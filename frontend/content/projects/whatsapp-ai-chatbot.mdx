@@ -1,0 +1,57 @@
+---
+# TODO: check the stack, results and links, and add the demo video from your Fiverr gig.
+title: "WhatsApp AI Chatbot with n8n and Groq"
+slug: whatsapp-ai-chatbot
+type: [WhatsApp, Agents]
+summary: "A WhatsApp assistant built with n8n and Groq that answers customer questions fast and hands complex chats to a person."
+description: "WhatsApp AI chatbot built with n8n and Groq by Muhammad Hasnain Pirzada: answers customer questions in seconds and hands complex chats to a human agent."
+stack: [n8n, Groq, Llama, WhatsApp Cloud API, Webhooks]
+results:
+  - "Customers get answers on WhatsApp, where they already are"
+  - "Fast replies thanks to Groq inference"
+  - "Visual n8n workflow the business can adjust"
+status: Live
+featured: true
+order: 3
+date: "2026-07-20"
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+fiverr: ""         # TODO: your WhatsApp chatbot gig URL
+---
+
+## The problem
+
+Customers message businesses on WhatsApp at all hours, and most of the questions are the same: prices, opening times, availability, order status. Answering them by hand is slow, and slow replies lose customers.
+
+## What I built
+
+A WhatsApp assistant that runs as an **n8n workflow** with **Groq** for the language model.
+
+- **WhatsApp Cloud API webhook.** Every incoming message triggers the workflow.
+- **Context first.** The workflow loads the conversation history and the business's information before the model replies.
+- **Groq for speed.** Open models on Groq's inference hardware answer in a fraction of the time of a typical API call, so the chat feels instant.
+- **Human hand-off.** When the question is out of scope or the customer asks for a person, the chat is flagged for the team.
+- **No black box.** The whole flow is visible in n8n, so the business can change messages and rules without code.
+
+## Architecture
+
+<Flow
+  steps={[
+    { label: "Customer on WhatsApp" },
+    { label: "Cloud API webhook" },
+    { label: "n8n workflow", note: "history + business info" },
+    { label: "Groq LLM" },
+    { label: "Reply or hand-off" },
+  ]}
+/>
+
+## Results
+
+- Common questions are answered right away, day or night.
+- The team only handles the conversations that really need a person.
+- The workflow is easy to change, because it lives in n8n, not in custom code.
+
+Want this for your business, in English and Arabic? See the [WhatsApp AI assistant service](/services#whatsapp-ai-assistant).

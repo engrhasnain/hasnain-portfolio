@@ -1,0 +1,109 @@
+/**
+ * Everything personal lives here, so edit this file first.
+ * Lines marked TODO need your real values before you share the site.
+ */
+export const site = {
+  name: "Muhammad Hasnain Pirzada",
+  shortName: "Muhammad Hasnain Pirzada", // always the full name, everywhere on the site
+  firstName: "Hasnain",
+  initials: "HP",
+  jobTitle: "Full Stack AI Engineer",
+  /** The one-line promise used in the hero, share images and Google. */
+  headline: "I build AI platforms and agents that automate operations for growing businesses",
+  /** Shown under your name in the hero and on About. */
+  roles: ["Software Engineer", "Full Stack AI Engineer"],
+  /** Current employer. Only shown in the About experience timeline, never as a headline. */
+  company: "Techtimize",
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://hasnainpirzada.vercel.app").replace(/\/+$/, ""),
+  description:
+    "Muhammad Hasnain Pirzada is a Full Stack AI Engineer building AI platforms and agents that automate operations for growing businesses: chatbots, MCP, voice AI.",
+  // Shown on /contact and in the footer, and used when the form can't send.
+  email: "pirzadahasnain.18@gmail.com",
+  phone: "+92 314 5672336",
+  whatsapp: "https://wa.me/923145672336",
+  /** Free Cal.com booking page for a 30-minute call. Leave "" to hide every "Book a call" button. */
+  booking: "https://cal.com/muhammad-hasnain-pirzada/30min",
+  // Put your photo (the same one as LinkedIn and Fiverr) at public/images/hasnain.jpg, square, 800x800 or bigger.
+  // Until the file exists, the site shows your initials instead.
+  photo: "/images/hasnain.jpg",
+  // Put your CV at this path. Until the file exists, the CV button sends people to /contact.
+  cv: "/cv/Muhammad-Hasnain-Pirzada-CV.pdf",
+  // Leave a link empty ("") to hide it everywhere.
+  links: {
+    linkedin: "https://www.linkedin.com/in/muhammad-hasnain-pirzada-335816201/",
+    github: "https://github.com/engrhasnain",
+    instagram: "https://www.instagram.com/hasnain_pirz.da/",
+    fiverr: "https://www.fiverr.com/s/aeeog18",
+    medium: "", // optional: your Medium URL
+  } as Record<"linkedin" | "github" | "instagram" | "fiverr" | "medium", string>,
+  keywords: [
+    "Hasnain Pirzada",
+    "Muhammad Hasnain Pirzada",
+    "Full Stack AI Engineer",
+    "AI platform developer",
+    "AI SaaS developer",
+    "MCP server developer",
+    "RAG chatbot developer",
+    "AI agent developer",
+    "WhatsApp AI chatbot",
+    "Software Engineer",
+  ],
+};
+
+export const nav = [
+  { href: "/projects", label: "Projects" },
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact" },
+];
+
+/** Facts from the AI Operations Platform codebase only. No guessed percentages. */
+export const proof = [
+  { value: "3", label: "apps in one AI platform" },
+  { value: "1,400+", label: "API endpoints" },
+  { value: "50+", label: "integrations" },
+  { value: "1,000+", label: "Claude tools on 6 MCP servers" },
+];
+
+/** The flagship case study the proof numbers come from. */
+export const flagship = "/projects/ai-operations-platform";
+
+/** "Tools I ship with" on the home page: one orbit ring per group, inner to outer. */
+export const stackGroups = [
+  {
+    label: "AI models",
+    note: "The models I build on, picked per job for quality and cost.",
+    tools: ["Claude", "OpenAI", "Gemini", "Groq"],
+  },
+  {
+    label: "AI and automation",
+    note: "Retrieval, tools for Claude, agents and the channels customers use.",
+    tools: ["LangChain", "MCP", "RAG", "n8n", "WhatsApp Cloud API"],
+  },
+  {
+    label: "Build and ship",
+    note: "The full stack around the AI, from database to cloud.",
+    tools: ["Python", "FastAPI", "TypeScript", "React", "Next.js", "NestJS", "Tailwind CSS", "PostgreSQL / pgvector", "Redis", "Docker", "AWS", "S3", "Vercel"],
+  },
+];
+
+/** Professional registration, shown on About and given to Google. */
+export const credentials = [
+  {
+    title: "Registered Engineer",
+    issuer: "Pakistan Engineering Council",
+  },
+];
+
+export type Certification = { title: string; issuer: string; url: string; year?: string };
+
+/**
+ * Courses and certificates (e.g. Coursera). Add one line per certificate:
+ *   { title: "Generative AI with Large Language Models", issuer: "Coursera · DeepLearning.AI", url: "https://coursera.org/verify/...", year: "2025" },
+ * The section on About only appears once this list has something in it.
+ */
+export const certifications: Certification[] = [];
+
+/** Playbook projects in progress. Move one to content/projects/*.mdx when it ships. */
+export const lab = ["AskStore", "SalesTalk MCP", "Wasla", "InboxPilot", "Reception AI", "QuantKit"];

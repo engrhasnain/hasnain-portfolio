@@ -1,0 +1,57 @@
+---
+# TODO: check the stack, results and links. Add a GitHub link if the code is public.
+title: "PDF Research Q&A Chatbot with RAG"
+slug: pdf-research-chatbot
+type: [Chatbots]
+summary: "Upload research papers and reports as PDFs, then ask questions in plain language and get answers based on the documents."
+description: "PDF research chatbot by Muhammad Hasnain Pirzada: upload papers and reports, ask questions in plain language, and get answers grounded in your own PDFs."
+stack: [Python, LangChain, OpenAI, Embeddings, Vector search, FastAPI]
+results:
+  - "Answers based on the uploaded PDFs, not the model's memory"
+  - "Works across many long documents at once"
+  - "Plain-language questions, no search syntax"
+status: Live
+featured: false
+order: 4
+date: "2026-06-10"
+cover: ""
+art: pdf           # which generated cover mockup to show until you add a cover image
+video: ""
+architecture: ""
+github: ""
+demo: ""
+fiverr: "https://www.fiverr.com/s/wbblvlA"  # AI chatbot gig
+---
+
+## The problem
+
+Researchers and analysts spend hours searching through long PDFs for one number, one definition or one conclusion. Keyword search misses anything phrased differently, and general chatbots answer from memory instead of the actual documents.
+
+## What I built
+
+A question-and-answer app over your own PDFs, built on **retrieval-augmented generation (RAG)**.
+
+- **Ingestion.** PDFs are parsed, cleaned and split into overlapping chunks so no idea is cut in half.
+- **Embeddings and vector search.** Each chunk is embedded, and every question pulls back the passages that match its meaning, not just its keywords.
+- **Grounded answers.** The model answers only from the retrieved passages. If the documents don't contain the answer, it says so.
+
+## Architecture
+
+<Flow
+  steps={[
+    { label: "PDF upload" },
+    { label: "Parse + chunk" },
+    { label: "Embeddings", note: "vector index" },
+    { label: "Retrieve top passages" },
+    { label: "LLM answer" },
+  ]}
+  caption="Classic RAG: the model sees only the passages that matter for each question."
+/>
+
+## Results
+
+- Questions that took a long search now take one message.
+- Answers come from the documents, which makes them easy to check.
+- The same pipeline works for contracts, manuals and policies, not only research papers.
+
+Want a chatbot over your own documents? See the [AI chatbot service](/services#ai-chatbot).

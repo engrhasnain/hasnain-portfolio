@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# builds
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# env + deploy
+.env
+.env.*
+!.env.example
+.vercel/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/

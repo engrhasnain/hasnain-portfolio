@@ -1,0 +1,58 @@
+---
+# TODO: check the stack, results and links, and edit anything that doesn't sound like you.
+title: "AI Business Chatbot: RAG + Image Generation"
+slug: ai-business-chatbot
+type: [Chatbots]
+summary: "One chatbot that runs on Claude, GPT or Gemini, answers from the business's own documents with RAG, and generates images in the same chat."
+description: "AI business chatbot by Muhammad Hasnain Pirzada: runs on Claude, GPT or Gemini, answers from company documents using RAG, and creates images in the chat."
+stack: [Claude, OpenAI GPT, Gemini, RAG, FastAPI, Next.js, PostgreSQL + pgvector]
+results:
+  - "Claude, GPT and Gemini behind one interface"
+  - "Answers grounded in the business's own documents"
+  - "Image generation inside the same conversation"
+status: Live
+featured: true
+order: 2
+date: "2026-09-01"
+cover: ""          # e.g. /images/projects/ai-business-chatbot.png (1600x900)
+video: ""          # YouTube link, or /videos/ai-business-chatbot.mp4
+architecture: ""   # optional diagram image, e.g. /images/projects/ai-business-chatbot-architecture.png
+github: ""
+demo: ""
+fiverr: "https://www.fiverr.com/s/wbblvlA"  # AI chatbot gig
+---
+
+## The problem
+
+Most business chatbots fail in one of two ways. They make things up, because they were never given the company's real information. Or they are tied to one AI provider, so when prices change or a better model ships, the whole bot has to be rebuilt.
+
+The business also wanted one assistant for two jobs: answering questions about its products and policies, and producing quick visuals without opening another tool.
+
+## What I built
+
+A chat app where the AI model is a setting, not a rewrite.
+
+- **Three providers, one interface.** Claude, GPT and Gemini sit behind the same API layer. The business picks a default model and can switch per conversation.
+- **Answers from their own data.** Documents and web pages are split into chunks, embedded and stored in a vector index. Every question first retrieves the most relevant chunks, and the model answers from those.
+- **Images in the chat.** When a message asks for a visual, the assistant calls the image model and returns the result in the same thread.
+
+## Architecture
+
+<Flow
+  steps={[
+    { label: "Chat UI", note: "Next.js" },
+    { label: "API", note: "FastAPI" },
+    { label: "Retriever", note: "vector search" },
+    { label: "LLM", note: "Claude / GPT / Gemini" },
+    { label: "Answer or image" },
+  ]}
+  caption="Every answer starts with retrieval, so the model works from the business's documents."
+/>
+
+## Results
+
+- One codebase serves three AI providers, so changing models is a config change.
+- Answers stay on topic because they are grounded in the business's documents.
+- Text answers and images come from one assistant instead of two tools.
+
+Want one for your business? The [AI chatbot service](/services#ai-chatbot) covers training on your documents, the chat widget and deployment.

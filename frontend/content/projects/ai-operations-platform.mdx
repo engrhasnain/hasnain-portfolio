@@ -1,0 +1,159 @@
+---
+# Flagship case study. Never name the client, its brands, people or data.
+# Every fact here comes from the website spec. Keep numbers to what the code shows: no guessed percentages.
+# Each section block needs nav="..." (its label in the sticky menu).
+title: "AI Operations Platform for Contractor Marketing"
+slug: ai-operations-platform
+type: [MCP, Agents, Voice]
+summary: "An AI platform that runs a digital marketing agency end to end: onboarding, content, reviews, social and calls, with an MCP layer that gives Claude 1,000+ tools."
+description: "Case study: an AI operations platform for contractor marketing with 3 apps, 1,400+ API endpoints, 50+ integrations and an MCP layer with 1,000+ Claude tools."
+stack: [React, TypeScript, NestJS, FastAPI, PostgreSQL + pgvector, Redis, AWS S3, Claude, Model Context Protocol, OAuth 2.1, AWS]
+results:
+  - "3 apps and 1,400+ API endpoints"
+  - "50+ integrations"
+  - "6 MCP servers, 17 MCPs, 1,000+ tools for Claude"
+  - "Human approval before anything goes live"
+status: Live
+featured: true
+order: 1
+date: "2026-09-20"
+layout: case-study
+art: platform      # the Mission Control mockup, shown until you add a cover image
+cta: "Need a platform like this for your business? Let's talk."
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+fiverr: "https://www.fiverr.com/s/X00B44k"  # MCP server gig
+---
+
+<Problem
+  n="01"
+  nav="Problem"
+  eyebrow="The problem"
+  title="An agency running on manual work"
+  manual={[
+    "Onboarding every new client by hand",
+    "Writing content one page and one post at a time",
+    "Replying to reviews manually",
+    "Posting to social for each client separately",
+    "Handling and following up on calls by hand",
+  ]}
+>
+
+A digital marketing agency looks after many contractor businesses at once. Every one of them needs onboarding, content, reviews, social posts and calls handled, week after week.
+
+All of that was **done by hand**, client by client. Every new client added more manual work for the same team.
+
+The goal: **one platform where AI does the repetitive work**, a person approves anything that goes live, and Claude can work with the business through safe, typed tools.
+
+</Problem>
+
+<Areas
+  n="02"
+  nav="Platform"
+  eyebrow="What the platform does"
+  title="12 areas of the agency, in one platform"
+  intro="Each of these used to be its own manual process. Now they all run in one platform, with one place to approve work."
+  items={[
+    { icon: "onboarding", title: "Onboarding", text: "Brings each new client onto the platform, step by step, in one place." },
+    { icon: "knowledge", title: "Client knowledge base", text: "Everything about each client in one place, so the AI works from real facts." },
+    { icon: "search", title: "SEO", text: "Search research and SEO work for every client's website." },
+    { icon: "content", title: "Content", text: "Website pages and posts drafted with AI, then approved by a person." },
+    { icon: "image", title: "Images", text: "AI-generated images for each client's pages and posts." },
+    { icon: "map", title: "Google Business Profile", text: "Keeps every client's Google Business Profile active and up to date." },
+    { icon: "social", title: "Social", text: "Social media posts created and scheduled for every client." },
+    { icon: "voice", title: "Calls and voice AI", text: "Calls turned into insight for the team, plus AI voice agents." },
+    { icon: "plug", title: "Business connectors", text: "50+ integrations with the tools the agency and its clients already use." },
+    { icon: "billing", title: "Billing", text: "Client plans and billing, managed inside the platform." },
+    { icon: "chat", title: "AI chatbot", text: "A RAG chatbot that answers from each client's own knowledge base." },
+    { icon: "gauge", title: "Mission Control", text: "One dashboard to see what's running and what needs attention." },
+  ]}
+/>
+
+<Architecture
+  n="03"
+  nav="Architecture"
+  eyebrow="Architecture"
+  title="From the screen to Claude"
+  intro="A simplified view of how the parts fit together, redrawn without any client names."
+  caption="Claude reaches the platform through the MCP layer, which is secured with OAuth 2.1."
+  tiers={[
+    { label: "Experience", nodes: [
+      { icon: "code", title: "React portal", note: "React + TypeScript · where the team works" },
+    ] },
+    { label: "Services", nodes: [
+      { icon: "server", title: "NestJS API", note: "core backend · auth · scheduled jobs" },
+      { icon: "sparkles", title: "FastAPI AI service", note: "AI features · RAG · cost tracking" },
+    ] },
+    { label: "Data", nodes: [
+      { icon: "database", title: "PostgreSQL + pgvector", note: "data and embeddings" },
+      { icon: "zap", title: "Redis", note: "job locks" },
+      { icon: "cloud", title: "S3", note: "files and media" },
+    ] },
+    { label: "Outside world", nodes: [
+      { icon: "plug", title: "50+ external APIs", note: "the tools the business runs on" },
+      { icon: "layers", title: "MCP layer for Claude", note: "6 servers · 17 MCPs · 1,000+ tools", highlight: true },
+    ] },
+  ]}
+/>
+
+<Built
+  n="04"
+  nav="What I built"
+  eyebrow="What I built"
+  title="The whole stack, end to end"
+  intro="From the screen the team uses to the backend, the AI and the cloud it runs on."
+  items={[
+    { icon: "code", title: "React + TypeScript portal", text: "The web app the agency team works in every day, across all 12 areas.", tags: ["React", "TypeScript"] },
+    { icon: "server", title: "NestJS API", text: "The core backend: business logic, JWT authentication, signed webhooks and scheduled jobs.", tags: ["NestJS", "PostgreSQL", "Redis"] },
+    { icon: "sparkles", title: "FastAPI AI service", text: "The AI side of the platform, with AI cost tracking and spend caps built in.", tags: ["FastAPI", "Python", "AI"] },
+    { icon: "layers", title: "MCP layer", text: "6 servers and 17 MCPs exposing 1,000+ tools, so Claude can work with the platform.", tags: ["MCP", "Claude", "OAuth 2.1"] },
+    { icon: "chat", title: "RAG chatbot", text: "Answers questions from each client's knowledge base, with embeddings in pgvector.", tags: ["RAG", "pgvector"] },
+    { icon: "cloud", title: "CI/CD to AWS", text: "Automated build and deploy pipelines that ship the platform to AWS.", tags: ["CI/CD", "AWS"] },
+  ]}
+/>
+
+<Numbers
+  n="05"
+  nav="Numbers"
+  eyebrow="By the numbers"
+  title="The size of it"
+  items={[
+    { value: "3", label: "apps" },
+    { value: "1,400+", label: "API endpoints" },
+    { value: "~100", label: "scheduled jobs" },
+    { value: "50+", label: "integrations" },
+    { value: "1,000+", label: "MCP tools" },
+  ]}
+  note="Counted from the code. No guessed percentages."
+/>
+
+<Workflows
+  n="06"
+  nav="Workflows"
+  eyebrow="Key workflows"
+  title="How work moves through it"
+  intro="Four workflows that used to be manual, now running through the platform, with a person approving what goes live."
+  items={[
+    { title: "New client to live", steps: ["New client signs up", "Onboarding", "Client knowledge base built", "Content and profiles prepared", "Human approval", "Live"] },
+    { title: "Research to published page", steps: ["Research", "Page drafted with AI", "Human approval", "Published"] },
+    { title: "Call to insight", steps: ["Call comes in", "AI summarises it", "Insight for the team"] },
+    { title: "AI chatbot", steps: ["Question asked", "Search the client's knowledge base", "Answer from that knowledge"] },
+  ]}
+/>
+
+<Highlights
+  n="07"
+  nav="Highlights"
+  eyebrow="Engineering highlights"
+  title="Built to be trusted with real clients"
+  items={[
+    { icon: "shield", title: "Human approval for anything that goes live", text: "AI prepares the work, a person approves it. Nothing goes live without a yes.", tag: "approval: required", steps: ["AI draft", "Human approval", "Live"] },
+    { icon: "coins", title: "AI cost tracking and spend caps", text: "AI usage is tracked by cost, and spend caps stop it before it becomes a surprise bill.", tag: "cost tracked" },
+    { icon: "lock", title: "Redis locks for scheduled jobs", text: "Each of the ~100 scheduled jobs runs once, even when several workers are running.", tag: "one job, one run" },
+    { icon: "key", title: "JWT and signed webhooks", text: "Requests are authenticated with JWT, and incoming webhooks must carry a valid signature.", tag: "verify first" },
+    { icon: "server", title: "OAuth 2.1 on MCP servers", text: "The MCP servers Claude connects to are protected with OAuth 2.1.", tag: "OAuth 2.1" },
+  ]}
+/>

@@ -1,0 +1,40 @@
+---
+# Starter post: edit it into your own words before you share it.
+title: "How I Build RAG Chatbots That Don't Make Things Up"
+slug: rag-chatbots-that-dont-make-things-up
+summary: "A chatbot trained on your documents is only useful if people can trust it. These are the five things I do on every RAG build to keep answers accurate."
+description: "Five steps for building a RAG chatbot that answers accurately from your own documents: clean data, smart chunking, retrieval checks and honest fallbacks."
+date: "2026-10-04"
+tags: [RAG, Chatbots, LLMs]
+draft: false
+---
+
+Every business that asks me for a chatbot has the same fear: *what if it tells a customer something wrong?* It's the right fear. A chatbot that sounds confident and is wrong is worse than no chatbot at all.
+
+**Retrieval-augmented generation (RAG)** is the standard fix: before the model answers, you look up the relevant parts of your own documents and give them to it. But RAG on its own isn't magic. Here is what I do on every build to keep answers accurate.
+
+## 1. Clean the data before anything else
+
+Most wrong answers start in the documents, not the model. Old price lists, duplicate policies and PDFs with broken tables all end up in the index if you let them. I spend real time on this step: removing outdated files, fixing extraction, and keeping one source of truth for each topic.
+
+## 2. Chunk by meaning, not by character count
+
+Splitting every document into fixed 500-character pieces cuts ideas in half. I split on headings and sections where possible, keep a small overlap between chunks, and store the document title and section with each chunk so the model knows where text came from.
+
+## 3. Check retrieval separately from generation
+
+If the right passage never reaches the model, no prompt will save the answer. I keep a small set of real questions with known answers and check that retrieval finds the right passages *before* tuning prompts. When retrieval is weak, hybrid search (keywords plus embeddings) or a re-ranking step usually fixes it.
+
+## 4. Tell the model it is allowed to say "I don't know"
+
+The prompt says clearly: answer only from the provided context, and if the answer isn't there, say so and offer a human. Customers forgive "let me connect you with the team". They don't forgive invented refund policies.
+
+## 5. Hand off to a human, and learn from it
+
+Every bot I build has a way out: an email, a live chat or a WhatsApp hand-off. The questions it couldn't answer are the most useful data you have. They show exactly which documents to add next.
+
+## The result
+
+None of this is complicated, but skipping any one step is how chatbots end up making things up. Done together, they give you a bot your team is happy to put in front of customers.
+
+*Want a chatbot trained on your own documents? See the [AI chatbot service](/services#ai-chatbot) or [send me a message](/contact).*
