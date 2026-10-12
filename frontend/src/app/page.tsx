@@ -136,7 +136,7 @@ export default function HomePage() {
       </section>
 
       {/* How it fits together */}
-      <section className="section relative overflow-hidden">
+      <section className="cv-auto section relative overflow-hidden">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(50%_60%_at_50%_55%,rgb(59_130_246/0.1),transparent_70%)]"
@@ -156,7 +156,7 @@ export default function HomePage() {
       </section>
 
       {/* 3. Featured projects */}
-      <section className="section container-page">
+      <section className="cv-auto section container-page">
         <SectionHeading
           eyebrow="Featured work"
           title="Production AI, not demos"
@@ -175,7 +175,7 @@ export default function HomePage() {
       </section>
 
       {/* 4. Services */}
-      <section className="section border-t border-line">
+      <section className="cv-auto section border-t border-line">
         <div className="container-page">
           <SectionHeading
             eyebrow="Services"
@@ -266,7 +266,7 @@ export default function HomePage() {
       </section>
 
       {/* 5. Stack */}
-      <section className="section relative overflow-hidden border-t border-line">
+      <section className="cv-auto section relative overflow-hidden border-t border-line">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(45%_60%_at_75%_50%,rgb(94_234_212/0.08),transparent_70%)]"
@@ -289,7 +289,7 @@ export default function HomePage() {
 
       {/* 6. Latest posts */}
       {posts.length > 0 ? (
-        <section className="section border-t border-line">
+        <section className="cv-auto section border-t border-line">
           <div className="container-page">
             <SectionHeading
               eyebrow="Writing"

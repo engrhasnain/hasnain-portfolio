@@ -1111,3 +1111,10 @@
     animation: none;
   }
 }
+
+/* Below-the-fold sections: the browser skips their layout and paint until you scroll near them,
+   so a phone draws the hero first. `auto` remembers each section's real height once it has been shown. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
+}
