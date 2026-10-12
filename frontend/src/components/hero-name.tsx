@@ -50,7 +50,10 @@ export function HeroName({ name }: { name: string }) {
 
   useEffect(() => {
     reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = setTimeout(decode, 250);
+    // On phones the name shows straight away: the decode re-renders every frame, which a phone pays for while
+    // the page is still loading. On desktop it plays on load, and everywhere it plays when you hover the name.
+    const desktop = window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 1024px)").matches;
+    const timer = desktop ? setTimeout(decode, 250) : undefined;
     return () => {
       clearTimeout(timer);
       cancelAnimationFrame(frame.current);

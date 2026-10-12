@@ -67,7 +67,7 @@ export function Interactions() {
       canvas.height = Math.round(window.innerHeight * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    resize();
+    let sized = false; // the full-screen canvas only gets a backing store once someone clicks
 
     const draw = (t: number) => {
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -127,6 +127,10 @@ export function Interactions() {
 
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      if (!sized) {
+        resize();
+        sized = true;
+      }
       const count = 10;
       const sparks = Array.from({ length: count }, (_, i) => {
         const angle = (i / count) * Math.PI * 2 + Math.random() * 0.6;
@@ -186,13 +190,16 @@ export function Interactions() {
       untilt();
     };
 
-    window.addEventListener("resize", resize);
+    const onResize = () => {
+      if (sized) resize();
+    };
+    window.addEventListener("resize", onResize);
     window.addEventListener("pointerdown", onDown, { passive: true });
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("pointerleave", leaveAll);
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerleave", leaveAll);

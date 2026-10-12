@@ -7,6 +7,7 @@ type Node = { angle: number; radius: number; speed: number; size: number; phase:
 /**
  * A slowly orbiting constellation of AI "neurons" around a centre (my photo, the AI core).
  * Canvas 2D, pauses when off screen, and draws a still frame for reduced-motion users.
+ * On phones it uses fewer nodes, a cheaper glow and 30 fps, and it only starts moving once the page has loaded.
  */
 export function NeuralCanvas({ className, count = 72 }: { className?: string; count?: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -17,6 +18,9 @@ export function NeuralCanvas({ className, count = 72 }: { className?: string; co
     if (!canvas || !ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const light = window.matchMedia("(max-width: 1023px), (hover: none)").matches;
+    const frameGap = light ? 1000 / 30 : 0;
+    let lastFrame = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let width = 0;
     let height = 0;
@@ -24,7 +28,7 @@ export function NeuralCanvas({ className, count = 72 }: { className?: string; co
     let running = false;
     const mouse = { x: -9999, y: -9999 };
 
-    const nodes: Node[] = Array.from({ length: count }, () => ({
+    const nodes: Node[] = Array.from({ length: light ? Math.round(count * 0.55) : count }, () => ({
       angle: Math.random() * Math.PI * 2,
       radius: 0.3 + Math.random() * 0.2,
       speed: (Math.random() * 0.6 + 0.2) * (Math.random() < 0.5 ? -1 : 1) * 0.0012,
@@ -80,8 +84,9 @@ export function NeuralCanvas({ className, count = 72 }: { className?: string; co
           ctx.stroke();
         }
         ctx.fillStyle = p.n.azure ? `rgba(96, 165, 250, ${0.55 + pulse * 0.45})` : `rgba(94, 234, 212, ${0.55 + pulse * 0.45})`;
+        // canvas shadows are expensive, so phones skip the glow
         ctx.shadowColor = p.n.azure ? "#3B82F6" : "#5EEAD4";
-        ctx.shadowBlur = near ? 14 : 6;
+        ctx.shadowBlur = light ? 0 : near ? 14 : 6;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.n.size * (near ? 1.8 : 1), 0, Math.PI * 2);
         ctx.fill();
@@ -90,7 +95,10 @@ export function NeuralCanvas({ className, count = 72 }: { className?: string; co
     };
 
     const loop = (t: number) => {
-      draw(t);
+      if (t - lastFrame >= frameGap) {
+        draw(t);
+        lastFrame = t;
+      }
       if (running) frame = requestAnimationFrame(loop);
     };
     const start = () => {
@@ -107,7 +115,10 @@ export function NeuralCanvas({ className, count = 72 }: { className?: string; co
     draw(0);
 
     const visibility = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()));
-    visibility.observe(canvas);
+    // Let the page finish loading (photo, name, text) before the network starts moving.
+    const begin = () => visibility.observe(canvas);
+    const hasIdle = typeof window.requestIdleCallback === "function";
+    const idle = hasIdle ? window.requestIdleCallback(begin, { timeout: 2500 }) : window.setTimeout(begin, 1200);
     const sizing = new ResizeObserver(() => {
       resize();
       if (!running) draw(performance.now());
@@ -128,6 +139,8 @@ export function NeuralCanvas({ className, count = 72 }: { className?: string; co
 
     return () => {
       stop();
+      if (hasIdle) window.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
       visibility.disconnect();
       sizing.disconnect();
       window.removeEventListener("pointermove", onMove);
