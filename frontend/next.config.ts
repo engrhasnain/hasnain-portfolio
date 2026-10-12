@@ -21,8 +21,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com" }],
   },
   async rewrites() {
+    // Crawlers (Google, link previews) that only look for the classic /favicon.ico
+    // get the same generated photo icon that <link rel="icon"> points at.
+    const favicon = { source: "/favicon.ico", destination: "/icon" };
     // /api/* on this site is proxied to FastAPI, so the browser never needs CORS.
-    return apiUrl ? [{ source: "/api/:path*", destination: `${apiUrl}/api/:path*` }] : [];
+    const api = { source: "/api/:path*", destination: `${apiUrl}/api/:path*` };
+    return apiUrl ? [favicon, api] : [favicon];
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
