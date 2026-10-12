@@ -91,7 +91,8 @@ export function toProjectMeta({ body: _body, ...meta }: Project): ProjectMeta {
 
 export const getPosts = cache((): Post[] =>
   readCollection("blog")
-    .filter((entry) => !(entry.data.draft === true && process.env.NODE_ENV === "production"))
+    // Drafts never appear on the live site. Run a local build with SHOW_DRAFTS=1 to read them before publishing.
+    .filter((entry) => !(entry.data.draft === true && process.env.NODE_ENV === "production" && process.env.SHOW_DRAFTS !== "1"))
     .map((entry) => {
       const summary = required(entry, "summary");
       const words = entry.body.split(/\s+/).filter(Boolean).length;
@@ -108,6 +109,7 @@ export const getPosts = cache((): Post[] =>
         cover: text(entry.data.cover),
         canonical: text(entry.data.canonical),
         readingMinutes: Math.max(1, Math.round(words / 220)),
+        draft: entry.data.draft === true,
         body: entry.body,
       } satisfies Post;
     })

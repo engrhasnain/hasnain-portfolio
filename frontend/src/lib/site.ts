@@ -34,7 +34,7 @@ export const site = {
     github: "https://github.com/engrhasnain",
     instagram: "https://www.instagram.com/hasnain_pirz.da/",
     fiverr: "https://www.fiverr.com/s/aeeog18",
-    medium: "", // optional: your Medium URL
+    medium: "https://medium.com/@mhasnainpirzada",
   } as Record<"linkedin" | "github" | "instagram" | "fiverr" | "medium", string>,
   keywords: [
     "Hasnain Pirzada",

@@ -29,7 +29,7 @@ export default function BlogPage() {
           as="h1"
           eyebrow="Blog"
           title="Notes from building AI in production"
-          intro="The long versions of my LinkedIn posts: what worked, what didn't, and what I'd do again."
+          intro="What I learn building AI agents, chatbots and MCP servers for real businesses: what worked, what didn't, and what I'd do again."
         />
         {posts.length > 0 ? (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

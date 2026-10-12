@@ -41,4 +41,6 @@ export type PostMeta = {
   cover?: string;
   canonical?: string;
   readingMinutes: number;
+  /** Only ever true in a local SHOW_DRAFTS preview. */
+  draft?: boolean;
 };

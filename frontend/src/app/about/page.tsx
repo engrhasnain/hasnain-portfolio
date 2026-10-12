@@ -25,12 +25,12 @@ const values = [
   { title: "Costs that make sense", text: "The right model for each job, caching where it helps, and no surprise bills." },
 ];
 
-// TODO: add dates (e.g. "2023 – Present") once you decide how much to show.
+// Titles and dates match LinkedIn exactly. "Full Stack AI Engineer" stays the brand line everywhere else.
 const experience = [
   {
-    role: "Full Stack AI Engineer",
+    role: "Associate Software Engineer (AI/LLM)",
     org: site.company,
-    when: "Present",
+    when: "Nov 2025 – Present",
     points: [
       "Built an AI operations platform that runs a digital marketing agency end to end",
       "3 apps, 1,400+ API endpoints and 50+ integrations, from React portal to AWS",
@@ -40,22 +40,31 @@ const experience = [
   },
   {
     role: "Freelance AI Engineer",
-    org: "Fiverr",
-    when: "Ongoing",
+    org: "Available on Fiverr",
+    when: "Open for projects",
     points: [
-      "Chatbots trained on client documents with RAG",
+      "AI chatbots trained on a business's own documents (RAG)",
+      "MCP servers that connect Claude to real systems",
       "WhatsApp assistants and n8n automations",
-      "Delivered with demos, docs and handover",
     ],
   },
   {
-    role: "Full Stack Developer",
-    org: "Web apps and APIs",
-    when: "Earlier",
+    role: "Associate Software Engineer",
+    org: "Cognisons",
+    when: "Sep 2025 – Nov 2025",
     points: [
-      "Built web apps end to end, from database to UI",
-      "Next.js and React front ends, Python and Node.js back ends",
-      "The foundation for putting AI in front of real users",
+      "Built end-to-end data and ML workflows",
+      "Collected, cleaned and explored datasets, and engineered features",
+      "Built reproducible ML pipelines, including work with YOLO models",
+    ],
+  },
+  {
+    role: "Natural Language Processing Engineer (Internship)",
+    org: "ITSOLERA Pvt Ltd",
+    when: "Jun 2024 – Sep 2024",
+    points: [
+      "Completed an internship in Natural Language Processing",
+      "Worked on chatbots and language-processing tasks",
     ],
   },
 ];

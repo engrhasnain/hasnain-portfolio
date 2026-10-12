@@ -15,6 +15,7 @@ export function ProjectsGrid({ projects }: { projects: ProjectMeta[] }) {
       <div role="group" aria-label="Filter projects by type" className="mb-8 flex flex-wrap gap-2">
         {options.map((option) => {
           const n = option === "All" ? projects.length : count(option);
+          if (n === 0) return null; // an empty filter looks unfinished
           return (
             <button
               key={option}

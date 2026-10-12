@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/avatar";
@@ -56,6 +57,11 @@ export default async function PostPage({ params }: Props) {
             <ArrowLeft /> All posts
           </Link>
         </nav>
+        {post.draft ? (
+          <p className="mt-6 rounded-2xl border border-amber/50 bg-amber/10 px-4 py-3 text-sm font-semibold text-amber">
+            Draft preview: this post is hidden on the live site until it&apos;s published.
+          </p>
+        ) : null}
         <header className="animate-in mt-6">
           <p className="text-sm text-muted">
             <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingMinutes} min read
@@ -72,6 +78,17 @@ export default async function PostPage({ params }: Props) {
             </ul>
           ) : null}
         </header>
+        {post.cover ? (
+          <Image
+            src={post.cover}
+            alt=""
+            width={2400}
+            height={1260}
+            priority
+            sizes="(min-width: 768px) 720px, 100vw"
+            className="animate-pop mt-10 h-auto w-full rounded-2xl border border-line shadow-[0_30px_80px_-40px_rgb(94_234_212/0.5)]"
+          />
+        ) : null}
 
         <div className="prose-glow mt-10 border-t border-line pt-10">
           <Mdx source={post.body} />

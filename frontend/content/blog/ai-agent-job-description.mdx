@@ -1,0 +1,86 @@
+---
+title: "Your AI Agent Needs a Job Description Before It Gets Access"
+slug: ai-agent-job-description
+summary: "Google just gave AI agents their own inbox. Here is how I decide what an agent can read, send and change, before it touches a real system."
+description: "Google just gave AI agents their own inbox. Here is how I decide what an agent can read, send and change, before it touches a real system."
+date: "2026-10-12"
+tags: [AI agents, MCP, AI security]
+cover: "/images/blog/ai-agent-job-description/cover.jpg"
+draft: false
+---
+
+When a new person joins your company, nobody hands them the keys to everything on day one. They get a role, a manager and access to the tools that role needs. Then the access grows as trust grows.
+
+AI agents are about to join your company too. Most businesses are giving them access the old way: one shared API key, full permissions, and hope.
+
+## What changed
+
+At Gemini at Work on October 8, Google introduced the Gemini agent: an agent that works across apps and gets its own identity at work. It has its own email, calendar and Drive, it shows up in the company directory, and its actions are recorded in its own activity log. ([Google's announcement](https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026), with independent coverage from [Reworked](https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/) and [Decrypt](https://decrypt.co/380545/google-gemini-coworker-own-email-address).)
+
+That is a big shift. Until now, an AI assistant mostly worked through a person's account. Now the agent is a coworker with its own seat.
+
+## Why it matters for your business
+
+An agent with its own identity is easier to see. It is not automatically safer. Someone still has to decide three things:
+
+1. **What it can read.** Customer records? Invoices? Only this one inbox?
+2. **What it can do.** Draft only, or also send, publish, delete and pay?
+3. **Who owns it.** When it gets something wrong at 2 AM, whose phone rings?
+
+If nobody writes these down, the answers are "everything", "everything" and "nobody". That is the real risk with agents. It's rarely the model. It's the access around it. OWASP, the security community behind the best-known list of risks for AI applications, has a name for it: [excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/). It means an AI with too many tools, too many permissions, or too much freedom to act without a person.
+
+## How I handle it: a job description for every agent
+
+Before I connect an agent to a real system, I write it a one-page job description. Then I build the access to match it, not the other way around.
+
+![Read, write and destructive actions side by side: reading runs on its own, writing is drafted by the agent and approved by a person, and destructive actions never run without a person](/images/blog/ai-agent-job-description/levels.jpg)
+
+1. **One role, one scope.** Each agent gets the smallest set of tools its job needs. A content agent can draft a page. It can't touch billing. Access is granted per system with scoped OAuth (the method the [MCP specification](https://modelcontextprotocol.io/specification/latest/basic/authorization) uses for authorization), not one master key.
+2. **Read, write and destructive are different things.** I label every tool by what it can change. Reading a record is low risk. Sending an email or publishing a page is higher. Deleting or paying is flagged as destructive and needs a person to approve it.
+3. **A human approves anything public.** Pages, posts and review replies wait in an approval queue. The agent does the work, and a person clicks Approve.
+4. **Every action is logged to the agent.** Who asked, which tool ran, what went in, what came out, and what it cost. When something looks wrong, you can trace it in minutes.
+5. **An owner and a review date.** Every agent has a named owner. Its access is reviewed like any employee's, and removed when the job is done.
+
+<Callout>
+
+**From a real build:** I built the MCP layer of an [AI operations platform](/projects/ai-operations-platform) for a digital marketing agency: 6 servers, 17 MCPs and over 1,000 tools for Claude. With that many tools, access design took more time than features. Tool names are prefixed by system so the model never confuses two of them. Tools load on demand, so an agent only sees what its task needs. Destructive actions are flagged, and anything that goes public waits for a person to approve it.
+
+</Callout>
+
+## The job description template
+
+This is the one-page version I start from. Copy it for your first agent.
+
+![An example agent job description for a content agent: role, systems it can and can't reach, what it can read, what it can do alone, what needs approval, what it must never do, its owner, its logs and its review date](/images/blog/ai-agent-job-description/template.jpg)
+
+- **Role:** what this agent is responsible for, in one sentence
+- **Systems:** which systems it can reach, and which it can't
+- **Can read:** the data it needs, nothing more
+- **Can do without approval:** low-risk actions such as drafting and tagging
+- **Needs approval:** sending, publishing, changing records
+- **Never:** deleting, paying, changing permissions
+- **Owner:** one named person
+- **Logs:** where every action is recorded
+- **Review:** when its access is checked again
+
+If you can't fill in a line, the agent isn't ready for production.
+
+## When you don't need this
+
+Not every AI tool is an agent. A chatbot that only answers questions from your documents can't change anything, so it needs good retrieval more than a job description. A single n8n workflow with one fixed step is often fine as it is. The job description matters once the AI can act: send, publish, book, update or pay.
+
+## The short version
+
+Google giving agents an identity makes them visible. It doesn't make them safe. Write the job description first, build the access to match it, and keep a person in the loop for anything that can't be undone.
+
+Planning your first agent? Tell me what you want it to do, and I'll help you write its job description before anything gets built. See [AI agents and MCP servers](/services#ai-agent).
+
+Related: [What Is an MCP Server, and Does Your Business Need One?](/blog/what-is-an-mcp-server)
+
+## Sources
+
+1. Google Cloud: [Gemini at Work 2026 announcement](https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026)
+2. Reworked: [Google debuts its all-purpose Gemini agent for work](https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/)
+3. Decrypt: [Google wants Gemini to be your next coworker, complete with its own email address](https://decrypt.co/380545/google-gemini-coworker-own-email-address)
+4. OWASP Top 10 for LLM Applications: [LLM06:2025 Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)
+5. Model Context Protocol specification: [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization)
