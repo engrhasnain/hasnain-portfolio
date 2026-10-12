@@ -41,6 +41,8 @@ export type PostMeta = {
   cover?: string;
   canonical?: string;
   readingMinutes: number;
+  /** A live, animated cover from components/post-covers.tsx, shown on the site instead of the cover image. */
+  coverArt?: string;
   /** Only ever true in a local SHOW_DRAFTS preview. */
   draft?: boolean;
 };

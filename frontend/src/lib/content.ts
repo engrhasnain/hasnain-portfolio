@@ -110,6 +110,7 @@ export const getPosts = cache((): Post[] =>
         canonical: text(entry.data.canonical),
         readingMinutes: Math.max(1, Math.round(words / 220)),
         draft: entry.data.draft === true,
+        coverArt: text(entry.data.coverArt),
         body: entry.body,
       } satisfies Post;
     })

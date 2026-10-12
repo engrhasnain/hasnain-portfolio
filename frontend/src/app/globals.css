@@ -1055,3 +1055,27 @@
     animation-delay: calc(2s + var(--i) * 70ms);
   }
 }
+
+/* ---------- Live blog covers (components/post-covers.tsx) ---------- */
+/* 1em = 1/120 of the cover's width, so the 1200px design scales to any size. */
+.post-cover-root {
+  font-size: calc(100cqw / 120);
+}
+/* The tilted card straightens on hover (same .tilt as the project covers), and its glow and chips light up. */
+.post-cover .tilt {
+  transform: perspective(120em) rotateX(6deg) rotateY(-14deg) rotateZ(1.5deg);
+}
+.post-cover:hover .tilt,
+.group:hover .post-cover .tilt {
+  transform: perspective(120em) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.02);
+}
+.post-cover:hover .agent-card,
+.group:hover .post-cover .agent-card {
+  box-shadow:
+    0 3em 8em -3em rgb(0 0 0 / 0.9),
+    0 0 7em -1.5em rgb(94 234 212 / 0.6);
+}
+.post-cover:hover .agent-chip,
+.group:hover .post-cover .agent-chip {
+  box-shadow: 0 0 2.4em -0.8em currentColor;
+}

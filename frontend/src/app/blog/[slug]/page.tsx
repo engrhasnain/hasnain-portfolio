@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { hasPostCover, PostCover } from "@/components/post-covers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/avatar";
@@ -78,7 +79,11 @@ export default async function PostPage({ params }: Props) {
             </ul>
           ) : null}
         </header>
-        {post.cover ? (
+        {hasPostCover(post.coverArt) ? (
+          <div className="post-cover animate-pop tilt-host mt-10 overflow-hidden rounded-2xl border border-line shadow-[0_30px_80px_-40px_rgb(94_234_212/0.5)]">
+            <PostCover art={post.coverArt} />
+          </div>
+        ) : post.cover ? (
           <Image
             src={post.cover}
             alt=""
