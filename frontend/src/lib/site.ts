@@ -96,14 +96,38 @@ export const credentials = [
   },
 ];
 
-export type Certification = { title: string; issuer: string; url: string; year?: string };
+export type Certification = {
+  title: string;
+  issuer: string;
+  /** The certificate's public verify link (e.g. coursera.org/verify/...). Without one, the card has no Verify button. */
+  url?: string;
+  year?: string;
+  /** For a specialization: its courses, each with its own verify link if it has one. */
+  courses?: { title: string; url?: string }[];
+};
 
-/**
- * Courses and certificates (e.g. Coursera). Add one line per certificate:
- *   { title: "Generative AI with Large Language Models", issuer: "Coursera · DeepLearning.AI", url: "https://coursera.org/verify/...", year: "2025" },
- * The section on About only appears once this list has something in it.
- */
-export const certifications: Certification[] = [];
+/** Courses and certificates, shown on About. Add a verify link to any of them and a Verify button appears. */
+export const certifications: Certification[] = [
+  {
+    // A Coursera specialization that prepares for AWS Cloud Practitioner (not the official AWS exam certification).
+    title: "AWS Cloud Practitioner Specialization",
+    issuer: "Coursera · LearnKartS",
+    year: "Nov 2025",
+    url: "https://coursera.org/verify/specialization/GXKLJVIC8VSI",
+    courses: [
+      { title: "Cloud Fundamentals", url: "https://coursera.org/verify/XJNBLYBO3EK1" },
+      { title: "Introduction to AWS", url: "https://coursera.org/verify/BILX56R1B2Y3" },
+      { title: "AWS Services", url: "https://coursera.org/verify/MNGN0PXTN8I1" },
+      { title: "AWS Pricing" },
+    ],
+  },
+  // From the CV. Add each verify link when you have it.
+  { title: "Machine Learning Specialization (3 courses)", issuer: "Stanford University" },
+  { title: "Applied Data Science with Python (5 courses)", issuer: "University of Michigan" },
+  { title: "Neural Networks and Deep Learning", issuer: "DeepLearning.AI" },
+  { title: "Mastering REST APIs with FastAPI", issuer: "Packt · Coursera" },
+  { title: "Complete Generative AI with LangChain and Hugging Face", issuer: "Udemy" },
+];
 
 /** Playbook projects in progress. Move one to content/projects/*.mdx when it ships. */
 export const lab = ["AskStore", "SalesTalk MCP", "Wasla", "InboxPilot", "Reception AI", "QuantKit"];

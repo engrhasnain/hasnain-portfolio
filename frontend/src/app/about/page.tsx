@@ -250,15 +250,19 @@ export default function AboutPage() {
               </li>
             ))}
             {certifications.map((c, i) => (
-              <li key={c.url}>
+              <li key={c.title} className={c.courses?.length ? "sm:col-span-2" : undefined}>
                 <Reveal delay={(i + 1) * 0.06} className="h-full">
-                  <a
-                    href={c.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group card card-hover flex h-full items-start gap-4 p-6"
+                  <div
+                    className={`group card card-hover relative isolate flex h-full items-start gap-4 overflow-hidden p-6 ${
+                      c.courses?.length ? "border-teal/30" : ""
+                    }`}
                   >
-                    <span className="fx-icon grid size-12 shrink-0 place-items-center rounded-xl border border-teal/30 bg-night text-2xl text-teal">
+                    {c.courses?.length ? <CardNetwork seed={140} /> : null}
+                    <span
+                      className={`fx-icon grid size-12 shrink-0 place-items-center rounded-xl text-2xl ${
+                        c.url ? "bg-brand text-night shadow-[0_0_24px_-6px_rgb(94_234_212/0.7)]" : "border border-teal/30 bg-night text-teal"
+                      }`}
+                    >
                       <AwardIcon />
                     </span>
                     <div className="min-w-0">
@@ -267,11 +271,38 @@ export default function AboutPage() {
                         {c.issuer}
                         {c.year ? ` · ${c.year}` : ""}
                       </p>
-                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-teal">
-                        Verify <ArrowUpRight className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </span>
+                      {c.courses?.length ? (
+                        <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Courses">
+                          {c.courses.map((course) => (
+                            <li key={course.title}>
+                              {course.url ? (
+                                <a
+                                  href={course.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="chip text-ink transition hover:border-teal/60 hover:text-teal"
+                                >
+                                  ✓ {course.title}
+                                </a>
+                              ) : (
+                                <span className="chip text-ink">✓ {course.title}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                      {c.url ? (
+                        <a
+                          href={c.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-teal hover:underline"
+                        >
+                          Verify certificate <ArrowUpRight />
+                        </a>
+                      ) : null}
                     </div>
-                  </a>
+                  </div>
                 </Reveal>
               </li>
             ))}
