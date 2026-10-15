@@ -1,0 +1,57 @@
+---
+title: "SalesTalk MCP: Chat with Your Sales Database in Claude"
+slug: salestalk-mcp
+type: [MCP, Agents]
+summary: "A custom MCP server that lets Claude answer sales questions in plain English from a live PostgreSQL database, read-only by design."
+description: "SalesTalk MCP by Muhammad Hasnain Pirzada: a read-only Model Context Protocol server that connects Claude to a PostgreSQL sales database, with six purpose-built tools and layered safety."
+stack: [Python, MCP SDK, PostgreSQL, Docker, Starlette]
+results:
+  - "Plain-English questions answered from live data in under a second"
+  - "Six purpose-built tools, from top customers to revenue by city"
+  - "Write and delete attempts refused by several independent safety layers"
+status: Live
+featured: true
+order: 5
+date: "2026-10-11"
+cover: ""
+art: salestalk     # animated SalesTalk mockup (see components/cover-mocks.tsx)
+video: ""
+architecture: ""
+github: "https://github.com/engrhasnain/salestalk-mcp"
+demo: ""
+fiverr: ""
+---
+
+## The problem
+
+Most companies keep their answers in a database, but only people who write SQL can get them out. A manager who wants "our top customers last month" or "Dubai against Riyadh this quarter" has to ask a developer and wait. AI assistants can't help either, because they can't see the company's data.
+
+## What I built
+
+A custom **MCP server** (Model Context Protocol, the standard way to give Claude new abilities) that connects Claude to a sales database. Anyone can ask a question in plain English and get real numbers back.
+
+- **Six purpose-built tools.** List and describe tables, monthly sales and top customers, revenue by city, best-selling products, and a guarded read-only query tool. Claude picks the right tool instead of guessing at SQL.
+- **Friendly date ranges.** "Last month", "this quarter", "last 30 days" and explicit ranges all work.
+- **Read-only by design.** A select-only database role, read-only transactions, a statement timeout, a row cap, single-statement checks and a query guard. Asking it to delete the orders table is refused, every time.
+- **A web console.** An animated console shows exactly what Claude sees: the tool it calls, the raw protocol messages, and the answer as a table or chart.
+- **Ready to run.** Docker setup, a seeded demo database for a fictional Gulf trading company, and 234 automated tests.
+
+## Architecture
+
+<Flow
+  steps={[
+    { label: "You, in Claude" },
+    { label: "MCP over stdio" },
+    { label: "SalesTalk tools", note: "range parser + query guard" },
+    { label: "Read-only Postgres role" },
+    { label: "Answer as a table or chart" },
+  ]}
+/>
+
+## Results
+
+- Questions like "top 5 customers last month" come back with real figures in well under a second.
+- Every number can be traced to the exact tool call that produced it.
+- The same pattern connects Claude to your own database, CRM, ERP or internal API, with read-only access by default.
+
+Want Claude connected to your own system? See the [MCP server service](/services#mcp-server).

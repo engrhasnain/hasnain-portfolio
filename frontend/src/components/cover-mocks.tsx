@@ -5,7 +5,7 @@ import { BookOpen, Check, namedIcons, typeIcons, WhatsApp } from "./icons";
 // Every size is in `em`, and .mock-root sets 1em from the cover's size, so they scale from phone cards to the big cover.
 // .seq-N replays the conversation step by step; .tilt gives the 3D angle that straightens on hover.
 
-export type MockArt = "platform" | "chat" | "mcp" | "whatsapp" | "pdf";
+export type MockArt = "platform" | "chat" | "mcp" | "salestalk" | "whatsapp" | "pdf";
 
 const surface = "bg-[#0F1531]";
 const raised = "bg-[#18214A]";
@@ -158,6 +158,87 @@ function McpMock() {
         <div className="mt-[0.6em] flex items-baseline justify-between">
           <span className="text-[1.3em] leading-none font-extrabold text-ink">6</span>
           <span className="font-mono text-[0.42em] text-teal">servers · 1,000+ tools</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const topCustomers = [
+  { name: "Al Fajr Import & Export", city: "Dubai", aed: "58,645", w: 100 },
+  { name: "Al Noor Hypermarket", city: "Riyadh", aed: "42,488", w: 72 },
+  { name: "Al Safa Foodstuff", city: "Dubai", aed: "38,084", w: 65 },
+];
+const cityRevenue = [
+  { city: "Dubai", w: 100 },
+  { city: "Riyadh", w: 81 },
+  { city: "Jeddah", w: 64 },
+  { city: "Abu Dhabi", w: 31 },
+];
+
+function SalesTalkMock() {
+  return (
+    <div className="relative flex w-[26em] items-center gap-[1em]">
+      <Window title="claude · salestalk" className="w-[16.4em] shrink-0">
+        <div className="px-[0.8em] py-[0.75em] text-[0.54em]">
+          <p className="seq-1 ml-auto w-fit max-w-[85%] rounded-[1em] rounded-br-[0.3em] bg-brand px-[0.9em] py-[0.5em] font-semibold text-night">
+            Top customers last month?
+          </p>
+          <p className="seq-2 mt-[0.7em] flex items-center gap-[0.55em] rounded-[0.6em] border border-white/[0.07] bg-night px-[0.7em] py-[0.45em] font-mono text-[0.88em]">
+            <span className="grid size-[1.3em] place-items-center rounded-full bg-teal/15 text-teal">
+              <Check />
+            </span>
+            <span>
+              <span className="text-sky-300">query_sales</span>
+              <span className="text-muted">(</span>
+              <span className="text-amber-300">&quot;last_month&quot;</span>
+              <span className="text-muted">)</span>
+            </span>
+            <span className="ml-auto text-muted">459ms</span>
+          </p>
+          <ul className="seq-3 mt-[0.6em] flex flex-col gap-[0.45em]">
+            {topCustomers.map((c, i) => (
+              <li key={c.name} className="grid grid-cols-[1em_1fr_auto] items-center gap-x-[0.5em] gap-y-[0.2em]">
+                <span className="font-mono text-[0.85em] text-muted">{i + 1}</span>
+                <span className="truncate text-ink">
+                  {c.name} <span className="text-muted">· {c.city}</span>
+                </span>
+                <span className="font-mono text-[0.85em] text-ink">{c.aed}</span>
+                <span className="col-start-2 col-end-4 h-[0.35em] overflow-hidden rounded-full bg-white/[0.06]">
+                  <span className="block h-full rounded-full bg-brand" style={{ width: `${c.w}%` }} />
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="seq-5 mt-[0.7em] flex items-center gap-[0.55em] rounded-[0.6em] border border-red-400/40 bg-red-500/10 px-[0.7em] py-[0.45em] font-mono text-[0.88em]">
+            <span className="text-red-300">✕</span>
+            <span className="text-ink">DELETE FROM orders</span>
+            <span className="ml-auto font-sans font-semibold text-red-300">refused</span>
+          </p>
+        </div>
+      </Window>
+
+      <div className={`seq-4 w-[8.6em] shrink-0 rounded-[0.9em] border border-white/10 ${surface} p-[0.65em] shadow-[0_1.4em_3em_-0.8em_rgb(0_0_0/0.8)]`}>
+        <p className="flex items-center justify-between font-mono text-[0.4em] tracking-[0.2em] text-muted uppercase">
+          PostgreSQL
+          <span className="flex items-center gap-[0.4em] tracking-normal text-teal normal-case">
+            <span className="tile-pulse size-[0.7em] rounded-full bg-teal" /> read-only
+          </span>
+        </p>
+        <p className="mt-[0.7em] font-mono text-[0.38em] text-muted">revenue_by_city · this quarter</p>
+        <ul className="mt-[0.45em] flex flex-col gap-[0.42em]">
+          {cityRevenue.map((c) => (
+            <li key={c.city} className="flex flex-col gap-[0.18em]">
+              <span className="text-[0.42em] text-ink">{c.city}</span>
+              <span className="h-[0.38em] overflow-hidden rounded-full bg-white/[0.06]">
+                <span className="block h-full rounded-full bg-brand" style={{ width: `${c.w}%` }} />
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-[0.7em] flex items-baseline justify-between">
+          <span className="text-[1.3em] leading-none font-extrabold text-ink">6</span>
+          <span className="font-mono text-[0.42em] text-teal">tools · SELECT only</span>
         </div>
       </div>
     </div>
@@ -404,6 +485,7 @@ const mocks: Record<MockArt, () => ReactNode> = {
   platform: PlatformMock,
   chat: ChatMock,
   mcp: McpMock,
+  salestalk: SalesTalkMock,
   whatsapp: WhatsAppMock,
   pdf: PdfMock,
 };

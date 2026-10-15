@@ -130,4 +130,4 @@ export const certifications: Certification[] = [
 ];
 
 /** Playbook projects in progress. Move one to content/projects/*.mdx when it ships. */
-export const lab = ["AskStore", "SalesTalk MCP", "Wasla", "InboxPilot", "Reception AI", "QuantKit"];
+export const lab = ["AskStore", "Wasla", "InboxPilot", "Reception AI", "QuantKit"];
