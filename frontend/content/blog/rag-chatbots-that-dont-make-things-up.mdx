@@ -4,40 +4,74 @@ slug: rag-chatbots-that-dont-make-things-up
 summary: "A chatbot trained on your documents is only useful if people can trust it. These are the five things I do on every RAG build to keep answers accurate."
 description: "Five steps for building a RAG chatbot that answers accurately from your own documents: clean data, smart chunking, retrieval checks and honest fallbacks."
 date: "2026-10-04"
-updated: "2026-10-12"
+updated: "2026-10-19"
 tags: [RAG, Claude, AI security]
 cover: "/images/blog/rag-chatbots-that-dont-make-things-up/cover.jpg"   # share image (LinkedIn, WhatsApp, Medium)
 coverArt: rag-chatbot   # the live, animated version shown on the site
 draft: false
+answer: "To stop a RAG chatbot from making things up, clean your documents first, split them by meaning instead of by length, test retrieval on its own with real customer questions, tell the model to admit when the answer isn't in your content, and give every chat a way to reach a person."
+faq:
+  - q: "What does RAG stand for?"
+    a: "RAG stands for retrieval-augmented generation. Before the AI model answers, the system searches your own documents for the most relevant passages and gives them to the model with the question, so the answer comes from your content instead of from the model's memory."
+  - q: "Can a RAG chatbot still hallucinate?"
+    a: "Yes. If retrieval misses the right passage, or the prompt lets the model fill gaps, it can still invent an answer that sounds right. Clean data, tested retrieval and a clear instruction to say it doesn't know when the answer isn't in the documents make this much rarer."
+  - q: "What is chunking in RAG?"
+    a: "Chunking is how your documents are split into small pieces before they are stored for search. Splitting by headings and sections keeps each idea whole. Splitting every document into fixed-length pieces cuts ideas in half, and the chatbot then finds half an answer."
+  - q: "Is my business responsible for what its chatbot says?"
+    a: "It can be. In 2024 a Canadian tribunal ordered Air Canada to pay a customer after its website chatbot described a refund policy that didn't exist, and rejected the airline's argument that the chatbot was responsible for its own words. Treat every chatbot answer as your own answer."
+  - q: "How do I test a chatbot before launch?"
+    a: "Use real questions in three groups: questions it should answer, each paired with the passage the answer must come from; questions it shouldn't answer, where the right reply is a hand-off; and questions written the messy way customers really write. Fix data and retrieval first, prompts last."
+  - q: "What database do RAG chatbots use?"
+    a: "They need a store that can search by meaning, called a vector store. For most business chatbots I use PostgreSQL with the pgvector extension, so the documents, the embeddings and the rest of the app data live in one database the team already knows."
+sources:
+  - publisher: "Lewis et al., 2020"
+    title: "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"
+    url: "https://arxiv.org/abs/2005.11401"
+  - publisher: "Anthropic"
+    title: "Introducing Contextual Retrieval"
+    url: "https://www.anthropic.com/news/contextual-retrieval"
+  - publisher: "OWASP GenAI Security Project"
+    title: "LLM09:2025 Misinformation"
+    url: "https://genai.owasp.org/llmrisk/llm092025-misinformation/"
+  - publisher: "CBC News"
+    title: "Air Canada found liable for chatbot's bad advice on plane tickets"
+    url: "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416"
+  - publisher: "GitHub"
+    title: "pgvector"
+    url: "https://github.com/pgvector/pgvector"
 ---
 
 Every business that asks me for a chatbot has the same fear: *what if it tells a customer something wrong?* It's the right fear. A chatbot that sounds confident and is wrong is worse than no chatbot at all.
 
-## What RAG is
+## What is RAG?
 
 **Retrieval-augmented generation (RAG)** is the standard fix. Before the model answers, you search your own documents for the passages that matter and give them to the model along with the question. The model answers from your content, not from memory.
 
 The idea comes from a 2020 research paper by Lewis and colleagues at Facebook AI Research ([the paper](https://arxiv.org/abs/2005.11401)), and it is now how most business chatbots are built.
 
-But RAG on its own isn't magic. Retrieval can miss the right passage, and the model can still fill the gap with something that sounds right.
+## Why do RAG chatbots still make things up?
 
-## Why it matters for your business
+RAG on its own isn't magic. Retrieval can miss the right passage, and the model can still fill the gap with something that sounds right. Most of the time the cause is boring: messy documents, chunks cut in the wrong place, or nobody checking what retrieval actually found.
 
-A wrong answer from your bot is still your answer. If it invents a refund policy, quotes last year's price or promises something your team can't deliver, the customer holds you to it.
+## Why does a wrong chatbot answer matter?
 
-OWASP, the security community behind the best-known list of risks for AI applications, lists this as one of the top ten: [misinformation](https://genai.owasp.org/llmrisk/llm092025-misinformation/), when a model produces false information that sounds credible, and people trust it without checking.
+A wrong answer from your bot is still your answer. In 2024, a tribunal in British Columbia ordered Air Canada to pay a customer after its website chatbot told him he could claim a bereavement refund after his trip, which the airline's real policy didn't allow. Air Canada argued the chatbot was responsible for its own words. The tribunal called that "a remarkable submission" and said the chatbot "is still just a part of Air Canada's website." ([CBC News](https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416))
 
-The good news is that most wrong answers have a boring cause, and you can fix it before launch.
+OWASP, the security community behind the best-known list of risks for AI applications, puts this in its top ten as [misinformation](https://genai.owasp.org/llmrisk/llm092025-misinformation/): a model produces false information that sounds credible, and people trust it without checking.
 
-## How I build it: five things on every RAG chatbot
+The good news is that you can catch most of it before launch.
+
+## How do you stop a RAG chatbot from making things up?
+
+These are the five things I do on every build.
 
 1. **Clean the data before anything else.** Most wrong answers start in the documents, not the model. Old price lists, duplicate policies and PDFs with broken tables all end up in the index if you let them. I remove outdated files, fix the text extraction, and keep one source of truth for each topic.
-2. **Chunk by meaning, not by character count.** Splitting every document into fixed 500-character pieces cuts ideas in half. I split on headings and sections where possible, keep a small overlap between chunks, and store the document title and section with each chunk, so the model knows where the text came from. Anthropic's research on [contextual retrieval](https://www.anthropic.com/news/contextual-retrieval) shows the same thing: chunks that keep their context are found more reliably.
+2. **Chunk by meaning, not by character count.** Splitting every document into fixed 500-character pieces cuts ideas in half. I split on headings and sections where possible, keep a small overlap between chunks, and store the document title and section with each chunk, so the model knows where the text came from. Anthropic's research on [contextual retrieval](https://www.anthropic.com/news/contextual-retrieval) backs this up: adding context to each chunk cut failed retrievals by 49% in their tests, and by 67% with a re-ranking step on top.
 3. **Check retrieval separately from generation.** If the right passage never reaches the model, no prompt will save the answer. I keep a small set of real questions with known answers and check that retrieval finds the right passages *before* tuning prompts. When retrieval is weak, hybrid search (keywords plus embeddings) or a re-ranking step usually fixes it.
 4. **Let the model say "I don't know".** The prompt says clearly: answer only from the provided context, show where the answer came from, and if the answer isn't there, say so and offer a person. Customers forgive "let me connect you with the team". They don't forgive invented refund policies.
-5. **Hand off to a human, and learn from it.** Every bot I build has a way out: email, live chat or a WhatsApp hand-off. The questions it couldn't answer are the most useful data you have. They show exactly which documents to add next.
+5. **Hand off to a human, and learn from it.** Every bot I build has a way out: email, live chat or a [WhatsApp hand-off](/projects/whatsapp-ai-chatbot). The questions it couldn't answer are the most useful data you have. They show exactly which documents to add next.
 
-## What I test before a bot goes live
+## How do you test a RAG chatbot before launch?
 
 Before launch, I run every bot against a short list of real questions, in three groups:
 
@@ -49,27 +83,22 @@ When the bot gets one of these wrong, the fix almost always lives in the data or
 
 <Callout>
 
-**From a real build:** In the [AI operations platform](/projects/ai-operations-platform) I built, the chatbot answers from each client's own knowledge base, stored as embeddings in PostgreSQL with [pgvector](https://github.com/pgvector/pgvector). My [AI business chatbot](/projects/ai-business-chatbot) works the same way across Claude, GPT and Gemini: whichever model answers, it answers from the business's own documents.
+**From a real build:** In the [AI operations platform](/projects/ai-operations-platform) I built, the chatbot answers from each client's own knowledge base, stored as embeddings in PostgreSQL with [pgvector](https://github.com/pgvector/pgvector). My [AI business chatbot](/projects/ai-business-chatbot) works the same way across Claude, GPT and Gemini: whichever model answers, it answers from the business's own documents. The [PDF research chatbot](/projects/pdf-research-chatbot) does it for long reports and papers.
 
 </Callout>
 
-## When you don't need this
+## When don't you need RAG?
 
-If your questions have a small set of fixed answers, a good FAQ page or a scripted flow may be enough. If the answer changes every hour, like live stock levels or today's prices, the bot should look it up from your system directly, through an API or an [MCP server](/blog/what-is-an-mcp-server), instead of from documents.
+If your questions have a small set of fixed answers, a good FAQ page or a scripted flow may be enough. If the answer changes every hour, like live stock levels or today's prices, the bot should look it up from your system directly, through an API or an [MCP server](/blog/what-is-an-mcp-server), instead of from documents. And once the bot can take actions instead of only answering, it needs [a job description and limits](/blog/ai-agent-job-description) as well.
 
 RAG is for when the answers live in documents your team already trusts.
 
-## The short version
+## Key takeaways
 
-None of this is complicated, but skipping any one step is how chatbots end up making things up. Clean data, chunks that keep their meaning, tested retrieval, an honest "I don't know" and a way to reach a person: together, they give you a bot your team is happy to put in front of customers.
+- RAG makes a chatbot answer from your documents, but it can still make things up if the data or retrieval is weak.
+- Your business can be held to what its chatbot says, as Air Canada found out.
+- Clean the documents, chunk by meaning and test retrieval with real questions before you touch the prompt.
+- Tell the bot to say "I don't know" and hand off to a person when the answer isn't there.
+- The questions it can't answer show you which documents to add next.
 
-Want a chatbot trained on your own documents? Tell me what it should answer, and I'll tell you honestly what will work. See [AI chatbot development](/services#ai-chatbot).
-
-Related: [What Is an MCP Server, and Does Your Business Need One?](/blog/what-is-an-mcp-server)
-
-## Sources
-
-1. Lewis et al., 2020: [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
-2. Anthropic: [Introducing Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval)
-3. OWASP Top 10 for LLM Applications: [LLM09:2025 Misinformation](https://genai.owasp.org/llmrisk/llm092025-misinformation/)
-4. [pgvector on GitHub](https://github.com/pgvector/pgvector)
+Want a chatbot trained on your own documents? Tell me what it should answer, and I'll tell you honestly what will work. See [AI chatbot development](/services#ai-chatbot), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).

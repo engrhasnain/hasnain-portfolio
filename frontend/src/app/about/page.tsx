@@ -30,7 +30,7 @@ const experience = [
   {
     role: "Associate Software Engineer (AI/LLM)",
     org: site.company,
-    when: "Nov 2025 – Present",
+    when: "Nov 2025 - Present",
     points: [
       "Built an AI operations platform that runs a digital marketing agency end to end",
       "3 apps, 1,400+ API endpoints and 50+ integrations, from React portal to AWS",
@@ -51,7 +51,7 @@ const experience = [
   {
     role: "Associate Software Engineer",
     org: "Cognisons",
-    when: "Sep 2025 – Nov 2025",
+    when: "Sep 2025 - Nov 2025",
     points: [
       "Built end-to-end data and ML workflows",
       "Collected, cleaned and explored datasets, and engineered features",
@@ -61,7 +61,7 @@ const experience = [
   {
     role: "Natural Language Processing Engineer (Internship)",
     org: "ITSOLERA Pvt Ltd",
-    when: "Jun 2024 – Sep 2024",
+    when: "Jun 2024 - Sep 2024",
     points: [
       "Completed an internship in Natural Language Processing",
       "Worked on chatbots and language-processing tasks",

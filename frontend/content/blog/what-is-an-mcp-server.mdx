@@ -4,28 +4,66 @@ slug: what-is-an-mcp-server
 summary: "MCP lets Claude and other AI agents use your real systems safely. Here is what an MCP server is, when it is worth building, and when it isn't."
 description: "What an MCP server is in plain words, how it connects Claude and AI agents to your CRM, database and APIs, and when your business actually needs one built."
 date: "2026-10-11"
-updated: "2026-10-12"
+updated: "2026-10-19"
 tags: [MCP, Claude, AI agents]
 cover: "/images/blog/what-is-an-mcp-server/cover.jpg"   # share image (LinkedIn, WhatsApp, Medium)
 coverArt: mcp-server   # the live, animated version shown on the site
 draft: false
+answer: "An MCP server is a small piece of software that connects an AI model such as Claude to one of your systems, like a CRM, database or internal API, through a short list of approved tools. Your business needs one when AI has to work inside those systems again and again, with permissions and logs you control."
+faq:
+  - q: "Is MCP only for Claude?"
+    a: "No. Anthropic created MCP, but it is an open standard. ChatGPT, Gemini, Microsoft Copilot, Cursor and Visual Studio Code support it, and since December 2025 it has been run by the Agentic AI Foundation under the Linux Foundation. One MCP server can serve all of these clients."
+  - q: "Is an MCP server the same as an API?"
+    a: "No. An API is how software talks to your system. An MCP server sits on top of it and describes your system to an AI model as a set of named tools, each with a description and a strict input schema, so the model knows what it can do and the server controls what it is allowed to do."
+  - q: "Is MCP secure?"
+    a: "MCP is as secure as the server you build. A good MCP server uses OAuth so each client gets only the access it was granted, checks every input, keeps read and write tools apart, logs every call and asks a person before anything public or hard to undo. A server with one master key and no logs is not secure."
+  - q: "Can an MCP server change data, or only read it?"
+    a: "Both, depending on the tools you give it. Many first MCP servers are read only, which is the safest place to start. Write tools can be added one by one, with the right permission for each, and destructive actions such as deleting or paying should always wait for a person."
+  - q: "Do I need an MCP server for a chatbot?"
+    a: "Usually not. If the chatbot only answers questions from your documents, a RAG chatbot is the right fit. You need MCP when the AI must look up live data or take actions in your systems, such as checking a booking or updating a customer record."
+sources:
+  - publisher: "Anthropic"
+    title: "Introducing the Model Context Protocol"
+    url: "https://www.anthropic.com/news/model-context-protocol"
+  - publisher: "Anthropic"
+    title: "Donating the Model Context Protocol and establishing the Agentic AI Foundation"
+    url: "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation"
+  - publisher: "Model Context Protocol specification"
+    title: "Tools"
+    url: "https://modelcontextprotocol.io/specification/latest/server/tools"
+  - publisher: "Model Context Protocol specification"
+    title: "Authorization"
+    url: "https://modelcontextprotocol.io/specification/latest/basic/authorization"
+  - publisher: "OWASP GenAI Security Project"
+    title: "LLM06:2025 Excessive Agency"
+    url: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 ---
 
 Most AI assistants can talk about your business. Very few can *do* anything in it. They can't look up a customer, check a booking or create an invoice, because they have no safe way to reach the systems where that work happens.
 
-That is changing fast. More teams want Claude, or their own AI agent, to work inside the CRM, the database and the internal tools, not just next to them. The real question is how to let it in without handing over the keys to everything.
+That is changing fast. More teams want Claude, or their own AI agent, to work inside the CRM, the database and the internal tools, not next to them. The real question is how to let it in without handing over the keys to everything.
 
-## What an MCP server is
+## What is an MCP server?
 
-The **Model Context Protocol (MCP)** is an open standard for connecting AI models to tools and data. Anthropic introduced it in November 2024, and it is now supported far beyond Claude. ([Anthropic's announcement](https://www.anthropic.com/news/model-context-protocol))
+The **Model Context Protocol (MCP)** is an open standard for connecting AI models to tools and data. Anthropic introduced it in November 2024. ([Anthropic's announcement](https://www.anthropic.com/news/model-context-protocol))
 
 An **MCP server** is the piece you build for one of your own systems: a CRM, a database, a file store or an internal API. It sits between the AI and that system, and it tells the AI which **tools** exist, such as `find_customer` or `create_booking`, what each tool does, and what input it needs. When the model decides to use a tool, the server checks the request, runs it against the real system and returns the result. ([MCP specification: tools](https://modelcontextprotocol.io/specification/latest/server/tools))
 
 Think of it as a menu of approved actions. The model never gets your database password. It only gets the tools you chose to give it.
 
-## Why it matters for your business
+## Who supports MCP?
 
-Here is what that looks like in practice. A sales lead asks Claude: "Which deals haven't been touched in two weeks?" With an MCP server for the CRM, Claude calls a tool like `list_deals(stale_days=14)` and answers with real data. Without it, the model can only guess, or someone has to export a spreadsheet first.
+Almost everyone who builds AI products. In December 2025, Anthropic handed MCP over to the Agentic AI Foundation, a fund under the Linux Foundation that Anthropic, Block and OpenAI co-founded. At that point there were more than 10,000 active public MCP servers, and ChatGPT, Gemini, Microsoft Copilot, Cursor and Visual Studio Code all supported the protocol. ([Anthropic](https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation))
+
+For a business, that matters more than any feature. A server you build today isn't tied to one AI company. If you move from Claude to another model next year, the server stays.
+
+## Why would a business need an MCP server?
+
+Here is what it looks like in practice. A sales lead asks Claude: "Which deals haven't been touched in two weeks?" With an MCP server for the CRM, Claude calls a tool like `list_deals(stale_days=14)` and answers with real data. Without it, the model can only guess, or someone has to export a spreadsheet first.
+
+I built a small version of this as a demo: [SalesTalk MCP](/projects/salestalk-mcp) lets Claude answer sales questions in plain English from a live PostgreSQL database, and it is read only by design.
+
+## MCP server vs API integration: what's the difference?
 
 You can connect an AI to a system with a one-off API integration, and for one app talking to one system that is often fine. MCP starts to pay off when:
 
@@ -33,15 +71,17 @@ You can connect an AI to a system with a one-off API integration, and for one ap
 - **You have many systems.** Every tool follows the same pattern, so the tenth integration is as easy to review as the first.
 - **You need control.** Permissions, input checks and logs live in one place, on the server, instead of being scattered through prompts.
 
-That last point matters most. The real risk with an AI that can act is rarely the model. It's the access around it. OWASP, the security community behind the best-known list of risks for AI applications, has a name for it: [excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/). It means an AI with too many tools, too many permissions, or too much freedom to act without a person.
+That last point matters most. When an AI can act, the risk usually sits in the access around the model, not in the model itself. OWASP, the security community behind the best-known list of risks for AI applications, calls it [excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/): an AI with too many tools, too many permissions, or too much freedom to act without a person.
 
-## How I build an MCP server
+## How do you build a secure MCP server?
 
 1. **Small, clear tools.** `get_invoice(invoice_id)` beats `do_billing_stuff(query)`. The model picks tools by reading their names and descriptions, so I write them for a reader, not for myself.
 2. **Strict input schemas.** Every tool declares exactly what input it accepts. Bad input is rejected before it touches a real system.
-3. **Read and write kept apart.** Reading data is low risk. Changing data needs the right permission, and anything public or hard to undo waits for a person to approve it.
+3. **Read and write kept apart.** Reading data is low risk. Changing data needs the right permission, and anything public or hard to undo waits for a person to approve it. The [MCP specification](https://modelcontextprotocol.io/specification/latest/server/tools) itself says there should always be a human who can deny a tool call.
 4. **Proper sign-in.** Remote MCP servers are protected with OAuth, the authorization method the [MCP specification](https://modelcontextprotocol.io/specification/latest/basic/authorization) describes, so each client only gets the access it was granted.
 5. **Logs for every call.** When something looks wrong, you can see exactly which tool ran, with what input, for whom.
+
+Before an agent gets any of these tools, I write down what it is allowed to do. I explain how in [Your AI Agent Needs a Job Description Before It Gets Access](/blog/ai-agent-job-description).
 
 <Callout>
 
@@ -49,23 +89,18 @@ That last point matters most. The real risk with an AI that can act is rarely th
 
 </Callout>
 
-## When you don't need one
+## When don't you need an MCP server?
 
 If your AI only answers questions from documents, you need a good [RAG chatbot](/blog/rag-chatbots-that-dont-make-things-up), not MCP. If you have one simple automation with one fixed step, an n8n workflow may be faster to ship. And if nobody will look after the server once it's live, wait: an MCP server is a small piece of software, and it needs an owner like any other.
 
 MCP is for when the AI has to work with your systems again and again, across tools and teams.
 
-## The short version
+## Key takeaways
 
-An MCP server turns "the AI knows about our business" into "the AI can work in our business, within limits we set". Keep the tools small, keep reading and writing apart, and keep a person in the loop for anything that can't be undone.
+- An MCP server gives an AI model a short menu of approved tools for one of your systems. The model never sees your passwords.
+- MCP is an open standard, supported by ChatGPT, Gemini, Copilot and Claude, so the work isn't tied to one AI company.
+- It beats one-off API integrations when several AI apps need the same systems, or when you need permissions and logs in one place.
+- Build it with small tools, strict inputs, OAuth, logs, and a person approving anything that can't be undone.
+- If your AI only answers from documents, you probably need RAG instead.
 
-Thinking about connecting Claude to your own systems? Tell me what you want it to do, and I'll tell you honestly whether MCP is the right fit. See [MCP server development](/services#mcp-server).
-
-Related: [Your AI Agent Needs a Job Description Before It Gets Access](/blog/ai-agent-job-description)
-
-## Sources
-
-1. Anthropic: [Introducing the Model Context Protocol](https://www.anthropic.com/news/model-context-protocol)
-2. Model Context Protocol specification: [Tools](https://modelcontextprotocol.io/specification/latest/server/tools)
-3. Model Context Protocol specification: [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization)
-4. OWASP Top 10 for LLM Applications: [LLM06:2025 Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)
+Thinking about connecting Claude to your own systems? Tell me what you want it to do, and I'll tell you honestly whether MCP is the right fit. See [MCP server development](/services#mcp-server), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).

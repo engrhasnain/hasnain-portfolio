@@ -39,6 +39,23 @@ function required(entry: Entry, key: string): string {
   return value;
 }
 
+/** A frontmatter list of objects, where every item must have each of `keys` as text. */
+function records(entry: Entry, key: string, keys: string[]): Record<string, string>[] {
+  const value = entry.data[key];
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new Error(`${entry.file}: "${key}" must be a list`);
+  return value.map((item, i) => {
+    const row = (item ?? {}) as Record<string, unknown>;
+    return Object.fromEntries(
+      keys.map((k) => {
+        const v = text(row[k]);
+        if (!v) throw new Error(`${entry.file}: ${key}[${i}] is missing "${k}"`);
+        return [k, v];
+      }),
+    );
+  });
+}
+
 function isoDate(entry: Entry, key: string): string | undefined {
   const value = entry.data[key];
   if (value instanceof Date) return value.toISOString().slice(0, 10);
@@ -111,6 +128,9 @@ export const getPosts = cache((): Post[] =>
         readingMinutes: Math.max(1, Math.round(words / 220)),
         draft: entry.data.draft === true,
         coverArt: text(entry.data.coverArt),
+        answer: text(entry.data.answer),
+        faq: records(entry, "faq", ["q", "a"]).map(({ q, a }) => ({ q, a })),
+        sources: records(entry, "sources", ["publisher", "title", "url"]).map(({ publisher, title, url }) => ({ publisher, title, url })),
         body: entry.body,
       } satisfies Post;
     })

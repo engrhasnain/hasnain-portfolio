@@ -1,26 +1,83 @@
 ---
 title: "Your AI Agent Needs a Job Description Before It Gets Access"
 slug: ai-agent-job-description
-summary: "Google just gave AI agents their own inbox. Here is how I decide what an agent can read, send and change, before it touches a real system."
-description: "Google just gave AI agents their own inbox. Here is how I decide what an agent can read, send and change, before it touches a real system."
+summary: "AI agents now get their own email, identity and permissions. Here is how I decide what an agent can read, do and never touch, before it touches a real system."
+description: "How to set AI agent permissions with a one-page job description: what an agent can read, do and never touch, who owns it, plus a free template."
 date: "2026-10-12"
-tags: [AI agents, MCP, AI security]
+updated: "2026-10-19"
+tags: [AI agents, MCP, AI security, AI governance]
 cover: "/images/blog/ai-agent-job-description/cover.jpg"   # share image (LinkedIn, WhatsApp, Medium)
 coverArt: agent-id   # the live, animated version shown on the site
 draft: false
+answer: "An AI agent job description is a one-page document that sets an agent's role, the systems and data it can reach, what it may do alone, what needs a person's approval, what it must never do, who owns it and when its access is reviewed. Write it before the agent gets any access, then build its permissions to match."
+faq:
+  - q: "What permissions should an AI agent have?"
+    a: "Only the permissions its job needs, and nothing more. This is the principle of least privilege. A content agent can draft pages but can't touch billing. Give it read access first, add write access tool by tool, and keep destructive actions such as deleting or paying behind a person's approval."
+  - q: "What is excessive agency in AI?"
+    a: "Excessive agency is OWASP's name for an AI system that has too many tools, too many permissions or too much freedom to act without a person. It is one of the top risks in the OWASP Top 10 for LLM Applications, because a model that is tricked or simply wrong can then do real damage."
+  - q: "Should an AI agent have its own account?"
+    a: "Yes, where the platform supports it. An agent with its own identity, like Google Workspace coworker agents or Microsoft Entra Agent ID, can be given its own permissions, and its actions are logged to the agent instead of to a person. Never run an agent on a person's login or a shared admin key."
+  - q: "Does every AI agent action need human approval?"
+    a: "No. Reading data and drafting work can run on their own. Actions that go public or change records, such as sending an email, publishing a page or updating a customer, should wait for a person to approve them. Actions that can't be undone, such as deleting data or making a payment, should never run without a person."
+  - q: "How often should you review an AI agent's access?"
+    a: "Set a review date when the agent goes live. Every 90 days is a sensible default, and review it sooner whenever its tools, data or owner change. Remove the access completely when the job is done, just as you would for an employee who leaves."
+  - q: "What is the difference between an AI agent and a chatbot?"
+    a: "A chatbot answers questions. An AI agent takes actions: it can send, publish, book, update or pay by calling tools in your systems. A chatbot that only answers from your documents needs good retrieval. An agent that can act needs a job description and permissions built to match it."
+sources:
+  - publisher: "Google Cloud"
+    title: "Welcome to Gemini at Work 2026"
+    url: "https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026"
+  - publisher: "Reworked"
+    title: "Google debuts its all-purpose Gemini agent for work"
+    url: "https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/"
+  - publisher: "Decrypt"
+    title: "Google wants Gemini to be your next coworker, complete with its own email address"
+    url: "https://decrypt.co/380545/google-gemini-coworker-own-email-address"
+  - publisher: "Microsoft Learn"
+    title: "Authorization in Microsoft Entra Agent ID"
+    url: "https://learn.microsoft.com/en-us/entra/agent-id/authorization-agent-id"
+  - publisher: "OWASP GenAI Security Project"
+    title: "LLM06:2025 Excessive Agency"
+    url: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
+  - publisher: "OWASP GenAI Security Project"
+    title: "OWASP Top 10 for Agentic Applications for 2026"
+    url: "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+  - publisher: "Gartner"
+    title: "Gartner Predicts Over 40% of Agentic AI Projects Will Be Canceled by End of 2027"
+    url: "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027"
+  - publisher: "Gartner"
+    title: "Gartner Says Applying Uniform Governance Across AI Agents Will Lead to Enterprise AI Agent Failure"
+    url: "https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure"
+  - publisher: "NIST Computer Security Resource Center"
+    title: "Glossary: least privilege"
+    url: "https://csrc.nist.gov/glossary/term/least_privilege"
+  - publisher: "Model Context Protocol specification"
+    title: "Authorization"
+    url: "https://modelcontextprotocol.io/specification/latest/basic/authorization"
+  - publisher: "Model Context Protocol specification"
+    title: "Tools"
+    url: "https://modelcontextprotocol.io/specification/latest/server/tools"
 ---
 
 When a new person joins your company, nobody hands them the keys to everything on day one. They get a role, a manager and access to the tools that role needs. Then the access grows as trust grows.
 
-AI agents are about to join your company too. Most businesses are giving them access the old way: one shared API key, full permissions, and hope.
+AI agents are joining companies too. Most businesses are giving them access the old way: one shared API key, full permissions, and hope.
 
-## What changed
+## AI agents now get their own identity
 
-At Gemini at Work on October 8, Google introduced the Gemini agent: an agent that works across apps and gets its own identity at work. It has its own email, calendar and Drive, it shows up in the company directory, and its actions are recorded in its own activity log. ([Google's announcement](https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026), with independent coverage from [Reworked](https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/) and [Decrypt](https://decrypt.co/380545/google-gemini-coworker-own-email-address).)
+At its Gemini at Work event in October 2026, Google introduced coworker agents for Google Workspace. Each one gets its own Workspace account, with an email address, calendar, Drive and a place in the company directory. Google says every action the agent takes is written to an audit trail and attributed to the agent rather than to a person, and that each agent gets role-based permissions approved by the company's security admins. ([Google's announcement](https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026), with independent coverage from [Reworked](https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/) and [Decrypt](https://decrypt.co/380545/google-gemini-coworker-own-email-address).)
 
-That is a big shift. Until now, an AI assistant mostly worked through a person's account. Now the agent is a coworker with its own seat.
+Microsoft took the same road with [Microsoft Entra Agent ID](https://learn.microsoft.com/en-us/entra/agent-id/authorization-agent-id). Agents get their own identities there too, and Microsoft blocks them from the most powerful admin roles, such as Global Administrator, because "agents should operate with least privilege."
 
-## Why it matters for your business
+That is a big shift. Until now, an AI assistant mostly worked through a person's account. Now the agent is a coworker with its own seat. And like any new coworker, it needs a job description.
+
+## What is an AI agent job description?
+
+It is the AI version of the role document a new hire gets. On one page, in plain words, it says what the agent is for, which systems and data it can reach, what it may do on its own, what needs a person's approval, what it must never do, who owns it, where its actions are logged and when its access is checked again.
+
+It is not a prompt. A prompt tells the agent how to behave. A job description decides what the agent is *allowed* to do, and the permissions are built from it. So even if the agent is tricked or simply wrong, it can't do more than the page says.
+
+## Why do AI agent permissions matter?
 
 An agent with its own identity is easier to see. It is not automatically safer. Someone still has to decide three things:
 
@@ -28,60 +85,56 @@ An agent with its own identity is easier to see. It is not automatically safer. 
 2. **What it can do.** Draft only, or also send, publish, delete and pay?
 3. **Who owns it.** When it gets something wrong at 2 AM, whose phone rings?
 
-If nobody writes these down, the answers are "everything", "everything" and "nobody". That is the real risk with agents. It's rarely the model. It's the access around it. OWASP, the security community behind the best-known list of risks for AI applications, has a name for it: [excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/). It means an AI with too many tools, too many permissions, or too much freedom to act without a person.
+If nobody writes these down, the answers are "everything", "everything" and "nobody". That is the real risk with agents. It's rarely the model. It's the access around it. OWASP, the security community behind the best-known list of risks for AI applications, has a name for it: [excessive agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/). It means an AI with too many tools, too many permissions, or too much freedom to act without a person. OWASP's newer [Top 10 for Agentic Applications](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/), published in December 2025, puts identity and privilege abuse on the list as well.
 
-## How I handle it: a job description for every agent
+There is a business cost too. Gartner predicts that [over 40% of agentic AI projects will be canceled by the end of 2027](https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027), because of rising costs, unclear business value or inadequate risk controls. In May 2026 it went further: agent failures are most likely when a company doesn't separate what an agent can *do* from what it can *reach*, and Gartner expects 40% of enterprises to [demote or decommission autonomous agents by 2027](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure) because of governance gaps they only find after an incident in production. A job description is how you find those gaps before launch.
+
+## How do you set permissions for an AI agent?
 
 Before I connect an agent to a real system, I write it a one-page job description. Then I build the access to match it, not the other way around.
 
 ![Read, write and destructive actions side by side: reading runs on its own, writing is drafted by the agent and approved by a person, and destructive actions never run without a person](/images/blog/ai-agent-job-description/levels.jpg)
 
-1. **One role, one scope.** Each agent gets the smallest set of tools its job needs. A content agent can draft a page. It can't touch billing. Access is granted per system with scoped OAuth (the method the [MCP specification](https://modelcontextprotocol.io/specification/latest/basic/authorization) uses for authorization), not one master key.
+1. **One role, one scope.** Each agent gets the smallest set of tools its job needs. Security teams call this [least privilege](https://csrc.nist.gov/glossary/term/least_privilege): every user or process gets only the access its task requires. A content agent can draft a page. It can't touch billing. Access is granted per system with scoped OAuth (the method the [MCP specification](https://modelcontextprotocol.io/specification/latest/basic/authorization) uses for authorization), not one master key.
 2. **Read, write and destructive are different things.** I label every tool by what it can change. Reading a record is low risk. Sending an email or publishing a page is higher. Deleting or paying is flagged as destructive and needs a person to approve it.
-3. **A human approves anything public.** Pages, posts and review replies wait in an approval queue. The agent does the work, and a person clicks Approve.
-4. **Every action is logged to the agent.** Who asked, which tool ran, what went in, what came out, and what it cost. When something looks wrong, you can trace it in minutes.
+3. **A human approves anything public.** Pages, posts and review replies wait in an approval queue. The agent does the work, and a person clicks Approve. The [MCP tools specification](https://modelcontextprotocol.io/specification/latest/server/tools) says the same: there should always be a human in the loop who can deny a tool call.
+4. **Every action is logged to the agent.** Who asked, which tool ran, what went in, what came out, and what it cost. When something looks wrong, you can trace it in minutes. The MCP specification asks clients to log tool usage for audit, and Google now does it by default for its coworker agents.
 5. **An owner and a review date.** Every agent has a named owner. Its access is reviewed like any employee's, and removed when the job is done.
 
 <Callout>
 
-**From a real build:** I built the MCP layer of an [AI operations platform](/projects/ai-operations-platform) for a digital marketing agency: 6 servers, 17 MCPs and over 1,000 tools for Claude. With that many tools, access design took more time than features. Tool names are prefixed by system so the model never confuses two of them. Tools load on demand, so an agent only sees what its task needs. Destructive actions are flagged, and anything that goes public waits for a person to approve it.
+**From a real build:** I built the MCP layer of an [AI operations platform](/projects/ai-operations-platform) for a digital marketing agency: 6 servers, 17 MCPs and over 1,000 tools for Claude. With that many tools, access design took more time than features. Tool names are prefixed by system so the model never confuses two of them, which is also what the MCP specification recommends when tools from several servers meet. Tools load on demand, so an agent only sees what its task needs. Destructive actions are flagged, and anything that goes public waits for a person to approve it.
 
 </Callout>
 
-## The job description template
+## The AI agent job description template
 
-This is the one-page version I start from. Copy it for your first agent.
+This is the one-page version I start from. The image shows it filled in for a content agent, and the list below fills it in for an agent that drafts replies to Google reviews. Copy it for your first agent.
 
 ![An example agent job description for a content agent: role, systems it can and can't reach, what it can read, what it can do alone, what needs approval, what it must never do, its owner, its logs and its review date](/images/blog/ai-agent-job-description/template.jpg)
 
-- **Role:** what this agent is responsible for, in one sentence
-- **Systems:** which systems it can reach, and which it can't
-- **Can read:** the data it needs, nothing more
-- **Can do without approval:** low-risk actions such as drafting and tagging
-- **Needs approval:** sending, publishing, changing records
-- **Never:** deleting, paying, changing permissions
-- **Owner:** one named person
-- **Logs:** where every action is recorded
-- **Review:** when its access is checked again
+- **Role:** what this agent is responsible for, in one sentence. *Example: drafts replies to new Google reviews for our two branches.*
+- **Systems:** which systems it can reach, and which it can't. *Example: Google Business Profile reviews only. Not the CRM, not billing.*
+- **Can read:** the data it needs, nothing more. *Example: the review text, star rating and branch name.*
+- **Can do without approval:** low-risk actions such as drafting and tagging. *Example: draft a reply and tag the review by topic.*
+- **Needs approval:** sending, publishing, changing records. *Example: posting any reply.*
+- **Never:** deleting, paying, changing permissions. *Example: deleting or reporting reviews, or offering refunds and discounts.*
+- **Owner:** one named person. *Example: the operations manager.*
+- **Logs:** where every action is recorded. *Example: every draft and every posted reply, with who approved it.*
+- **Review:** when its access is checked again. *Example: every 90 days, or when its tools change.*
 
 If you can't fill in a line, the agent isn't ready for production.
 
-## When you don't need this
+## When don't you need an agent job description?
 
-Not every AI tool is an agent. A chatbot that only answers questions from your documents can't change anything, so it needs good retrieval more than a job description. A single n8n workflow with one fixed step is often fine as it is. The job description matters once the AI can act: send, publish, book, update or pay.
+Not every AI tool is an agent. A chatbot that only answers questions from your documents can't change anything, so it needs [good retrieval](/blog/rag-chatbots-that-dont-make-things-up) more than a job description. A single n8n workflow with one fixed step is often fine as it is. The job description matters once the AI can act: send, publish, book, update or pay.
 
-## The short version
+## Key takeaways
 
-Google giving agents an identity makes them visible. It doesn't make them safe. Write the job description first, build the access to match it, and keep a person in the loop for anything that can't be undone.
+- Google and Microsoft now give AI agents their own identities. That makes agents visible, not safe.
+- Most agent risk is access, not the model. OWASP calls it excessive agency.
+- Write a one-page job description before the agent gets any access, then build the permissions from it.
+- Separate read, write and destructive tools. Keep a person in the loop for anything public or anything that can't be undone.
+- Give every agent a named owner, a log and a review date.
 
-Planning your first agent? Tell me what you want it to do, and I'll help you write its job description before anything gets built. See [AI agents and MCP servers](/services#ai-agent).
-
-Related: [What Is an MCP Server, and Does Your Business Need One?](/blog/what-is-an-mcp-server)
-
-## Sources
-
-1. Google Cloud: [Gemini at Work 2026 announcement](https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026)
-2. Reworked: [Google debuts its all-purpose Gemini agent for work](https://www.reworked.co/collaboration-productivity/google-debuts-its-all-purpose-gemini-agent-for-work/)
-3. Decrypt: [Google wants Gemini to be your next coworker, complete with its own email address](https://decrypt.co/380545/google-gemini-coworker-own-email-address)
-4. OWASP Top 10 for LLM Applications: [LLM06:2025 Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/)
-5. Model Context Protocol specification: [Authorization](https://modelcontextprotocol.io/specification/latest/basic/authorization)
+If your agent will reach your systems through MCP, start with [What Is an MCP Server, and Does Your Business Need One?](/blog/what-is-an-mcp-server). Planning your first agent? Tell me what you want it to do, and I'll help you write its job description before anything gets built. See [AI agents and n8n automation](/services#ai-agent) and [MCP servers](/services#mcp-server), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).

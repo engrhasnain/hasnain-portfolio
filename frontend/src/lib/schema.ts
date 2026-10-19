@@ -116,14 +116,40 @@ export function postSchema(post: Post) {
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
+    ...(post.answer ? { abstract: post.answer } : {}),
     url: `${site.url}/blog/${post.slug}`,
     mainEntityOfPage: `${site.url}/blog/${post.slug}`,
     datePublished: post.date,
     dateModified: post.updated ?? post.date,
+    inLanguage: "en",
     keywords: post.tags.join(", "),
-    image: `${site.url}/blog/${post.slug}/opengraph-image`,
+    wordCount: post.body.split(/\s+/).filter(Boolean).length,
+    image: post.cover ? abs(post.cover) : `${site.url}/blog/${post.slug}/opengraph-image`,
+    isPartOf: { "@id": websiteId },
     author: { "@id": personId, "@type": "Person", name: site.name, url: `${site.url}/about` },
     publisher: { "@id": personId },
+    ...(post.sources.length
+      ? {
+          citation: post.sources.map((s) => ({
+            "@type": "CreativeWork",
+            name: s.title,
+            url: s.url,
+            publisher: { "@type": "Organization", name: s.publisher },
+          })),
+        }
+      : {}),
+  };
+}
+
+export function faqSchema(faq: { q: string; a: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
   };
 }
 

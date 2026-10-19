@@ -3,7 +3,7 @@ import { site } from "./site";
 
 type PageMetaInput = {
   title: string;
-  /** 150–160 characters, with the page's main keyword. */
+  /** 150-160 characters, with the page's main keyword. */
   description: string;
   path: string;
   /** Use the title as-is instead of adding " · Muhammad Hasnain Pirzada". */

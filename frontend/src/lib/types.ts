@@ -7,7 +7,7 @@ export type ProjectMeta = {
   slug: string;
   title: string;
   summary: string;
-  /** Meta description for Google, 150–160 characters. */
+  /** Meta description for Google, 150-160 characters. */
   description: string;
   type: ProjectType[];
   stack: string[];
@@ -45,4 +45,10 @@ export type PostMeta = {
   coverArt?: string;
   /** Only ever true in a local SHOW_DRAFTS preview. */
   draft?: boolean;
+  /** The 40-60 word direct answer shown at the top, the part search and AI answers quote. */
+  answer?: string;
+  /** Questions people ask about the topic. Shown under the post and sent to search engines as FAQPage. */
+  faq: { q: string; a: string }[];
+  /** Everything the post cites. Shown as the Sources list and sent as schema.org citations. */
+  sources: { publisher: string; title: string; url: string }[];
 };
