@@ -3,13 +3,13 @@ import { JsonLd } from "@/components/json-ld";
 import { PostCard } from "@/components/post-card";
 import { SectionHeading } from "@/components/section-heading";
 import { getPosts } from "@/lib/content";
-import { breadcrumbSchema } from "@/lib/schema";
+import { blogSchema, breadcrumbSchema } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
   title: "Blog: Notes on AI Chatbots, RAG, MCP and Agents",
   description:
-    "Muhammad Hasnain Pirzada writes about building AI that works in production: RAG chatbots, MCP servers, AI agents, WhatsApp bots and what each one costs.",
+    "Muhammad Hasnain Pirzada writes about building AI that works in production: AI agents, MCP servers, RAG chatbots and voice AI, with sources for every claim.",
   path: "/blog",
 });
 
@@ -19,10 +19,13 @@ export default function BlogPage() {
   return (
     <>
       <JsonLd
-        data={breadcrumbSchema([
-          { name: "Home", path: "/" },
-          { name: "Blog", path: "/blog" },
-        ])}
+        data={[
+          blogSchema(posts),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+          ]),
+        ]}
       />
       <section className="section container-page">
         <SectionHeading

@@ -141,6 +141,28 @@ export function postSchema(post: Post) {
   };
 }
 
+export function blogSchema(posts: Post[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${site.url}/blog#blog`,
+    url: `${site.url}/blog`,
+    name: `${site.name} · Blog`,
+    description: "Notes from building AI in production: AI agents, MCP servers, RAG chatbots and voice AI.",
+    inLanguage: "en",
+    isPartOf: { "@id": websiteId },
+    author: { "@id": personId },
+    publisher: { "@id": personId },
+    blogPost: posts.map((p) => ({
+      "@type": "BlogPosting",
+      headline: p.title,
+      url: `${site.url}/blog/${p.slug}`,
+      datePublished: p.date,
+      dateModified: p.updated ?? p.date,
+    })),
+  };
+}
+
 export function faqSchema(faq: { q: string; a: string }[]) {
   return {
     "@context": "https://schema.org",

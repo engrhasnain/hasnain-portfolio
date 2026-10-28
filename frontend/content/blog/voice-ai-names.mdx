@@ -1,0 +1,128 @@
+---
+title: "Your Voice AI Hears \"Martin\" When Your Customer Says \"Mardan\""
+slug: voice-ai-names
+summary: "Speech AI gets the sentence right and the name wrong. Why names break voice agents, what the research says, and five fixes that work in practice."
+description: "Why speech recognition gets names wrong in voice AI agents, what research says about rare names and local languages, and five fixes that work in production."
+date: "2026-10-28"
+tags: [Voice AI, Speech recognition, AI agents]
+cover: "/images/blog/voice-ai-names/cover.jpg"   # share image (LinkedIn, WhatsApp, Medium)
+coverArt: voice-names   # the live, animated version shown on the site
+draft: false
+answer: "Voice AI gets names wrong because names are rare in its training data, so the model swaps them for familiar words that sound alike. To fix it, test with your own names, give the speech API a list of names to expect, match the transcript against your records, confirm key details out loud, and fine-tune once call volume justifies it."
+faq:
+  - q: "Why does my voice assistant get names wrong?"
+    a: "Speech models learn from audio where common words appear millions of times and most names appear rarely or never. When a name sounds close to a familiar word, the model picks the familiar word, so Mardan becomes Martin. Unfamiliar names can also be split into odd pieces instead of being treated as one word."
+  - q: "What is word error rate in speech recognition?"
+    a: "Word error rate, or WER, is the share of words a speech model gets wrong compared with a correct transcript. It is the standard accuracy score, but it averages across every word, so one wrong name in a twenty-word sentence still looks 95% accurate even when that name was the whole point of the call."
+  - q: "What is keyword boosting in speech-to-text?"
+    a: "Keyword boosting means passing the speech API a list of words to favour, such as your customer names, cities or products. Deepgram calls it Keyterm Prompting and Google Cloud calls it model adaptation. It works best when the list is short, specific and pulled from your real data for each call."
+  - q: "How do I improve speech recognition for Urdu or Pashto names?"
+    a: "Start by recording real phrases with your own names, said by native speakers with their accents and background noise, and measure how many names come out right. Then add a name list to the speech API, correct the transcript against your records by sound, and confirm key details. Fine-tuning on local speakers is the long-term fix."
+  - q: "Should a voice agent repeat details back to the caller?"
+    a: "Yes, for anything with a consequence, such as a city, an address, a name on a booking or an order. Repeating the key detail costs a second and prevents a wrong booking. Keep it to the important words, so the call doesn't feel like a quiz."
+  - q: "When is fine-tuning a speech model worth it?"
+    a: "When you handle thousands of calls in one language and region and the cheaper fixes still miss too many names. Fine-tuning needs clean, consented recordings of local speakers saying local names, and it costs more, but it is the only step that improves the model itself rather than the layers around it."
+sources:
+  - publisher: "Speech Technology"
+    title: "The Proper Noun Problem in Speech Recognition"
+    url: "https://www.speechtechmag.com/Articles/Editorial/Industry-Voices/The-Proper-Noun-Problem-in-Speech-Recognition-176481.aspx"
+  - publisher: "LREC 2026, ACL Anthology"
+    title: "A Dataset for Evaluating ASR on Specialized Vocabulary"
+    url: "https://aclanthology.org/2026.lrec-1.32/"
+  - publisher: "Jahani, Dawodi and Baktash, 2026"
+    title: "From Scarcity to Scale: A Release-Level Analysis of the Pashto Common Voice Dataset"
+    url: "https://arxiv.org/abs/2602.14062"
+  - publisher: "Sun et al., Meta AI, 2023"
+    title: "Contextual Biasing of Named-Entities with Large Language Models"
+    url: "https://arxiv.org/abs/2309.00723"
+  - publisher: "Deepgram documentation"
+    title: "Keyterm Prompting"
+    url: "https://developers.deepgram.com/docs/keyterm"
+  - publisher: "Google Cloud documentation"
+    title: "Improve transcription results with model adaptation"
+    url: "https://docs.cloud.google.com/speech-to-text/docs/v1/adaptation"
+  - publisher: "Troveo"
+    title: "Speech and Voice Training Data: Where AI Companies Get It in 2026"
+    url: "https://www.troveo.ai/resources/speech-voice-training-data"
+---
+
+Say "Mardan" to a voice assistant and there's a good chance it writes "Martin."
+
+The rest of the sentence comes out fine. The grammar is right, the meaning is clear. Only one word is wrong, and it's the one the whole request depends on: the city, the customer's name, the product they want.
+
+If you're building a voice agent for bookings, orders or support, this is the bug that quietly breaks it.
+
+## Why does speech recognition get names wrong?
+
+Speech models learn from huge amounts of audio. Common words show up millions of times. A surname from Khyber Pakhtunkhwa, a Riyadh street or a new brand name may show up a few times, or never.
+
+A [Speech Technology article on the proper noun problem](https://www.speechtechmag.com/Articles/Editorial/Industry-Voices/The-Proper-Noun-Problem-in-Speech-Recognition-176481.aspx) (September 2026) gives three reasons this happens:
+
+1. **Rarity.** Names are rare in training data, so the model has little to go on.
+2. **Sound-alikes win.** When the audio could match a familiar word, the model has every statistical reason to pick the familiar one. "Mardan" becomes "Martin."
+3. **Tokens.** Unfamiliar names get split into odd pieces instead of being treated as one word.
+
+## Why doesn't your accuracy score show it?
+
+Most teams judge speech AI by word error rate (WER): the share of words it gets wrong. The problem is that WER averages across every word. A transcript with one wrong name in twenty words still looks 95% right.
+
+A paper at LREC 2026 measured this directly. It scored specialist words and everyday words separately. On the hardest test sets, the Whisper models it tested had an [error rate of 0.88 to 0.90 on specialist words, against 0.06 to 0.19 on everyday words](https://aclanthology.org/2026.lrec-1.32/). In plain terms: nearly every specialist word wrong, while the rest of the sentence looked fine. One overall score would hide that gap completely.
+
+For a voice agent, those are not equal errors. A wrong "the" changes nothing. A wrong city sends a driver to the wrong place.
+
+## Why is the gap bigger for languages like Pashto and Urdu?
+
+Languages like Pashto and Urdu have far less public speech data than English. Pashto on Mozilla Common Voice grew from 1.49 hours in mid-2023 to about 2,769 hours in 2025, with about 976 hours validated for training ([Jahani, Dawodi and Baktash, 2026](https://arxiv.org/abs/2602.14062)). That is real progress, and it came from volunteers. But the same paper found the data skews toward young adults, a small group of contributors does most of the recording, and about 42% of clips have no gender label.
+
+So the gap isn't only hours. It's whose voices are in those hours. That's why speech data companies such as Appen, Shaip and LXT now [recruit speakers to record to a script](https://www.troveo.ai/resources/speech-voice-training-data) in dozens of languages. The model isn't short of grammar. It's short of people saying these exact words.
+
+## How do you fix name errors in a voice agent?
+
+These are the five fixes I'd use, in this order.
+
+### 1. Build a test set of your own names first
+
+Before you compare providers, record 50 to 100 real phrases from your use case: your cities, customer names, product names. Say them the way your users do, with their accents and background noise. Then measure how many names come out right, separately from overall accuracy.
+
+This one step tells you more than any public benchmark.
+
+### 2. Give the model the names upfront
+
+Most speech APIs let you pass a list of words to favour:
+
+- **Deepgram** calls it [Keyterm Prompting](https://developers.deepgram.com/docs/keyterm). It works on its Nova-3 and Flux models, allows up to 500 tokens of terms per request, and the docs recommend focusing on the 20 to 50 most important ones.
+- **Google Cloud Speech-to-Text** calls it [model adaptation](https://docs.cloud.google.com/speech-to-text/docs/v1/adaptation), with phrase sets and custom classes for lists like city or product names.
+
+For a booking agent, that list can come straight from your database: today's customers, your branch cities, your product catalogue.
+
+Research backs this up. Meta researchers gave a language model a list of likely names while it re-checked the speech model's best guesses, and errors on their test set dropped by 16.6%. When the correct names were taken out of the list, the gain fell to 2.7% ([Sun et al., 2023](https://arxiv.org/abs/2309.00723)). The LREC 2026 paper found the same thing: giving the model the right specialist words in its prompt brought the error rate on those words down by 0.50 to 0.70. The list is what does the work, so it has to contain the right names.
+
+### 3. Correct the transcript against what you know
+
+After transcription, match each name against your real records by sound, not just spelling. If the transcript says "Martin" and your list of service cities has "Mardan," that's almost certainly the answer. A simple phonetic match catches a lot of what the speech model missed. If your agent reaches your records through an [MCP server](/blog/what-is-an-mcp-server), this check can be one more read-only tool.
+
+### 4. Confirm the word that matters
+
+For anything with a consequence, the agent should repeat the key detail back: "Mardan, in KP, right?" One extra second costs far less than a wrong booking. Save it for the important words, so the call doesn't feel like a quiz. It's the voice version of a chatbot [saying "I don't know" instead of guessing](/blog/rag-chatbots-that-dont-make-things-up).
+
+### 5. Fine-tune when the volume justifies it
+
+If you handle thousands of calls in one language and region, fine-tuning on recordings of local speakers saying local names is the long-term fix. It costs more, and you need clean, consented data. But it's the only step that improves the model itself, not just the layers around it.
+
+## When don't you need all of this?
+
+If your voice feature only takes notes in a meeting, a wrong name is annoying but cheap to fix later. Steps 1 and 2 are enough.
+
+The full stack of fixes matters when the agent acts on what it hears: booking, ordering, routing a call or updating a record. At that point the agent also needs clear limits on what it can do, which I cover in [Your AI Agent Needs a Job Description Before It Gets Access](/blog/ai-agent-job-description).
+
+## Key takeaways
+
+- Speech AI usually gets the sentence right and the name wrong, because names are rare in its training data.
+- Word error rate hides it. Measure names separately, on your own recordings.
+- Give the speech API a list of the names you expect, pulled from your real data.
+- Match the transcript against your records by sound, and confirm anything that can't be undone.
+- A bigger model won't fix this on its own. Recordings of people who actually say these words every day will.
+
+If you've used a voice assistant in Urdu, Pashto or Arabic, what's the word it always gets wrong?
+
+Building a voice agent for bookings or support? Tell me what it needs to understand, and I'll tell you honestly what will work. See [AI voice agents](/services#ai-voice-agent), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).

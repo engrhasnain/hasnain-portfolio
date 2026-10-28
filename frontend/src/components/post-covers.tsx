@@ -284,7 +284,64 @@ function RagChatbotCover() {
   );
 }
 
-const covers = { "agent-id": AgentIdCover, "mcp-server": McpServerCover, "rag-chatbot": RagChatbotCover } as const;
+const wave = [0.35, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.85, 0.55, 0.3, 0.75, 0.95, 0.45, 0.65, 0.3, 0.8, 0.5, 0.7, 0.35, 0.55];
+
+/** "Your Voice AI Hears "Martin" When Your Customer Says "Mardan"" */
+function VoiceNamesCover() {
+  return (
+    <CoverLayout
+      seed={43}
+      eyebrow="Voice AI · Speech recognition"
+      title={
+        <>
+          Your Voice AI Gets the Sentence Right and <span className={greenText}>the Name Wrong</span>
+        </>
+      }
+      subtitle="Why names break voice agents, what the research says, and five fixes that work."
+    >
+      <CardHeader
+        label="VOICE AGENT"
+        name="booking-line"
+        status="listening"
+        icon={
+          <>
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <path d="M12 19v3" />
+          </>
+        }
+      />
+      <div className="mt-[1.8em] flex h-[4.2em] items-center gap-[0.45em] border-t border-white/10 pt-[1.4em]">
+        {wave.map((h, i) => (
+          <span
+            key={i}
+            className="net-node w-[0.55em] rounded-full bg-[linear-gradient(180deg,#5EEAD4,#34D399)]"
+            style={{ height: `${h * 2.8}em`, "--d": `${(i * 0.21) % 2.4}s` } as CSSProperties}
+          />
+        ))}
+      </div>
+      <div className="mt-[1.4em] grid gap-[0.9em] text-[1.5em]">
+        <div className="flex items-center justify-between rounded-[0.8em] border border-white/[0.07] bg-night/60 px-[0.8em] py-[0.5em]">
+          <span className="font-mono text-[0.8em] tracking-[0.14em] text-muted">CUSTOMER SAID</span>
+          <span className="font-bold text-teal">&ldquo;Mardan&rdquo;</span>
+        </div>
+        <div className="flex items-center justify-between rounded-[0.8em] border border-white/[0.07] bg-night/60 px-[0.8em] py-[0.5em]">
+          <span className="font-mono text-[0.8em] tracking-[0.14em] text-muted">MODEL HEARD</span>
+          <span className="font-bold text-rose-400 line-through decoration-2">&ldquo;Martin&rdquo;</span>
+        </div>
+        <span className={`${chip} ${okChip} text-[1em]!`}>✓ Matched to your cities: Mardan</span>
+        <span className={`${chip} ${waitChip} text-[1em]!`}>⏸ &ldquo;Mardan, in KP, right?&rdquo;</span>
+      </div>
+    </CoverLayout>
+  );
+}
+
+const covers = {
+  "agent-id": AgentIdCover,
+  "mcp-server": McpServerCover,
+  "rag-chatbot": RagChatbotCover,
+  "voice-names": VoiceNamesCover,
+} as const;
 
 export type CoverArt = keyof typeof covers;
 

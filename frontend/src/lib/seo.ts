@@ -45,7 +45,10 @@ export function pageMetadata({
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
-    alternates: { canonical: canonical ?? path },
+    alternates: {
+      canonical: canonical ?? path,
+      types: { "application/rss+xml": [{ url: "/feed.xml", title: `${site.name} · Blog` }] },
+    },
     openGraph,
     twitter: { card: "summary_large_image", title: fullTitle, description },
   };
