@@ -1,0 +1,81 @@
+---
+title: "LLM Cost Tracking and Job Orchestration for an AI Platform"
+slug: ai-cost-observability
+type: [Automation, Models]
+summary: "One ledger for every AI and API call, one rate card for every model, and a scheduler that stops background jobs from running twice across workers and servers."
+description: "LLM cost tracking for a production AI platform: one cost ledger, a model rate card that flags unknown and retired models, and jobs locked across servers."
+stack: [FastAPI, PostgreSQL, Redis, APScheduler, NestJS, React, Claude, OpenAI, Gemini, Model Context Protocol]
+results:
+  - "86 operation codes in one cost ledger"
+  - "43 models on one rate card, 10 marked retired"
+  - "76 ledger calls across 61 backend files"
+  - "100+ background jobs behind a lock and a lease"
+status: Live
+featured: false
+order: 28
+date: "2026-06-26"
+art: panel
+preview:
+  window: "cost-ledger · live"
+  heading: "Claude call · website copy"
+  rows:
+    - { label: "Op code", value: "AI_WRITE_WEB_CONTENT", tone: info }
+    - { label: "Model", value: "on rate card", tone: ok }
+    - { label: "Cache tokens", value: "read + write logged", tone: ok }
+    - { label: "Client", value: "attributed", tone: ok }
+    - { label: "Job lease", value: "held by one server", tone: info }
+  footer: "Unpriced models are flagged, never hidden"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+The platform calls Claude, OpenAI, Gemini, Cohere, DataForSEO and Retell AI from dozens of places, and the agency needs to know what each call cost and which client it was for. Model prices had been typed by hand into 17 separate places across two codebases, and several held wrong live rates. A model missing from every list was recorded as free. At the same time, some background jobs ran two or three times per interval once the app ran on more than one server.
+
+## What I built
+
+- **One cost ledger.** Every billed call writes a cost event with the client, product, operation code, provider, model, input, output and cache tokens, batch mode, the deliverable and the retry number. Logging never raises, so a tracking failure cannot break the work it measures.
+- **A model rate card.** One module holds the rates for 43 models across Anthropic, OpenAI, Google and xAI, tagged with the vendor page and the date each was checked. It resolves exact names, aliases and dated snapshots by longest prefix, and applies an announced price change from the day it takes effect.
+- **Unknown and retired models flagged.** A model with no rate is logged with a warning and counted. Retired models are listed, and a test fails if code uses one or types a model name outside the library.
+- **Cache-aware costs.** The shared AI client counts cache reads and writes apart from fresh input, so cached prompts are priced at cache rates and appear in the ledger. Batch and data-residency multipliers stack the way the vendor applies them.
+- **One rate card for every service.** The NestJS backend posts its spend to the same ledger instead of keeping its own prices. The MCP servers use a generated port of the card to estimate token and context cost per tool call.
+- **A cost dashboard.** The React portal shows spend by vendor and product, per client with each deliverable, and per MCP server down to each tool.
+- **Coordination with a fallback.** Rate gates, concurrency limits, claims and shared status records live in Redis as atomic Lua scripts. If Redis is unset or down, each one falls back to its in-process version.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "AI or API call" },
+    { label: "Shared client", note: "tokens, cache included" },
+    { label: "Rate card", note: "dated, alias-aware" },
+    { label: "Cost ledger", note: "client, product, op code" },
+    { label: "Dashboard", note: "with a coverage audit" },
+  ]}
+/>
+
+Background work runs on APScheduler, and each tick passes three checks before it runs. A pause flag shared through Redis means a job paused from the admin side stops on every worker. A lease row in Postgres, claimed with one atomic upsert, lets only one server start the job in its interval. A Redis tick lock then lets only one worker on that server run it. Several jobs that bill model calls ship paused but visible in the scheduler, and are turned on by hand.
+
+## Built to be trusted
+
+- **A self-audit for cost tracking.** A coverage check reports real token volume recorded at zero cost, spend with no client attached, models with no rate, and drift between the rates table and the card. The dashboard shows it as a banner.
+- **Fail open, on purpose.** If Redis or the lease table is unavailable, jobs run as they did before, with a warning in the log, instead of stopping the platform.
+- **Pauses that cannot be forgotten.** A manual pause clears on restart, so a job cannot stay off for good by accident.
+- **Versioned prompts.** Prompts can be edited at runtime in a shared prompt table. Each save moves a version string, and stored results tied to the old version are retired, so an edit really changes the next answer.
+- **Honest backfills.** Backfilled events carry the date the spend happened, and deliverable IDs are checked first so history is never logged twice.
+
+## By the numbers
+
+- 86 operation codes and 12 products in the ledger
+- 43 models on the rate card from 4 vendors, with 10 marked retired
+- 76 calls to the ledger's logging function across 61 files of the Python backend
+- 17 places that held model prices, now derived from or audited against one card
+- More than 100 scheduled background jobs
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

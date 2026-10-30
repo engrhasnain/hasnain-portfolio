@@ -4,8 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/avatar";
 import { CtaBand } from "@/components/cta-band";
-import { ArrowLeft } from "@/components/icons";
+import { ArrowLeft, ArrowUpRight } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
+import { PostCard } from "@/components/post-card";
 import { formatDate, getPost, getPosts } from "@/lib/content";
 import { Mdx } from "@/lib/mdx";
 import { breadcrumbSchema, faqSchema, postSchema } from "@/lib/schema";
@@ -25,7 +26,9 @@ export async function generateMetadata({ params }: Props) {
   const post = getPost(slug);
   if (!post) return {};
   return pageMetadata({
-    title: post.title,
+    // A hook headline stays the H1; the search title leads with the keyword and skips the name suffix.
+    title: post.seoTitle ?? post.title,
+    absoluteTitle: Boolean(post.seoTitle) || post.title.length > 38,
     description: post.description,
     path: `/blog/${slug}`,
     type: "article",
@@ -61,9 +64,9 @@ export default async function PostPage({ params }: Props) {
           ]),
         ]}
       />
-      <article className="container-page max-w-3xl py-12 sm:py-20">
+      <article className="container-page max-w-3xl pt-10 pb-20 sm:pt-16 sm:pb-28">
         <nav aria-label="Breadcrumb">
-          <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-teal">
+          <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-ink/60 transition-colors hover:text-teal">
             <ArrowLeft /> All posts
           </Link>
         </nav>
@@ -72,25 +75,39 @@ export default async function PostPage({ params }: Props) {
             Draft preview: this post is hidden on the live site until it&apos;s published.
           </p>
         ) : null}
-        <header className="animate-in mt-6">
-          <p className="text-sm text-muted">
-            By{" "}
-            <Link href="/about" rel="author" className="text-ink hover:text-teal">
-              {site.name}
-            </Link>{" "}
-            · <time dateTime={post.date}>{formatDate(post.date)}</time>
-            {post.updated && post.updated !== post.date ? (
-              <>
-                {" "}
-                · Updated <time dateTime={post.updated}>{formatDate(post.updated)}</time>
-              </>
-            ) : null}{" "}
-            · {post.readingMinutes} min read
+
+        <header className="mt-8 sm:mt-10">
+          {/* One line on wider screens; on phones the byline, the dates and the read time stack, so no line starts with a dot. */}
+          <p className="meta animate-in flex flex-col gap-1.5 md:flex-row md:flex-wrap md:items-center md:gap-x-2">
+            <span>
+              By{" "}
+              <Link href="/about" rel="author" className="transition-colors hover:text-ink">
+                {site.name}
+              </Link>
+            </span>
+            <span aria-hidden="true" className="hidden text-ink/45 md:inline">
+              ·
+            </span>
+            <span className="text-ink/55">
+              <time dateTime={post.date}>{formatDate(post.date)}</time>
+              {post.updated && post.updated !== post.date ? (
+                <>
+                  <span className="mx-2 text-ink/45">·</span>
+                  Updated <time dateTime={post.updated}>{formatDate(post.updated)}</time>
+                </>
+              ) : null}
+            </span>
+            <span aria-hidden="true" className="hidden text-ink/45 md:inline">
+              ·
+            </span>
+            <span className="text-ink/55">{post.readingMinutes} min read</span>
           </p>
-          <h1 className="mt-3 text-3xl leading-tight sm:text-5xl">{post.title}</h1>
-          <p className="mt-4 text-lg leading-relaxed text-muted">{post.summary}</p>
+          <h1 className="animate-in mt-5 text-[2.3rem] leading-[1.06] [--d:60ms] sm:text-5xl lg:text-[3.5rem]">
+            {post.title}
+          </h1>
+          <p className="animate-in mt-6 text-lg leading-relaxed text-ink/70 [--d:120ms] sm:text-xl">{post.summary}</p>
           {post.tags.length > 0 ? (
-            <ul className="mt-5 flex flex-wrap gap-2">
+            <ul className="animate-in mt-7 flex flex-wrap gap-2 [--d:160ms]" aria-label="Tags">
               {post.tags.map((tag) => (
                 <li key={tag} className="chip">
                   {tag}
@@ -99,45 +116,49 @@ export default async function PostPage({ params }: Props) {
             </ul>
           ) : null}
         </header>
+
         {hasPostCover(post.coverArt) ? (
-          <div className="post-cover animate-pop tilt-host mt-10 overflow-hidden rounded-2xl border border-line shadow-[0_30px_80px_-40px_rgb(94_234_212/0.5)]">
+          <div className="post-cover tilt-host card animate-pop mt-10 overflow-hidden [--d:200ms] sm:mt-12">
             <PostCover art={post.coverArt} />
           </div>
         ) : post.cover ? (
-          <Image
-            src={post.cover}
-            alt=""
-            width={2400}
-            height={1260}
-            priority
-            sizes="(min-width: 768px) 720px, 100vw"
-            className="animate-pop mt-10 h-auto w-full rounded-2xl border border-line shadow-[0_30px_80px_-40px_rgb(94_234_212/0.5)]"
-          />
+          <div className="card animate-pop mt-10 overflow-hidden [--d:200ms] sm:mt-12">
+            <Image
+              src={post.cover}
+              alt=""
+              width={2400}
+              height={1260}
+              priority
+              sizes="(min-width: 768px) 720px, 100vw"
+              className="h-auto w-full"
+            />
+          </div>
         ) : null}
 
         {post.answer ? (
-          <section aria-labelledby="short-answer" className="mt-10 rounded-2xl border border-teal/30 bg-teal/5 px-5 py-4">
-            <h2 id="short-answer" className="font-mono text-xs font-semibold tracking-[0.18em] text-teal uppercase">
+          <section aria-labelledby="short-answer" className="card-feature mt-8 p-6 sm:p-7">
+            <h2 id="short-answer" className="meta">
               The short answer
             </h2>
-            <p className="mt-2 text-[1.0625rem] leading-8 text-ink">{post.answer}</p>
+            <p className="mt-3 text-[1.0625rem] leading-8 text-ink/90">{post.answer}</p>
           </section>
         ) : null}
 
-        <div className={`prose-glow border-t border-line pt-10 ${post.answer ? "mt-8" : "mt-10"}`}>
+        <div className="prose-glow mt-12 sm:mt-14">
           <Mdx source={post.body} />
         </div>
 
         {post.faq.length ? (
-          <section aria-labelledby="faq" className="mt-14 border-t border-line pt-10">
-            <h2 id="faq" className="text-2xl sm:text-3xl">
+          <section aria-labelledby="faq" className="mt-16 border-t border-white/[0.06] pt-14">
+            <p className="eyebrow">Questions</p>
+            <h2 id="faq" className="mt-4 text-3xl sm:text-4xl">
               Frequently asked questions
             </h2>
-            <dl className="mt-6 space-y-3">
+            <dl className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">
               {post.faq.map(({ q, a }) => (
-                <div key={q} className="card p-5">
-                  <dt className="font-semibold text-ink">{q}</dt>
-                  <dd className="mt-2 leading-7 text-ink/85">{a}</dd>
+                <div key={q} className="py-6">
+                  <dt className="text-lg font-bold text-ink">{q}</dt>
+                  <dd className="mt-2.5 leading-7 text-ink/75">{a}</dd>
                 </div>
               ))}
             </dl>
@@ -145,58 +166,66 @@ export default async function PostPage({ params }: Props) {
         ) : null}
 
         {post.sources.length ? (
-          <section aria-labelledby="sources" className="mt-14 border-t border-line pt-10">
-            <h2 id="sources" className="text-2xl sm:text-3xl">
+          <section aria-labelledby="sources" className="mt-20">
+            <p className="eyebrow">Checked against</p>
+            <h2 id="sources" className="mt-4 text-3xl sm:text-4xl">
               Sources
             </h2>
-            <ol className="mt-5 list-decimal space-y-2 pl-8 text-ink/90 marker:text-teal">
-              {post.sources.map((s) => (
-                <li key={s.url}>
-                  {s.publisher}:{" "}
-                  <a
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-teal underline decoration-teal/40 underline-offset-4 hover:decoration-teal"
-                  >
-                    {s.title}
-                  </a>
+            <ol className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+              {post.sources.map((s, i) => (
+                // The link stretches over the whole row, so the row is the click target.
+                <li key={s.url} className="group relative flex gap-5 py-4">
+                  <span className="meta mt-1 w-6 shrink-0 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="min-w-0 flex-1 leading-relaxed">
+                    <span className="block text-sm text-ink/55">{s.publisher}</span>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-0.5 font-semibold text-ink underline decoration-teal/40 underline-offset-4 transition-colors after:absolute after:inset-0 group-hover:text-teal group-hover:decoration-teal"
+                    >
+                      {s.title}
+                    </a>
+                  </p>
+                  <ArrowUpRight
+                    aria-hidden="true"
+                    className="mt-1 shrink-0 text-teal transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
                 </li>
               ))}
             </ol>
           </section>
         ) : null}
 
-        {related.length ? (
-          <nav aria-labelledby="keep-reading" className="mt-14 border-t border-line pt-10">
-            <h2 id="keep-reading" className="text-2xl sm:text-3xl">
-              Keep reading
-            </h2>
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-              {related.map((p) => (
-                <li key={p.slug}>
-                  <Link href={`/blog/${p.slug}`} className="group card card-hover flex h-full flex-col gap-2 p-5">
-                    <span className="font-semibold leading-snug text-ink transition group-hover:text-teal">{p.title}</span>
-                    <span className="text-sm leading-relaxed text-muted">{p.summary}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ) : null}
-
-        <footer className="card mt-14 flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center">
-          <Avatar className="size-16" sizes="64px" />
+        <footer className="card mt-20 flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-7">
+          <Avatar className="size-16" sizes="64px" ring="bg-teal/40 p-[2px]" />
           <div>
-            <p className="font-semibold">{site.name}</p>
-            <p className="mt-1 text-sm text-muted">
+            <p className="meta">Written by</p>
+            <p className="mt-1.5 text-xl font-bold tracking-[-0.025em] text-ink">{site.name}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink/65">
               {site.jobTitle} building chatbots, MCP servers and AI agents.{" "}
-              <Link href="/about" className="text-teal hover:underline">
+              <Link href="/about" className="link font-bold">
                 More about me
               </Link>
             </p>
           </div>
         </footer>
+
+        {related.length ? (
+          <nav aria-labelledby="keep-reading" className="mt-20">
+            <p className="eyebrow">Next up</p>
+            <h2 id="keep-reading" className="mt-4 text-3xl sm:text-4xl">
+              Keep reading
+            </h2>
+            <ul className="mt-8 grid gap-6 sm:grid-cols-2">
+              {related.map((p) => (
+                <li key={p.slug}>
+                  <PostCard post={p} />
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
       </article>
       <CtaBand />
     </>

@@ -250,6 +250,9 @@ const art: Record<ProjectType, (p: ArtProps) => ReactNode> = {
   Voice,
   WhatsApp,
   Models,
+  // SEO and automation projects use panel covers; these fallbacks only show if one is missing.
+  SEO: Agents,
+  Automation: Agents,
 };
 
 export function CoverArt({ type, uid, className }: { type: ProjectType; uid: string; className?: string }) {

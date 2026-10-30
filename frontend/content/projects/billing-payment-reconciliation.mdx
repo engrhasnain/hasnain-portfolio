@@ -1,0 +1,82 @@
+---
+title: "Authorize.net Billing and QuickBooks Deposit Reconciliation"
+slug: billing-payment-reconciliation
+type: [Automation]
+summary: "Orders become charges only after a person approves them, with duplicate-charge guards and recurring plans, and every card batch is matched to a QuickBooks bank deposit each morning."
+description: "Billing on Authorize.net: human-approved charges, recurring plans, duplicate-charge guards and card batches matched daily to QuickBooks bank deposits."
+stack: [NestJS, TypeScript, PostgreSQL, TypeORM, Authorize.net, QuickBooks Online API, BullMQ, Twilio, PDFKit, React]
+results:
+  - "No card runs until a person approves the charge"
+  - "Every card batch checked against the bank each morning"
+  - "Double clicks and retries can never charge twice"
+  - "84 API routes across billing and reconciliation"
+status: Live
+featured: false
+order: 18
+date: "2026-08-08"
+art: panel
+preview:
+  window: "reconciliation · daily"
+  heading: "Card batch · settled yesterday"
+  rows:
+    - { label: "Gateway batch", value: "ingested", tone: info }
+    - { label: "Bank deposit", value: "found in QuickBooks", tone: ok }
+    - { label: "Landed", value: "inside the window", tone: ok }
+    - { label: "Chargeback", value: "none", tone: muted }
+    - { label: "Period", value: "open", tone: info }
+  footer: "Missing deposits raise a WhatsApp alert"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+The agency bills its contractor clients by card: a first charge, then monthly plans. Orders came from reps on the phone, so a wrong price, a double click or a fake sign-up could each become a real charge. After the money moved, someone still had to check that every card batch reached the bank, catch chargebacks and returned checks, and close the month by hand, with no single record of what matched.
+
+## What I built
+
+- **Order to charge, with a person in the loop.** A rep enters the order, eight pre-charge checks run, and the charge is proposed. A person approves it on a separate approval page with a fresh sign-in, and only then does the card run.
+- **"Is this client real" signals.** Seven signals compare the website, the Google Business Profile name and phone, the live call number, the name on the card, and the card's address and security code results. They inform the approver and never block.
+- **Cards that never touch the server.** The card is tokenized in the browser with Authorize.net Accept.js, or the client adds it on Authorize.net's own page from a secure link. The portal keeps only the brand and last four.
+- **Recurring plans.** Monthly subscriptions run on Authorize.net recurring billing. Opening a settled batch shows each scheduled charge as matched, declined or manual, and for new clients a declined monthly charge becomes an event with a grace period, never a silent shut-off.
+- **Domain events that fan out.** An approved charge emits one event and five listeners act on it: onboarding starts with a portal invite, a Zoom meeting is queued, a website build joins the queue, the rep on the call is told, and a Facebook lead's open review flag clears.
+- **Bank deposit matching.** Every morning, settled card batches from Authorize.net are matched to bank deposits pulled from QuickBooks, within an amount tolerance and a business-day window.
+- **Checks and period close.** Recurring check templates create deposit events and print PDFs on pre-printed check stock. Finance can close a period to freeze its results, and reopen it when needed.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Order entered", note: "8 pre-charge checks" },
+    { label: "Charge proposed", note: "order claimed, card not run" },
+    { label: "Person approves", note: "separate sign-in" },
+    { label: "Card charged", note: "events fan out" },
+    { label: "Batch settles", note: "pulled from Authorize.net" },
+    { label: "Matched to a deposit", note: "QuickBooks, every morning" },
+  ]}
+/>
+
+Three morning jobs run in order. The first pulls settled batches and recurring schedules from Authorize.net, the second pulls bank deposits from QuickBooks with an overlap window for late posts, and the third runs both matchers and sends alerts. Every batch is re-checked on each run, so states move by themselves: a missing batch that lands becomes matched late, and a matched batch hit by a chargeback becomes reversed. Deposits nothing claims show as orphans for a person to categorize, and a client's billing hold clears once their payments reconcile. The onboarding steps after a charge are covered in [client onboarding automation](/projects/client-onboarding-activation).
+
+## Built to be trusted
+
+- **The status flip is the lock.** A charge claims its order with one conditional update, so a double click, a retry or a second tab cannot run the card twice. Once claimed, every exit is final, and a stuck charge is parked for review instead of being retried blindly.
+- **No duplicate charges or plans.** Each order carries one invoice number, so the payment service's duplicate check stops a second live charge, and a new plan is checked against the subscriptions that already exist at Authorize.net.
+- **No gateway key in the portal.** With the separate billing service switched on, the portal holds no Authorize.net key and money actions are only proposals. The records it pushes back are idempotent on their source ID.
+- **Encrypted tokens and default deny.** The QuickBooks refresh token is stored with AES-256-GCM and saved on every rotation. In read-only mode, the Authorize.net client refuses anything that is not an explicit read or an allow-listed charge.
+- **Alerts that never crash the job.** Missing batches, missing checks, chargebacks, returned checks and QuickBooks pull failures each send a WhatsApp message through Twilio. A failed alert is logged and the matcher carries on.
+
+## By the numbers
+
+- 45 API routes, 10 entities, 4 scheduled jobs and 25 spec files in the billing module
+- 39 API routes, 11 entities and 3 daily jobs in reconciliation
+- 14 billing domain events, with 5 listeners on an approved charge
+- 6 match states (matched, matched late, pending, missing, reversed, orphan) and 5 alert types
+- 7 trust signals and 8 pre-charge checks on every order
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

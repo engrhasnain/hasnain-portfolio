@@ -6,7 +6,9 @@ import { Flow } from "./flow";
 import { VideoEmbed } from "./video-embed";
 
 function Callout({ children }: { children: ReactNode }) {
-  return <div className="rounded-2xl border border-teal/30 bg-teal/5 px-5 py-4 text-ink">{children}</div>;
+  return (
+    <div className="card-feature px-6 py-5 text-ink/90 sm:px-7 sm:py-6 [&>*+*]:mt-3 [&_strong]:text-teal">{children}</div>
+  );
 }
 
 export const mdxComponents: MDXComponents = {

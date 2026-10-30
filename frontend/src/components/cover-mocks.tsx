@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { PreviewRow, ProjectPreview } from "@/lib/types";
 import { BookOpen, Check, namedIcons, typeIcons, WhatsApp } from "./icons";
 
 // Realistic product mockups for project covers, built from HTML/CSS (no image files).
@@ -13,7 +14,7 @@ const raised = "bg-[#18214A]";
 function Window({ title, className = "", children }: { title: string; className?: string; children: ReactNode }) {
   return (
     <div
-      className={`overflow-hidden rounded-[0.9em] border border-white/10 ${surface} shadow-[0_1.4em_3em_-0.8em_rgb(0_0_0/0.8),0_0_2.4em_-0.8em_rgb(94_234_212/0.35)] ${className}`}
+      className={`overflow-hidden rounded-[0.9em] border border-white/10 ${surface} shadow-[0_1.4em_3em_-0.8em_rgb(0_0_0/0.8)] ${className}`}
     >
       <div className="flex items-center gap-[0.32em] border-b border-white/[0.06] bg-[#131B3D] px-[0.75em] py-[0.5em]">
         <span className="size-[0.42em] rounded-full bg-[#FF5F57]" />
@@ -55,7 +56,7 @@ function ChatMock() {
             What&apos;s your refund policy?
           </p>
           <div className="seq-2 flex max-w-[90%] gap-[0.5em]">
-            <span className="mt-[0.1em] size-[1.6em] shrink-0 rounded-full bg-brand shadow-[0_0_0.8em_rgb(94_234_212/0.6)]" />
+            <span className="mt-[0.1em] size-[1.6em] shrink-0 rounded-full bg-brand" />
             <div className={`rounded-[1em] rounded-tl-[0.3em] border border-white/10 ${raised} px-[0.9em] py-[0.55em] text-ink`}>
               Refunds are accepted within 14 days with the original receipt.
               <span className="mt-[0.5em] flex w-fit items-center gap-[0.4em] rounded-[0.5em] border border-teal/40 bg-teal/10 px-[0.55em] py-[0.2em] font-mono text-[0.82em] text-teal">
@@ -270,7 +271,7 @@ function WhatsAppMock() {
         ))}
       </ol>
 
-      <div className="relative h-[14.2em] w-[8.4em] shrink-0 rounded-[1.4em] border-[0.28em] border-[#1C2547] bg-[#0A0F1E] p-[0.3em] shadow-[0_1.4em_3em_-0.8em_rgb(0_0_0/0.85),0_0_2.4em_-0.8em_rgb(94_234_212/0.4)]">
+      <div className="relative h-[14.2em] w-[8.4em] shrink-0 rounded-[1.4em] border-[0.28em] border-[#1C2547] bg-[#0A0F1E] p-[0.3em] shadow-[0_1.4em_3em_-0.8em_rgb(0_0_0/0.85)]">
         <span className="absolute top-[0.35em] left-1/2 h-[0.45em] w-[2.6em] -translate-x-1/2 rounded-full bg-[#1C2547]" />
         <div className="flex h-full flex-col overflow-hidden rounded-[1.1em] bg-[#0E1428]">
           <div className="flex items-center gap-[0.4em] bg-[#131B3D] px-[0.55em] pt-[0.95em] pb-[0.45em]">
@@ -362,7 +363,7 @@ const navItems = [
 ];
 const kpis = [
   { value: "3", label: "apps" },
-  { value: "1,400+", label: "endpoints" },
+  { value: "2,600+", label: "endpoints" },
   { value: "50+", label: "integrations" },
   { value: "1,000+", label: "MCP tools" },
 ];
@@ -381,7 +382,7 @@ const jobs = [
 function PlatformMock() {
   return (
     <div className="relative w-[25em]">
-      <Window title="mission-control" className="w-[22em]">
+      <Window title="ops-console" className="w-[22em]">
         <div className="flex">
           <nav className="flex w-[4.9em] shrink-0 flex-col gap-[0.2em] border-r border-white/[0.06] bg-[#0D1330] p-[0.4em]">
             {navItems.map((item, i) => {
@@ -401,7 +402,7 @@ function PlatformMock() {
           </nav>
           <div className="min-w-0 flex-1 p-[0.6em]">
             <div className="flex items-center justify-between">
-              <span className="text-[0.6em] font-extrabold text-ink">Mission Control</span>
+              <span className="text-[0.6em] font-extrabold text-ink">Operations</span>
               <span className="flex items-center gap-[0.35em] font-mono text-[0.38em] text-teal">
                 <span className="size-[0.6em] rounded-full bg-teal shadow-[0_0_0.6em_#5EEAD4]" /> all systems running
               </span>
@@ -462,7 +463,7 @@ function PlatformMock() {
 
       {/* Claude working through the MCP layer, floating over the dashboard */}
       <div className="seq-4 absolute -right-[0.2em] -bottom-[1.2em] w-[9.4em]">
-        <div className="animate-float rounded-[0.7em] border border-teal/40 bg-[#131B3D] p-[0.5em] shadow-[0_1.2em_2.4em_-0.6em_rgb(0_0_0/0.85),0_0_1.6em_-0.4em_rgb(94_234_212/0.5)]">
+        <div className="animate-float rounded-[0.7em] border border-teal/40 bg-[#131B3D] p-[0.5em] shadow-[0_1.2em_2.4em_-0.6em_rgb(0_0_0/0.85)]">
           <p className="flex items-center justify-between font-mono text-[0.36em] text-muted">
             claude · mcp <span className="text-teal">● live</span>
           </p>
@@ -492,6 +493,61 @@ const mocks: Record<MockArt, () => ReactNode> = {
 
 export function isMockArt(value: string | undefined): value is MockArt {
   return !!value && value in mocks;
+}
+
+const toneClass: Record<NonNullable<PreviewRow["tone"]>, string> = {
+  ok: "border-teal/40 bg-teal/10 text-teal",
+  info: "border-sky-400/40 bg-sky-400/10 text-sky-300",
+  warn: "border-amber/50 bg-amber/10 text-amber",
+  muted: "border-white/10 bg-white/[0.04] text-muted",
+};
+
+/**
+ * A product-style panel built from a project's `preview` frontmatter, so every case study gets its own cover
+ * without new code: a window title, an optional heading line, rows that appear one by one, and a footer note.
+ */
+function PanelMock({ preview }: { preview: ProjectPreview }) {
+  return (
+    <Window title={preview.window} className="w-[21em]">
+      <div className="px-[0.85em] pt-[0.75em] pb-[0.8em] text-[0.54em]">
+        {preview.heading ? (
+          <p className={`rounded-[0.8em] ${raised} px-[0.9em] py-[0.55em] font-semibold text-ink`}>{preview.heading}</p>
+        ) : null}
+        <ul className="mt-[0.7em] flex flex-col gap-[0.45em]">
+          {preview.rows.slice(0, 5).map((row, i) => (
+            <li
+              key={row.label}
+              className={`seq-${i + 1} flex items-center gap-[0.8em] rounded-[0.6em] border border-white/[0.07] bg-night px-[0.75em] py-[0.5em]`}
+            >
+              <span className="text-muted">{row.label}</span>
+              <span
+                className={`ml-auto truncate rounded-[0.45em] border px-[0.55em] py-[0.12em] font-mono text-[0.9em] ${toneClass[row.tone ?? "muted"]}`}
+              >
+                {row.value}
+              </span>
+            </li>
+          ))}
+        </ul>
+        {preview.footer ? (
+          <p
+            className={`seq-${Math.min(preview.rows.length, 5) + 1} mt-[0.7em] flex items-center gap-[0.5em] rounded-[0.6em] border border-teal/30 bg-teal/10 px-[0.75em] py-[0.45em] text-ink`}
+          >
+            <Check className="shrink-0 text-teal" /> {preview.footer}
+          </p>
+        ) : null}
+      </div>
+    </Window>
+  );
+}
+
+export function PanelCover({ preview }: { preview: ProjectPreview }) {
+  return (
+    <div className="mock-root absolute inset-0 grid place-items-center pt-[1.1em]">
+      <div className="tilt">
+        <PanelMock preview={preview} />
+      </div>
+    </div>
+  );
 }
 
 export function CoverMock({ art }: { art: MockArt }) {

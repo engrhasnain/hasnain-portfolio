@@ -4,7 +4,7 @@ slug: rag-chatbots-that-dont-make-things-up
 summary: "A chatbot trained on your documents is only useful if people can trust it. These are the five things I do on every RAG build to keep answers accurate."
 description: "Five steps for building a RAG chatbot that answers accurately from your own documents: clean data, smart chunking, retrieval checks and honest fallbacks."
 date: "2026-10-04"
-updated: "2026-10-19"
+updated: "2026-10-30"
 tags: [RAG, Claude, AI security]
 cover: "/images/blog/rag-chatbots-that-dont-make-things-up/cover.jpg"   # share image (LinkedIn, WhatsApp, Medium)
 coverArt: rag-chatbot   # the live, animated version shown on the site
@@ -13,6 +13,8 @@ answer: "To stop a RAG chatbot from making things up, clean your documents first
 faq:
   - q: "What does RAG stand for?"
     a: "RAG stands for retrieval-augmented generation. Before the AI model answers, the system searches your own documents for the most relevant passages and gives them to the model with the question, so the answer comes from your content instead of from the model's memory."
+  - q: "What does RAG mean in a chatbot?"
+    a: "It means the chatbot looks things up before it replies. For each question it searches your own documents, such as policies, help pages or product sheets, picks the passages that match and writes the reply from those passages only, with a note of where it came from. When nothing relevant comes back, a well-built RAG chatbot says it doesn't know and offers a person."
   - q: "Can a RAG chatbot still hallucinate?"
     a: "Yes. If retrieval misses the right passage, or the prompt lets the model fill gaps, it can still invent an answer that sounds right. Clean data, tested retrieval and a clear instruction to say it doesn't know when the answer isn't in the documents make this much rarer."
   - q: "What is chunking in RAG?"
@@ -81,6 +83,20 @@ Before launch, I run every bot against a short list of real questions, in three 
 
 When the bot gets one of these wrong, the fix almost always lives in the data or the retrieval, not in the prompt. That's why I test them in that order.
 
+## What does a RAG chatbot architecture look like?
+
+Here is the whole pipeline in one place, from the documents you already have to an answer in the chat. Each stage is simple on its own, and each one can fail on its own, which is why I check them one at a time.
+
+1. **Load and clean the documents.** The files come in from wherever they live: PDFs, help pages, policies, product sheets. I extract the text and drop anything outdated or duplicated, as in [step 1 above](#how-do-you-stop-a-rag-chatbot-from-making-things-up).
+2. **Split them into chunks.** Each document is cut along its headings and sections, and every chunk keeps its document title and section name, as in step 2.
+3. **Store embeddings in a vector store.** Each chunk is turned into an embedding, a list of numbers that captures what the text means, and saved in a vector store. For most builds I use PostgreSQL with pgvector.
+4. **Retrieve.** When a question comes in, it is turned into an embedding the same way, and the store returns the chunks closest to it in meaning. Hybrid search adds a keyword match, which helps with names, codes and product numbers.
+5. **Re-rank.** A second pass scores those chunks against the question more carefully and keeps only the best few. Stages 4 and 5 are what step 3 checks on their own.
+6. **Answer only from the retrieved text.** The model gets the question, those passages and a clear instruction: answer from this text alone, and cite the document and section the answer came from.
+7. **Say "I don't know" when the text isn't there.** If nothing relevant comes back, or the passages don't answer the question, the bot says so and offers a person, as in steps 4 and 5.
+
+The [launch tests](#how-do-you-test-a-rag-chatbot-before-launch) follow the same order: documents and retrieval first, the prompt in stage 6 last.
+
 <Callout>
 
 **From a real build:** In the [AI operations platform](/projects/ai-operations-platform) I built, the chatbot answers from each client's own knowledge base, stored as embeddings in PostgreSQL with [pgvector](https://github.com/pgvector/pgvector). My [AI business chatbot](/projects/ai-business-chatbot) works the same way across Claude, GPT and Gemini: whichever model answers, it answers from the business's own documents. The [PDF research chatbot](/projects/pdf-research-chatbot) does it for long reports and papers.
@@ -101,4 +117,4 @@ RAG is for when the answers live in documents your team already trusts.
 - Tell the bot to say "I don't know" and hand off to a person when the answer isn't there.
 - The questions it can't answer show you which documents to add next.
 
-Want a chatbot trained on your own documents? Tell me what it should answer, and I'll tell you honestly what will work. See [AI chatbot development](/services#ai-chatbot), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).
+Want a chatbot trained on your own documents? Tell me what it should answer, and I'll tell you honestly what will work. See [AI chatbot development](/services/ai-chatbot-development), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).

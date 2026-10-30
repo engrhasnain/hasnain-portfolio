@@ -5,7 +5,6 @@
 export const site = {
   name: "Muhammad Hasnain Pirzada",
   shortName: "Muhammad Hasnain Pirzada", // always the full name, everywhere on the site
-  firstName: "Hasnain",
   initials: "HP",
   jobTitle: "Full Stack AI Engineer",
   /** The one-line promise used in the hero, share images and Google. */
@@ -37,7 +36,6 @@ export const site = {
     medium: "https://medium.com/@mhasnainpirzada",
   } as Record<"linkedin" | "github" | "instagram" | "fiverr" | "medium", string>,
   keywords: [
-    "Hasnain Pirzada",
     "Muhammad Hasnain Pirzada",
     "Full Stack AI Engineer",
     "AI platform developer",
@@ -58,12 +56,16 @@ export const nav = [
   { href: "/contact", label: "Contact" },
 ];
 
-/** Facts from the AI Operations Platform codebase only. No guessed percentages. */
+/**
+ * Facts counted in the AI Operations Platform codebase on 2026-10-30 (no guessed percentages):
+ * routes = route decorators in the Python (1,943) and NestJS (694) backends; MCP tools = registered tools on the
+ * three MCP servers (868 + 201 + 117); tests = test functions in the Python (11,453), NestJS (2,402) and MCP (4,461) code.
+ */
 export const proof = [
-  { value: "3", label: "apps in one AI platform" },
-  { value: "1,400+", label: "API endpoints" },
+  { value: "2,600+", label: "API endpoints" },
+  { value: "1,180+", label: "MCP tools for Claude" },
+  { value: "18,000+", label: "automated tests" },
   { value: "50+", label: "integrations" },
-  { value: "1,000+", label: "Claude tools on 6 MCP servers" },
 ];
 
 /** The flagship case study the proof numbers come from. */

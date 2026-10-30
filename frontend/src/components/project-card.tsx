@@ -4,46 +4,46 @@ import type { ProjectMeta } from "@/lib/types";
 import { ArrowRight } from "./icons";
 import { ProjectCover } from "./project-cover";
 
+/** Same anatomy as PostCard: cover panel, meta line, title, summary, one link. */
 export function ProjectCard({ project, headingLevel = "h3" }: { project: ProjectMeta; headingLevel?: "h2" | "h3" }) {
   const Heading = headingLevel;
   return (
-    <Link
-      href={`/projects/${project.slug}`}
-      className="group card card-hover flex h-full flex-col overflow-hidden"
-    >
-      <div className="relative aspect-[16/9] overflow-hidden border-b border-line">
-        {project.layout === "case-study" ? (
-          <span className="absolute top-3 right-3 z-20 inline-flex items-center gap-1.5 rounded-full border border-amber/50 bg-night/85 px-2.5 py-1 text-[11px] font-bold text-amber shadow-[0_0_20px_-6px_rgb(245_158_11/0.8)] backdrop-blur">
-            <span className="size-1.5 rounded-full bg-amber" aria-hidden="true" />
-            Flagship case study
-          </span>
-        ) : null}
+    <Link href={`/projects/${project.slug}`} className="group card card-hover flex h-full flex-col overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.07]">
         {project.cover ? (
           <Image
             src={project.cover}
             alt=""
             fill
             sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition duration-500 group-hover:scale-[1.03]"
+            className="object-cover transition duration-500 group-hover:scale-[1.02]"
           />
         ) : (
           <ProjectCover project={project} />
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <div className="flex flex-wrap gap-2">
-          {project.type.map((t) => (
-            <span key={t} className="chip text-teal">
+      <div className="flex flex-1 flex-col p-6">
+        <p className="meta flex flex-wrap items-center gap-x-2">
+          {project.layout === "case-study" ? (
+            <>
+              <span>Flagship</span>
+              <span className="text-ink/45">·</span>
+            </>
+          ) : null}
+          {project.type.slice(0, 2).map((t, i) => (
+            <span key={t} className="flex items-center gap-2">
+              {i > 0 ? <span className="text-ink/45">·</span> : null}
               {t}
             </span>
           ))}
-          {project.status === "Building" ? <span className="chip">Building</span> : null}
-        </div>
-        <Heading className="text-lg leading-snug">{project.title}</Heading>
-        <p className="text-sm leading-relaxed text-muted">{project.summary}</p>
-        <span className="mt-auto inline-flex items-center gap-1 pt-2 text-sm font-semibold text-teal">
-          Read the case study
-          <ArrowRight className="transition group-hover:translate-x-1" />
+        </p>
+        <Heading className="mt-3 text-xl leading-snug transition-colors group-hover:text-teal">{project.title}</Heading>
+        <p className="mt-2 text-sm leading-relaxed text-ink/65">{project.summary}</p>
+        <span className="mt-auto flex items-center justify-between pt-6 text-sm">
+          <span className="inline-flex items-center gap-1.5 font-bold text-teal">
+            Read the case study <ArrowRight className="transition-transform group-hover:translate-x-1" />
+          </span>
+          {project.status === "Building" ? <span className="text-ink/50">Building</span> : null}
         </span>
       </div>
     </Link>

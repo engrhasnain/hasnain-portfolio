@@ -1,0 +1,79 @@
+---
+title: "Client Knowledge Graph with Source-Backed AI Facts"
+slug: client-knowledge-graph
+type: [Agents, Chatbots]
+summary: "A per-client knowledge base where every fact carries its source, AI claims are checked against the client's exact words, and each write is approved and read back."
+description: "A client knowledge graph that stores every fact with its source, checks AI claims against the client's exact words and approves each write with a read-back."
+stack: [FastAPI, NestJS, PostgreSQL + pgvector, Claude, Gmail API, Google Pub/Sub, BullMQ, React]
+results:
+  - "Every fact stored with its source"
+  - "Claims marked confirmed, contradicted or AI-added, with an exact quote"
+  - "Approved writes with provenance and read-back"
+  - "No bulk approval, by design"
+status: Live
+featured: false
+order: 21
+date: "2026-08-12"
+art: panel
+preview:
+  window: "knowledge-graph · live"
+  heading: "Call transcript · 4 new claims"
+  rows:
+    - { label: "Years in business", value: "Confirmed", tone: ok }
+    - { label: "Service area", value: "Confirmed", tone: ok }
+    - { label: "Warranty", value: "Contradicted", tone: warn }
+    - { label: "Free estimates", value: "AI-added", tone: muted }
+  footer: "Each claim checked against the client's exact words"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A marketing agency that writes websites, posts and replies for many contractors needs the facts about each one: years in business, service area, licences, warranties. Those facts are scattered across calls, texts and emails, and they change. When AI writes from memory, it fills the gaps with details that sound right but that the client never said, and nobody can tell where a claim came from.
+
+## What I built
+
+- **A per-client knowledge base.** Every fact carries its source, so the team can see whether it came from a call, a text, an email or the AI.
+- **Claim matching.** Claude compares each claim with what the client actually said and marks it confirmed, contradicted or AI-added. Confirmed and contradicted claims must quote the client's exact words.
+- **Approved writes.** Text is written only after approval, with its provenance attached, then read back from the database to prove it was stored.
+- **Intake from real conversations.** Calls, texts and Gmail feed the knowledge base. Gmail arrives by Pub/Sub push with polling alongside, and an 8-rule sender gate decides which emails count.
+- **An evidence-first agent.** An AI agent matches jobs to projects and has to show its evidence for every match.
+- **A fact-consistency checker.** Claude reads 10 core facts and checks 8 descriptive fields against them. It makes small corrections or raises a flag. It runs on a BullMQ queue with a 15-minute job lock, because one run makes several Claude calls in a row.
+- **A credential vault.** Client logins are kept in a Fernet-encrypted vault, and secrets are masked on screen.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Calls, texts, Gmail", note: "8-rule sender gate" },
+    { label: "Claim matching", note: "confirmed, contradicted, AI-added" },
+    { label: "Human approval", note: "one record at a time" },
+    { label: "Write + read-back", note: "with provenance" },
+    { label: "Consistency check", note: "10 core facts, 8 fields" },
+  ]}
+/>
+
+New material comes in from calls, texts and email, and Claude matches each claim to the client's own words. A person reviews what is left and approves it. The approved text is stored with its source and read back. In the portal, the team gets a client scorecard with a grade, a progress ladder and 8 subject tiles, where each subject is scored by how much of its sources are really captured. There is also a source registry, an authentication-gate queue, an audit trail for every record, fleet-wide provenance coverage with drill-down, and an ingestion monitor that shows cost.
+
+## Built to be trusted
+
+- **No bulk approval.** The authentication gate asks one question per record: does this trace back to the owner? A record that is only hearsay can't be stamped at all, and there is no "approve all" button.
+- **Stamps must match the log.** If a record carries a stamp with no matching audit event, the portal shows it as an alarm.
+- **Prompts in plain sight.** Buttons show the exact AI prompt behind a pipeline, so the team can see what the AI was asked.
+- **The client's promises stay theirs.** The consistency checker never rewrites a guarantee or warranty the client stated. A blank one is flagged, not filled in.
+- **Secrets stay hidden.** Credentials are encrypted with Fernet and masked in the portal.
+
+## By the numbers
+
+- About 214 API routes.
+- 27 database tables.
+- About 14 scheduled jobs.
+- 10 core facts and 8 descriptive fields in every consistency check.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

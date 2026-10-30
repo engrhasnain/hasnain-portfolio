@@ -1,0 +1,80 @@
+---
+title: "AI Social Media Automation for Contractor Businesses"
+slug: social-media-automation
+type: [Automation, Agents]
+summary: "A social media system that picks what to post from seven live signals, checks every caption with six guards, publishes to five platforms and answers Nextdoor leads."
+description: "AI social media automation that picks topics from 7 live signals, checks every caption with 6 content guards and publishes to 5 platforms with approval tiers."
+stack: [FastAPI, PostgreSQL, Claude, Meta Graph API, LinkedIn API, Pinterest API, Threads API, Playwright, Twilio, React]
+results:
+  - "A 7-signal engine decides what each client posts"
+  - "6 content guards check every caption before it can go out"
+  - "5 platforms: Facebook, Instagram, LinkedIn, Pinterest, Threads"
+  - "Nextdoor leads answered in the owner's voice, alerts capped at 2"
+status: Live
+featured: false
+order: 16
+date: "2026-09-04"
+art: panel
+preview:
+  window: "social-engine · live"
+  heading: "Freeze warning · new post idea"
+  rows:
+    - { label: "Signals", value: "Weather + seasonal", tone: info }
+    - { label: "Guards", value: "6 of 6 passed", tone: ok }
+    - { label: "Approval", value: "Exception review", tone: muted }
+    - { label: "Platforms", value: "Facebook, Instagram", tone: info }
+  footer: "Nothing is scheduled until all six guards pass"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A contractor marketing agency posts to social media for many client businesses at once. For each roofer or plumber, someone has to decide what to post this week, write it, check it and publish it on several platforms. Done by hand, posts go out late or generic, and one wrong claim or a competitor's name in a caption can cost a client trust. Leads that arrive on Nextdoor wait hours for a reply, and by then the neighbour has called someone else.
+
+## What I built
+
+- **A decision engine.** It scores seven signals for each client: Google Trends, weather, local news, seasonal timing, Search Console performance, engagement history and days since the last post. One strong signal, or two supporting ones, triggers a post.
+- **Six content guards.** Every caption is checked for competitor bleed, competitor names, fluff, unsupported claims, platform rejection risks and AI tells. Each guard can pass it, rewrite one sentence, regenerate the post or block it.
+- **Three approval tiers.** New clients get full review, established clients get exception-only review, and trusted clients run on autopilot.
+- **Five platform adapters.** Facebook, Instagram, LinkedIn, Pinterest and Threads, connected through OAuth.
+- **Analytics and inbox.** Results are collected at 24 hours, 72 hours and 7 days. Meta inbox, follower and profile sweeps keep the portal up to date.
+- **A Nextdoor lead responder.** It spots Nextdoor notifications forwarded by Gmail, opens the thread in a Playwright session per client, and drafts a reply in the owner's voice plus one follow-up.
+- **A portal for the team.** An AI post generator, a calendar, a publishing queue with approve and reject, scheduled and published views, the inbox and followers. The AI reply enhancer keeps a version history with undo.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "7 signals scored", note: "trends, weather, news, season" },
+    { label: "Claude writes the caption" },
+    { label: "6 content guards", note: "pass, rewrite, regenerate, block" },
+    { label: "Approval tier", note: "full, exception or autopilot" },
+    { label: "Publish to 5 platforms" },
+    { label: "Results at 24h, 72h, 7d" },
+  ]}
+/>
+
+The engine runs for every client on a schedule. When signals line up, for example a freeze warning in the client's market during pipe repair season, it picks a topic and a format and Claude writes the caption. The guards run in a fixed order. A small problem gets a targeted rewrite, a bigger one triggers a full regeneration with the violation added as a constraint, and anything serious is blocked for a person. Engagement history never triggers a post on its own: it only changes the format, using the results collected after each post.
+
+## Built to be trusted
+
+- **Hard stops.** A guard block stops the post and flags it for human review. It does not quietly publish.
+- **Autopilot with a limit.** On autopilot, a post that fails a guard is regenerated at most three times, then escalated to a person.
+- **Honest neighbourhood replies.** Validators check every Nextdoor draft. A rule-based refer-out guard forces a polite referral when a request falls outside the client's trade or credentials, so the AI never promises a job the client can't take.
+- **No spam, no alert floods.** An anti-spam guard caps daily replies per account, never answers the same post twice and adds a random delay before each send. Twilio SMS alerts to the owner stop at 2 per lead.
+- **Connections that stay alive.** Token refreshers keep LinkedIn, Pinterest and Threads connections from lapsing.
+
+## By the numbers
+
+- 105 API routes and 12 database models for social publishing.
+- About 16 scheduled jobs.
+- 5 platform adapters, 6 content guards and 3 approval tiers.
+- The Nextdoor responder adds 23 routes, 8 tables and 3 scheduled jobs.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI agent development](/services/ai-agent-development).

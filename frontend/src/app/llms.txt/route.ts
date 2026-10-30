@@ -24,7 +24,7 @@ export function GET() {
     `- [Contact](${site.url}/contact): email, WhatsApp or book a call (${site.booking})`,
     "",
     "## Services",
-    ...services.map((s) => `- [${s.title}](${site.url}/services#${s.slug}): ${s.oneLiner}`),
+    ...services.map((s) => `- [${s.headline}](${site.url}/services/${s.slug}): ${s.oneLiner}`),
     "",
     "## Projects",
     ...projects.map((p) => `- [${p.title}](${site.url}/projects/${p.slug}): ${p.summary}`),

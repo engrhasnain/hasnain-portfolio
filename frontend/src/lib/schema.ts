@@ -1,6 +1,6 @@
 // JSON-LD builders (schema.org). Google uses these to understand who the site is about.
 import { publicFileExists } from "./public-file";
-import { services } from "./services";
+import { services, type Service } from "./services";
 import { certifications, credentials, site } from "./site";
 import type { Post, Project } from "./content";
 
@@ -15,7 +15,6 @@ export function personSchema() {
     "@type": "Person",
     "@id": personId,
     name: site.name,
-    alternateName: [site.shortName, "Hasnain"],
     givenName: "Muhammad Hasnain",
     familyName: "Pirzada",
     jobTitle: site.roles,
@@ -110,6 +109,28 @@ export function projectSchema(project: Project) {
   };
 }
 
+/** The projects index as a list, so search and AI assistants can see every case study in one place. */
+export function projectsListSchema(projects: { slug: string; title: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    url: `${site.url}/projects`,
+    name: `AI projects by ${site.name}`,
+    isPartOf: { "@id": websiteId },
+    author: { "@id": personId },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: projects.length,
+      itemListElement: projects.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${site.url}/projects/${p.slug}`,
+        name: p.title,
+      })),
+    },
+  };
+}
+
 export function postSchema(post: Post) {
   return {
     "@context": "https://schema.org",
@@ -175,6 +196,8 @@ export function faqSchema(faq: { q: string; a: string }[]) {
   };
 }
 
+const areaServed = ["Saudi Arabia", "United Arab Emirates", "Worldwide"];
+
 export function servicesSchema() {
   return {
     "@context": "https://schema.org",
@@ -186,10 +209,32 @@ export function servicesSchema() {
         "@type": "Service",
         name: s.title,
         description: s.oneLiner,
-        url: `${site.url}/services#${s.slug}`,
+        url: `${site.url}/services/${s.slug}`,
         provider: { "@id": personId, "@type": "Person", name: site.name },
-        areaServed: ["Saudi Arabia", "United Arab Emirates", "Worldwide"],
+        areaServed,
       },
     })),
+  };
+}
+
+export function serviceSchema(s: Service) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${site.url}/services/${s.slug}#service`,
+    name: s.headline,
+    serviceType: s.title,
+    description: s.metaDescription,
+    url: `${site.url}/services/${s.slug}`,
+    provider: { "@id": personId, "@type": "Person", name: site.name },
+    areaServed,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `What's included: ${s.title}`,
+      itemListElement: s.includes.map((item) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: item },
+      })),
+    },
   };
 }

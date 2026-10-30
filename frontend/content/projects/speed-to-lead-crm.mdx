@@ -1,0 +1,80 @@
+---
+title: "Speed-to-Lead CRM with Meta Lead Ads and Zoom Phone"
+slug: speed-to-lead-crm
+type: [Automation, MCP]
+summary: "A speed-to-lead CRM for Facebook lead ads: instant assignment, texts from the advisor's own Zoom number, timed escalation, AI call summaries and guarded Meta Ads tools."
+description: "Speed-to-lead CRM for Meta lead ads: verified webhooks, round-robin assignment, escalation timers, Zoom call summaries and 113 guarded ads tools for Claude."
+stack: [FastAPI, PostgreSQL, Meta Marketing API, Meta Conversions API, Zoom Phone, Claude, React, Python MCP]
+results:
+  - "Every lead assigned round-robin in one atomic step"
+  - "Escalation at 15, 30 and 120 business-hours minutes"
+  - "AI writes never overwrite a human confirmation"
+  - "113 ads and social tools for Claude, with spend approval"
+status: Live
+featured: false
+order: 15
+date: "2026-08-28"
+art: panel
+preview:
+  window: "speed-to-lead · live"
+  heading: "Lead Ads webhook · new lead"
+  rows:
+    - { label: "Signature", value: "HMAC verified", tone: ok }
+    - { label: "Assigned", value: "Next advisor", tone: info }
+    - { label: "Auto-text", value: "From advisor's line", tone: ok }
+    - { label: "Escalation", value: "15 min timer set", tone: warn }
+  footer: "An AI write never overwrites a human confirmation"
+cta: "Need something like this for your business? Let's talk."
+fiverr: "https://www.fiverr.com/s/X00B44k"
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A lead from a Facebook ad goes cold fast if nobody calls. For a contractor marketing agency running ads for many client businesses, getting leads is the easy part. The hard part is answering each one quickly, knowing which advisor owns it, following up on time, and telling Meta which leads turned into real customers so the ads learn from results instead of form fills.
+
+## What I built
+
+- **Instant lead intake.** A Meta Lead Ads webhook, verified by HMAC, acknowledges at once and fetches the full lead in the background.
+- **Fair, atomic assignment.** Round-robin rotation hands each lead to the next advisor in one atomic step, so leads arriving together cannot break the rotation.
+- **Texts from the advisor's own number.** The first auto-text goes out from the assigned advisor's Zoom number, so the conversation stays on that advisor's line.
+- **Escalation on a clock.** If nobody acts, the lead escalates at 15, 30 and 120 minutes, counted in business hours: a second text to the advisor, then an admin text and email, then an operations alert with one-click reassign.
+- **Call summaries from Zoom.** Zoom Phone calls are pulled in, and Claude writes a summary and suggests a disposition. Industry classification runs rules first, then Claude Haiku. Playbooks and follow-ups keep the next step clear.
+- **Meta Ads, for people and for Claude.** Campaign, insight and drift management, conversion events sent back to Meta through the Conversions API, and 113 Claude tools generated from one JSON manifest.
+- **A CRM portal.** Lead work queues, dials, follow-ups, call scripts with an approval queue, list import, meeting scheduling and calendar sync. Advisors see only their own leads, a "Preview as" control shows any view as another user would see it, and the customer record embeds 13 tool pages as tabs.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Lead Ads webhook", note: "HMAC verified, acked at once" },
+    { label: "Background fetch" },
+    { label: "Round-robin assign", note: "atomic" },
+    { label: "Auto-text + timers", note: "15, 30, 120 min" },
+    { label: "Zoom call + AI summary" },
+    { label: "Conversion back to Meta", note: "after commit" },
+  ]}
+/>
+
+The webhook answers Meta straight away and does the slower work in the background. Once the lead is stored and assigned, the first text goes out from the advisor's number and the escalation timers start. The clock stops as soon as a call, a text to the lead or a manual note is logged. After a call, the Zoom Phone record comes in, Claude summarizes it and suggests a disposition, and nothing changes on the lead until the advisor taps Confirm. When a lead reaches a stage that matters, a conversion event goes back to Meta, so campaigns are judged on real outcomes.
+
+## Built to be trusted
+
+- **People win over AI.** Row locks mean an AI write never overwrites a human confirmation, and a lead's stage never moves backward.
+- **No double counting.** Conversion events are idempotent three ways, and they are sent from an after-commit hook, so an ads failure never rolls back the CRM.
+- **One place for currency.** Meta takes budgets in minor units, and only one module builds those values, so a budget can't come out a hundred times off.
+- **A careful stop flag.** The ads stop flag trips only when a live token check says the token is invalid, never on an error code that Meta also returns for unrelated reasons.
+- **Guarded Claude tools.** New campaigns start paused, budgets have ceilings, updates support dry runs and keep before and after snapshots, and anything that raises spend needs approval. Lead data is kept out of logs.
+
+## By the numbers
+
+- 213 API routes.
+- 38 lead and CRM tables, plus 16 Meta Ads tables.
+- 16 scheduled jobs, plus 7 flag-gated ads jobs.
+- 113 ads and social tools for Claude: 69 ad tools and 44 page and social tools.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

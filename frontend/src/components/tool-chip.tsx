@@ -10,6 +10,8 @@ const logoFor: Record<string, BrandLogoKey | { icon: keyof typeof namedIcons }> 
   googlegemini: "googlegemini",
   langchain: "langchain",
   mcp: "modelcontextprotocol",
+  mcpsdk: "modelcontextprotocol",
+  fastmcp: "modelcontextprotocol",
   modelcontextprotocol: "modelcontextprotocol",
   postgresql: "postgresql",
   postgresqlpgvector: "postgresql",
@@ -27,6 +29,22 @@ const logoFor: Record<string, BrandLogoKey | { icon: keyof typeof namedIcons }> 
   tailwindcss: "tailwindcss",
   docker: "docker",
   vercel: "vercel",
+  meta: "meta",
+  metaads: "meta",
+  facebook: "facebook",
+  instagram: "instagram",
+  google: "google",
+  googlesearchconsole: "google",
+  googlebusinessprofile: "google",
+  googlecloud: "googlecloud",
+  zoom: "zoom",
+  wordpress: "wordpress",
+  elementor: "elementor",
+  twilio: "twilio",
+  elevenlabs: "elevenlabs",
+  quickbooks: "quickbooks",
+  retellai: { icon: "voice" },
+  retell: { icon: "voice" },
   openai: { icon: "sparkles" },
   openaigpt: { icon: "sparkles" },
   groq: { icon: "zap" },
@@ -53,8 +71,35 @@ function visible(hex: string) {
 }
 
 /** The logo (or matching icon) and display colour for a tool name. */
+// Names like "Zoom RTMS", "Google Calendar API" or "PostgreSQL + pgvector" fall back to the longest brand they start with.
+const prefixes = Object.keys(logoFor).sort((a, b) => b.length - a.length);
+const extra: Record<string, { icon: keyof typeof namedIcons }> = {
+  bullmq: { icon: "layers" },
+  apscheduler: { icon: "clock" },
+  starlette: { icon: "code" },
+  typeorm: { icon: "database" },
+  sqlalchemy: { icon: "database" },
+  playwright: { icon: "globe" },
+  pillow: { icon: "image" },
+  opencv: { icon: "image" },
+  socketio: { icon: "zap" },
+  pdfkit: { icon: "layers" },
+  dataforseo: { icon: "search" },
+  cohere: { icon: "sparkles" },
+  indexnow: { icon: "search" },
+  authorizenet: { icon: "billing" },
+};
+
+function lookup(name: string) {
+  const k = key(name);
+  if (logoFor[k]) return logoFor[k];
+  if (extra[k]) return extra[k];
+  const prefix = prefixes.find((p) => p.length > 2 && k.startsWith(p));
+  return prefix ? logoFor[prefix] : undefined;
+}
+
 export function toolBrand(name: string): { color: string; path?: string; Fallback: ComponentType<IconProps> } {
-  const match = logoFor[key(name)];
+  const match = lookup(name);
   const brand = typeof match === "string" ? brandLogos[match] : undefined;
   return {
     color: brand ? visible(brand.hex) : "#5EEAD4",
@@ -74,20 +119,18 @@ export function ToolLogo({ name, size = 20 }: { name: string; size?: number }) {
   );
 }
 
-/** A tool in my stack, with its real logo in brand colour (or a matching icon), glowing in that colour on hover. */
+/** A tool in my stack: the system's chip, led by the tool's real logo (or a matching icon). The border takes the brand colour on hover. */
 export function ToolChip({ name, size = "md", className = "" }: { name: string; size?: "sm" | "md"; className?: string }) {
   const small = size === "sm";
   return (
     <span
       style={{ "--brand": toolBrand(name).color } as CSSProperties}
-      className={`tool-chip flex shrink-0 items-center rounded-2xl border border-line bg-panel font-semibold whitespace-nowrap text-ink ${
-        small ? "gap-2 py-1 pr-3 pl-1 text-xs" : "gap-3 py-2.5 pr-5 pl-2.5 text-sm"
+      className={`tool-chip chip shrink-0 whitespace-nowrap text-ink/85 ${
+        small ? "gap-2 py-1.5 pr-3 pl-2" : "gap-2.5 py-2 pr-4 pl-3 text-sm"
       } ${className}`}
     >
-      <span
-        className={`tool-logo grid place-items-center border border-white/[0.06] bg-night ${small ? "size-6 rounded-lg" : "size-9 rounded-xl"}`}
-      >
-        <ToolLogo name={name} size={small ? 14 : 20} />
+      <span className="tool-logo grid shrink-0 place-items-center">
+        <ToolLogo name={name} size={small ? 14 : 17} />
       </span>
       {name}
     </span>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { nav, site } from "@/lib/site";
 import { Close, Menu } from "./icons";
 import { LogoMark } from "./logo";
@@ -10,40 +10,37 @@ import { LogoMark } from "./logo";
 export function Header({ photo }: { photo?: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [glider, setGlider] = useState({ left: 0, width: 0, visible: false });
+  const [scrolled, setScrolled] = useState(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
+  // The bar is see-through at the very top and gets a solid edge once the page moves under it.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-night/80 backdrop-blur-md">
-      <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="group flex min-w-0 items-center gap-2.5 font-bold"
-          onClick={() => setOpen(false)}
-        >
-          <span className="transition duration-300 group-hover:rotate-[-8deg] group-hover:scale-110">
-            <LogoMark photo={photo} />
-          </span>
-          <span className="truncate text-[0.95rem] transition group-hover:text-teal sm:text-base">{site.shortName}</span>
+    <header
+      className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
+        scrolled || open ? "border-white/[0.07] bg-[#0b1020]/85 backdrop-blur-md" : "border-transparent bg-transparent"
+      }`}
+    >
+      <div className="container-page flex h-16 items-center justify-between gap-6">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5" onClick={() => setOpen(false)}>
+          <LogoMark photo={photo} />
+          <span className="truncate text-[0.98rem] font-extrabold tracking-tight">{site.shortName}</span>
         </Link>
 
         <nav aria-label="Main" className="hidden lg:block">
-          <ul className="relative flex items-center gap-1" onMouseLeave={() => setGlider((g) => ({ ...g, visible: false }))}>
-            {/* the glowing pill that slides to whichever link you point at */}
-            <li
-              aria-hidden="true"
-              className="nav-glider pointer-events-none absolute top-0 h-full rounded-full border border-teal/30 bg-teal/10 shadow-[0_0_24px_-6px_rgb(94_234_212/0.6)]"
-              style={{ left: glider.left, width: glider.width, opacity: glider.visible ? 1 : 0 }}
-            />
+          <ul className="flex items-center gap-8">
             {nav.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   aria-current={isActive(item.href) ? "page" : undefined}
-                  onMouseEnter={(e) =>
-                    setGlider({ left: e.currentTarget.offsetLeft, width: e.currentTarget.offsetWidth, visible: true })
-                  }
-                  className="nav-link relative block rounded-full px-4 py-2 text-sm text-muted transition duration-300 hover:text-ink aria-[current=page]:text-teal"
+                  className="nav-link text-[0.94rem] font-semibold text-ink/70 transition-colors hover:text-ink aria-[current=page]:text-ink"
                 >
                   {item.label}
                 </Link>
@@ -53,16 +50,12 @@ export function Header({ photo }: { photo?: string }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link href="/contact" className="btn btn-primary btn-attract hidden px-5 py-2 sm:inline-flex">
-            <span className="relative flex size-2" aria-hidden="true">
-              <span className="absolute inline-flex size-full rounded-full bg-night opacity-60 motion-safe:animate-ping" />
-              <span className="relative inline-flex size-2 rounded-full bg-night" />
-            </span>
+          <Link href="/contact" className="btn btn-primary btn-sm hidden sm:inline-flex">
             Hire me
           </Link>
           <button
             type="button"
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-line bg-panel text-xl text-ink lg:hidden"
+            className="grid size-10 shrink-0 place-items-center rounded-lg border border-line text-xl text-ink lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -74,7 +67,7 @@ export function Header({ photo }: { photo?: string }) {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="animate-in border-t border-line lg:hidden">
+        <nav id="mobile-nav" aria-label="Mobile" className="border-t border-line lg:hidden">
           <ul className="container-page flex flex-col py-3">
             {nav.map((item) => (
               <li key={item.href}>
@@ -82,14 +75,14 @@ export function Header({ photo }: { photo?: string }) {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   aria-current={isActive(item.href) ? "page" : undefined}
-                  className="block rounded-xl px-3 py-3 text-base text-muted aria-[current=page]:text-teal"
+                  className="block border-b border-line/60 py-3.5 text-base text-muted aria-[current=page]:text-ink"
                 >
                   {item.label}
                 </Link>
               </li>
             ))}
-            <li className="pt-2">
-              <Link href="/contact" onClick={() => setOpen(false)} className="btn btn-primary btn-attract w-full">
+            <li className="pt-4 pb-2">
+              <Link href="/contact" onClick={() => setOpen(false)} className="btn btn-primary w-full">
                 Hire me
               </Link>
             </li>

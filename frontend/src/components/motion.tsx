@@ -1,36 +1,27 @@
-"use client";
+import type { CSSProperties, ReactNode } from "react";
 
-import { LazyMotion, MotionConfig, domAnimation, m } from "framer-motion";
-import type { ReactNode } from "react";
-
-/** Loads only the small animation feature set, and respects "reduce motion" settings. */
+/** Kept so the layout doesn't change shape; motion no longer needs a client-side provider. */
 export function MotionProvider({ children }: { children: ReactNode }) {
-  return (
-    <LazyMotion features={domAnimation} strict>
-      <MotionConfig reducedMotion="user">{children}</MotionConfig>
-    </LazyMotion>
-  );
+  return <>{children}</>;
 }
 
-/** Subtle fade-up when the element scrolls into view. Never used above the fold. */
+/**
+ * Fade-up as the element scrolls into view, done by the browser with CSS scroll timelines (see .reveal).
+ * No JavaScript: the content is always in the HTML and visible to search engines, and older browsers simply show it.
+ * `delay` (seconds) staggers items in a row.
+ */
 export function Reveal({
   children,
   delay = 0,
-  className,
+  className = "",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
 }) {
   return (
-    <m.div
-      className={className}
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -60px 0px" }}
-      transition={{ duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
-    >
+    <div className={`reveal ${className}`} style={{ "--stagger": `${Math.round(delay * 100)}%` } as CSSProperties}>
       {children}
-    </m.div>
+    </div>
   );
 }

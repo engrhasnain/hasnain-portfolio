@@ -1,0 +1,82 @@
+---
+title: "Client Onboarding Automation with an 11-Step Activation Engine"
+slug: client-onboarding-activation
+type: [Automation, Agents]
+summary: "From a sale on the phone to a live client: 11 gated activation steps, signed approvals, DNS proof before go-live, and client texts that a person must send."
+description: "Client onboarding automation for an agency: an 11-step activation engine with dependency gates, signed approvals, DNS proof and a human-send text outbox."
+stack: [NestJS, TypeScript, PostgreSQL, BullMQ, FastAPI, React, TanStack Query, Zoom API, Google Calendar API]
+results:
+  - "11 activation steps, 0 to 10, each behind its own gate"
+  - "Every approval records who signed, when and on what version"
+  - "Nameserver changes held until DNS records read back"
+  - "No text reaches a client until a person clicks Send"
+status: Live
+featured: false
+order: 19
+date: "2026-07-28"
+art: panel
+preview:
+  window: "activation · live"
+  heading: "New client · card charged"
+  rows:
+    - { label: "Step 0 · charge", value: "collected", tone: ok }
+    - { label: "Service map", value: "approved by owner", tone: ok }
+    - { label: "AI enhancement", value: "waiting on step 5", tone: info }
+    - { label: "DNS copy", value: "read back", tone: ok }
+    - { label: "Client text", value: "draft, not sent", tone: warn }
+  footer: "Nothing reaches a client without a click"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+Selling a contractor on a call is the easy part. Then the agency has to charge the card, book an onboarding call, capture services and service areas, have the AI draft the profile, get the owner's approval, move the website and go live. Each hand-off lived in someone's head. Steps ran out of order, approvals carried no name or date, and nobody could say which clients were stuck.
+
+## What I built
+
+- **Order to charge.** A rep enters the order, even mid-call. The owner gets a text, background checks run (website, Google listing, price, recording disclosure), and the owner charges from one screen. The checks inform and never block. A deal review queue then lists every charged order, and only the owner can approve or hold one.
+- **Event-driven hand-off.** An approved charge writes the order's facts to the client's profile and reads them back, sends the portal invite, creates the Zoom meeting and, if the rep is still on the line, moves the call to the rep. A part that fails raises a card for staff.
+- **A guided onboarding call.** Fixed sections from opener to close. Any stamped part of the recording plays from its own start, and skipping the live check needs a typed reason.
+- **A pure state engine.** 11 steps, from the billing charge (step 0) to fully activated (step 10). Each resolves to Done, In progress, Action needed or Waiting from its evidence and its gates, with no database access of its own, so nothing turns green out of order.
+- **Launch and pause, one or many.** Staff launch or pause one client, a selection or every eligible client, and a daily run dispatches geocoding and AI enhancement for newly eligible clients.
+- **A blocked queue.** A client held up by an unapproved service map gets a dated row that is cleared, never deleted. A digest goes out every morning, even when the queue is empty.
+- **Verification and go-live.** A 14-row page reads every result from live records, from the charge to the CRM link, beside a go-live record with domain decisions and DNS proof.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Order on the call", note: "checks inform, never block" },
+    { label: "Owner charges", note: "billing events fan out" },
+    { label: "Onboarding call", note: "guided and recorded" },
+    { label: "Gated steps", note: "0 to 10, pure engine" },
+    { label: "Owner approval", note: "signed and versioned" },
+    { label: "Go-live", note: "DNS read back first" },
+  ]}
+/>
+
+Billing events drive everything after the charge, so nothing waits on someone remembering the next task. A signal provider reads each step from its own system of record, and the engine turns those facts into states. An approval whose source later changes, such as answers enhanced again, goes stale and asks for re-approval. Payment sits in the rollup too: a fully built client who falls behind on billing is not activated. The live transcript checks behind the call are covered in [live call intelligence](/projects/call-intelligence).
+
+## Built to be trusted
+
+- **Append-only approvals.** Approve and revoke both write an event, and the latest wins. Each approval records who signed, when, on what version and how: call, text, email or portal.
+- **Gates that explain.** A run behind a closed gate is refused with each open step named. An admin can override, and the record keeps which steps were open. Final approval waits until reconciliation flags and owner decisions are cleared.
+- **Seeded data never counts.** Migration and seed events never turn a step green, and approvals from a call count only once the call is stamped and written.
+- **DNS proof first.** If email or other services run on a domain, the nameserver change waits until the copied records read back from the new nameservers, with DMARC, 8 DKIM selectors and 5 mail CNAMEs probed too. The check is stored as proof.
+- **A human-send outbox.** Every client text waits as a draft. A staff member edits it if needed and clicks Send from their own Zoom number, and the first draft is kept beside what was sent.
+
+## By the numbers
+
+- 11 activation steps (0 to 10), checked at startup so a gate can only point to an earlier step
+- 49 API routes for activation, launch control and onboarding, plus 45 in the billing module
+- 4 cron jobs, 9 event listeners and 7 database entities
+- 17 backend spec files and 14 front-end test files
+- 13 billing and onboarding screens, plus a 4-tab activation dashboard
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

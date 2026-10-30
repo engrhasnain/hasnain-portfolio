@@ -1,0 +1,96 @@
+---
+title: "AI Image Library for Contractor Photos, SEO and Publishing"
+slug: ai-image-library
+type: [Models, Automation]
+summary: "An image product that takes contractor job photos from every source, analyses and screens them with Claude and Gemini, fills gaps with AI images and tracks which photos bring leads."
+description: "AI image library for contractor job photos: Claude and Gemini analysis, SEO alt text, privacy screens, AI image generation with QA, and lead tracking."
+stack: [FastAPI, NestJS, PostgreSQL, Claude Vision, Gemini, Pillow, AWS S3, Redis, APScheduler, DataForSEO, React, Model Context Protocol]
+results:
+  - "Two analysis passes: classify first, then SEO filenames and alt text"
+  - "Documents held by a thumbnail check too small to read"
+  - "AI images QA checked, capped and approved by a person"
+  - "135 API routes, 24 tables and 52 tools for Claude"
+status: Live
+featured: true
+order: 6
+date: "2026-08-20"
+art: panel
+preview:
+  window: "image-library · live"
+  heading: "Field app sync · new job photo"
+  rows:
+    - { label: "Near-duplicate", value: "None found", tone: ok }
+    - { label: "Document check", value: "Job photo", tone: ok }
+    - { label: "Work stage", value: "After", tone: info }
+    - { label: "Alt text city", value: "Job city only", tone: ok }
+    - { label: "Lifecycle", value: "Raw to approved", tone: muted }
+  footer: "Published only after it passes the release gate"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+Contractors send their marketing agency a steady stream of job photos from field apps, phones and old websites, with names like IMG_4471.jpg. Someone has to sort them, drop the repeats, write filenames and alt text, and make sure a photo of an invoice or a customer's house number never reaches a website. When a page needs a shot nobody has taken, it gets a stock photo that looks nothing like the client's work. And nobody knows which photos bring in calls.
+
+## What I built
+
+- **One intake for every source.** Housecall Pro, Jobber, Tint Wiz, CompanyCam, Brandfolder, Google Drive, WordPress media, Google Business Profile and texted photos all feed the same ingest, which drops exact copies by SHA-256 hash and matches each photo to its job.
+- **Two analysis passes.** Pass 1 classifies the work, service, work stage, quality, people, privacy and safety flags, and scores 29 placements. Pass 2 writes the SEO filename, alt text and caption. Claude Sonnet is the default, four other Claude and Gemini models can be picked, and bulk runs use batch mode at half the cost of live calls.
+- **Screens before analysis.** A dHash check holds back near-duplicates, and a separate gate checks a 256 pixel thumbnail for invoices, contracts, IDs and other documents.
+- **A file for every destination.** Photos are turned upright, HEIC is converted, and WebP and JPEG copies are cropped around the focal point for 38 destination profiles. Videos get a poster frame. Published copies carry an approximate city and a copyright tag, never the camera's GPS.
+- **AI images, with limits.** Gemini image models fill gaps in batches from a prompt list. Each image is QA checked, stays inside the caps and waits for a person.
+- **Search, rotation and pairs.** Search ranks by lead performance, then placement fit and quality, and records each use so the next pick can differ. Claude proposes before and after pairs for a person to accept, reject or swap.
+- **Lead and gap tracking.** Placements are tied to calls, clicks and form leads, AI answers in Google, ChatGPT, Perplexity and Gemini are checked for the client's pages and images, and a service by city grid shows which photos to ask the contractor for.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Ingest", note: "field apps, Drive, uploads" },
+    { label: "Duplicate and document checks", note: "dHash, 256px thumbnail" },
+    { label: "Pass 1: classify", note: "Claude or Gemini" },
+    { label: "Pass 2: filename + alt text", note: "job city only" },
+    { label: "Release gate", note: "privacy and approval" },
+    { label: "Publish and track", note: "leads per placement" },
+  ]}
+/>
+
+Every photo starts as raw. Code, not the model, works out crop fit, location and publish readiness. Alt text may only name the job's verified city, and text that names the wrong one is retried once, then queued for a person. The portal has a filterable library, quick classify, set-aside review, a before and after queue, rotation and SEO exception queues, generation review and lead reports. Claude does the same work through MCP tools.
+
+## The pipeline
+
+| Stage | What happens |
+|---|---|
+| Ingest | Shared intake, SHA-256 dedupe, provenance stamp, job match |
+| Triage | Optional quick classify with Gemini Flash |
+| Screens | Near-copies marked as duplicates; documents held |
+| Pass 1 | Work, service, stage, quality, people, privacy, placement scores |
+| Pass 2 | SEO filename, alt text up to 125 characters, caption, tags |
+| Derivatives | Upright master, HEIC to JPEG, WebP and JPEG crops |
+| Approval | Raw, approved, live, retired or rejected; raw never jumps to live |
+| Publish | Release gate in the query, each use recorded |
+| Measure | Calls, clicks, form leads and AI citations per placement |
+
+## Built to be trusted
+
+- **Privacy by resolution.** The document gate sees only a thumbnail too small to read, and it fails closed: anything it is unsure of goes to a restricted folder that only an admin can release.
+- **Rules in the query, not the screen.** Documents, screenshots and photos flagged for a readable address or plate are filtered out in the database query of every picker that feeds a published page. Faces and children need a release on record before social or Google Business Profile.
+- **AI images are never proof of work.** They are refused for galleries, case studies, testimonials, Google Business Profile and before and after pairs. Generation starts as a dry run, stops at caps per batch, per client and per month, and pauses itself on errors.
+- **Nothing is overwritten.** A rotated photo is saved beside the untouched original, and revert puts the original back, rebuilds the derivatives and analyses it again.
+- **Read-back and audit.** Lifecycle changes are read back, every generation decision is logged with who made it, and approving a QA failure needs a note.
+
+## By the numbers
+
+- 135 API routes and 123 Python modules for the image library.
+- 24 image tables and 5 scheduled image jobs.
+- 52 MCP tools for Claude that work on images and photos.
+- 49 portal files across 5 image screens.
+- 38 destination profiles and 29 placement scores per photo.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

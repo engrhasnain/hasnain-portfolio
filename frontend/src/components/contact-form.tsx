@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { services } from "@/lib/services";
-import { ArrowRight, Check } from "./icons";
+import { ArrowRight, Check, Mail } from "./icons";
 
 type Status =
   | { state: "idle" }
@@ -47,13 +47,13 @@ export function ContactForm({ email }: { email: string }) {
 
   if (status.state === "sent") {
     return (
-      <div role="status" className="card flex flex-col items-start gap-4 p-8">
-        <span className="grid size-12 place-items-center rounded-full bg-brand text-2xl text-night">
+      <div role="status" className="card-feature flex flex-col items-start gap-4 p-7 sm:p-9">
+        <span className="icon-tile">
           <Check />
         </span>
-        <h2 className="text-2xl">Message sent</h2>
-        <p className="text-muted">{status.message}</p>
-        <button type="button" className="link text-sm" onClick={() => setStatus({ state: "idle" })}>
+        <h2 className="mt-2 text-2xl sm:text-[1.75rem]">Message sent</h2>
+        <p className="leading-relaxed text-ink/70">{status.message}</p>
+        <button type="button" className="btn btn-ghost btn-sm mt-2" onClick={() => setStatus({ state: "idle" })}>
           Send another message
         </button>
       </div>
@@ -63,19 +63,28 @@ export function ContactForm({ email }: { email: string }) {
   const sending = status.state === "sending";
 
   return (
-    <form onSubmit={onSubmit} className="card relative flex flex-col gap-5 p-6 sm:p-8">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className="flex flex-col gap-2 text-sm font-medium">
+    <form onSubmit={onSubmit} className="card-feature flex flex-col gap-5 p-6 sm:p-9">
+      <div className="mb-1 flex items-start gap-4">
+        <span className="icon-tile">
+          <Mail />
+        </span>
+        <div>
+          <h2 className="text-2xl sm:text-[1.75rem]">Send a message</h2>
+          <p className="mt-1 text-sm text-ink/55">A few lines is enough to get started.</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <label className="flex flex-col gap-2 text-sm font-semibold text-ink/85">
           Your name
           <input name="name" required minLength={2} maxLength={100} autoComplete="name" className="field" />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium">
+        <label className="flex flex-col gap-2 text-sm font-semibold text-ink/85">
           Email
           <input name="email" type="email" required autoComplete="email" className="field" />
         </label>
       </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className="flex flex-col gap-2 text-sm font-medium">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <label className="flex flex-col gap-2 text-sm font-semibold text-ink/85">
           Company <span className="sr-only">(optional)</span>
           <input
             name="company"
@@ -85,7 +94,7 @@ export function ContactForm({ email }: { email: string }) {
             className="field"
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium">
+        <label className="flex flex-col gap-2 text-sm font-semibold text-ink/85">
           What do you need?
           <select name="service" defaultValue="" className="field">
             <option value="">Not sure yet</option>
@@ -97,7 +106,7 @@ export function ContactForm({ email }: { email: string }) {
           </select>
         </label>
       </div>
-      <label className="flex flex-col gap-2 text-sm font-medium">
+      <label className="flex flex-col gap-2 text-sm font-semibold text-ink/85">
         What should it do?
         <textarea
           name="message"
@@ -118,11 +127,11 @@ export function ContactForm({ email }: { email: string }) {
         </label>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-1 flex flex-col gap-4 border-t border-white/[0.07] pt-6 sm:flex-row sm:items-center sm:justify-between">
         <button type="submit" disabled={sending} className="btn btn-primary disabled:opacity-60">
           {sending ? "Sending…" : "Send message"} {!sending && <ArrowRight />}
         </button>
-        <p aria-live="polite" className="text-sm text-muted">
+        <p aria-live="polite" className="text-sm text-ink/55">
           {status.state === "error" ? (
             <span className="text-ink">
               {status.message} Email me at{" "}

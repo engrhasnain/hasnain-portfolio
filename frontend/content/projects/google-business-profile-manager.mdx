@@ -1,0 +1,81 @@
+---
+title: "Google Business Profile Manager for Many Client Listings"
+slug: google-business-profile-manager
+type: [SEO, Agents]
+summary: "A backend and console for managing many client Google Business Profiles from verified data, with risk-tiered edits and a read-back that proves each write landed."
+description: "Google Business Profile manager for agencies: risk-tiered edits, review replies, categories and holiday hours, plus a read-back that proves each write landed."
+stack: [FastAPI, PostgreSQL, Google Business Profile APIs, Google Places, Claude, React]
+results:
+  - "160 API routes, 58 service modules and 34 tables"
+  - "Every write read back and logged in two places"
+  - "1 and 2 star reviews always held for a person"
+  - "A console of 44 React components with test mode"
+status: Live
+featured: false
+order: 12
+date: "2026-09-16"
+art: panel
+preview:
+  window: "gbp-console · live"
+  heading: "Holiday hours · fleet run"
+  rows:
+    - { label: "Risk tier", value: "set on server", tone: ok }
+    - { label: "Listing", value: "verified", tone: ok }
+    - { label: "Merge", value: "specialHours only", tone: info }
+    - { label: "API response", value: "200, not proof", tone: warn }
+    - { label: "Read-back", value: "matches", tone: ok }
+  footer: "Old value, new value and read-back logged"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+For a contractor, the Google Business Profile is often the first thing a new customer sees. The agency looks after many of them, and each one needs the right categories, services, hours, photos and review replies. Doing that by hand is slow, and a careless edit can do real damage to a listing. There is a quieter problem too: Google can accept a change and still not show it, so a successful API response is not the same as a correct listing.
+
+## What I built
+
+- **Listing sync and audit.** Each profile is pulled in, compared with the verified business data, and checked for NAP (name, address, phone) consistency.
+- **A category recommender.** It fills at most 9 additional category slots and never pads them with weak matches just to fill the list.
+- **Services, descriptions and photos.** Semantic matching maps the client's real services onto the listing, Claude drafts the business description, and the logo and cover photo are pushed from the same place.
+- **Review-reply automation.** Claude drafts replies to new reviews, and they post on a delay that looks like a person answering, not a script.
+- **Fleet runs.** Holiday hours go out across every listing in one run, and a mislink sweep finds clients connected to the wrong Google listing, for example an unverified listing when a verified one exists in a connected account.
+- **A weekly policy check.** Google's published guidelines and API schema are checked against the console's rules every week, and the result is kept as a dated record. A change becomes a proposal, never an automatic update.
+- **The console.** A React console with a health strip, a listing switcher, pending edits and a push bar, editors for categories, services and service area, AI review replies, photo slots, performance, sync and a full write log.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Verified business data" },
+    { label: "Proposed edit", note: "console or fleet run" },
+    { label: "Risk-tier gate", note: "checked on the server" },
+    { label: "Write to Google", note: "Business Profile APIs" },
+    { label: "Read-back", note: "re-runnable" },
+    { label: "Write log", note: "old, new, who, result" },
+  ]}
+/>
+
+Every change starts from verified data, not from whatever is on the listing today. The server decides whether the edit is allowed, writes it through the Business Information API, then reads the listing back to confirm Google is really showing it. The Account Management and Performance APIs cover access and reporting, and the public Google Places API finds a client's listing before they have granted management access. Test mode and a confirm-before-write step let a person see exactly what will change first.
+
+## Built to be trusted
+
+- **Risk tiers enforced on the server.** A field with no tier gets no action at all, and an unverified listing blocks every push with a message saying why. The same check runs again just before the write.
+- **Read-back that allows for slow changes.** The check after a write can be re-run, so a change Google is still processing is not logged as a false failure.
+- **Careful review replies.** Replies post after a random delay that never lands on a round time. 1 and 2 star reviews are held for a person.
+- **Fleet pushes that touch one thing.** Holiday-hours runs merge only specialHours, and a 200 response is never treated as proof.
+- **Trust that is earned.** A 4-stage capability ladder removes human gates only after the system has proved itself consistent, and every write is logged in two places with the old value, the new value, who made it and the read-back result.
+
+## By the numbers
+
+- 160 API routes and 58 GBP service modules.
+- 34 GBP tables and 7 scheduled jobs.
+- 52 console files and 44 React components.
+- At most 9 additional categories, and a 4-stage capability ladder.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

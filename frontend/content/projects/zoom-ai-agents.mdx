@@ -1,0 +1,97 @@
+---
+title: "Zoom AI Agents for Calls, Meetings, Recordings and SMS"
+slug: zoom-ai-agents
+type: [Agents, Voice]
+summary: "AI agents and integrations across Zoom RTMS, Zoom Phone, Meetings and SMS: live redacted transcripts, call summaries, sales call review and texts from each advisor's own number."
+description: "Zoom AI agents on RTMS, Zoom Phone, Meetings and SMS: live redacted transcripts, call summaries, sales call review and consent-first texts, human approved."
+stack: [FastAPI, NestJS, React, PostgreSQL, Redis, BullMQ, Zoom RTMS, Zoom Meetings API, Zoom Phone API, Claude, AWS S3, Model Context Protocol, Google Calendar API, ffmpeg]
+results:
+  - "Live Zoom transcripts with card numbers redacted as spoken"
+  - "Every recording scanned for card data before storage"
+  - "54 Zoom tools for Claude on the MCP hub"
+  - "Texts sent from each advisor's own Zoom number, consent first"
+status: Live
+featured: true
+order: 3
+date: "2026-06-18"
+art: panel
+preview:
+  window: "zoom-agents · live"
+  heading: "Zoom Phone call · ended"
+  rows:
+    - { label: "Card scan", value: "clean", tone: ok }
+    - { label: "Matched to", value: "lead by phone", tone: info }
+    - { label: "Summary", value: "drafted by Claude", tone: info }
+    - { label: "Disposition", value: "suggested", tone: warn }
+    - { label: "Read-back", value: "verified", tone: ok }
+  footer: "The lead changes only when the advisor confirms"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+The agency runs on Zoom. Advisors call leads on Zoom Phone, sales and onboarding happen in Zoom meetings, and client texts go out from Zoom numbers. The facts sat in recordings nobody had time to replay, and the account's cloud recordings expire within days. Calls also carry risk: clients read card numbers aloud, recording needs consent, and a text sent after a STOP is a real problem.
+
+The onboarding call itself is covered in [Live Call Intelligence](/projects/call-intelligence). This page is the Zoom view: the APIs, the agents and the safety rules.
+
+## What I built
+
+- **Live transcripts over RTMS.** A Zoom Realtime Media Streams consumer opens a signed signaling socket and a transcripts-only media socket, answers keep-alives and reconnects up to 3 times. Card numbers and spoken passwords are redacted before a line is stored.
+- **Zoom Phone calls in the sales CRM.** A signed call-ended webhook wakes a 2-minute poll of Zoom's Call History. Each call is matched to a lead by its E.164 number, and Claude drafts a summary and a suggested disposition.
+- **Connectors for clients' own Zoom Phone.** A client connects its account through a Server-to-Server OAuth app. Credentials are proven before they are saved: a token is minted, write scopes are refused and the users list must answer. A daily sync copies calls, recordings and voicemails to private storage.
+- **Meeting automation.** NestJS creates a client's Zoom room when a charge is approved, through a BullMQ queue with retries. Advisors book and move meetings on the lead owner's own Zoom user, in an IANA timezone and never the server's, and recurring schedules reach Google Calendar as RRULEs.
+- **Texts from each advisor's own number.** Advisors connect their Zoom through user-managed OAuth with a signed state. A text counts as sent only after it reads back from the Zoom thread, and drafts written by a flow wait until a person presses Send.
+- **A recording pipeline Claude can use.** Each day, meeting and phone recordings are copied to private S3, read-only on Zoom, then reindexed and matched to clients through aliases. 54 MCP tools let Claude search and sort recordings, manage the staff roster and contacts, and send texts.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Zoom event", note: "signed webhook, stream or poll" },
+    { label: "Card gate", note: "scanned before storage" },
+    { label: "Private S3 + index", note: "matched to a client" },
+    { label: "Claude agent", note: "proposes with quotes" },
+    { label: "Code checks", note: "quote, time, speaker" },
+    { label: "Person confirms", note: "then read back" },
+  ]}
+/>
+
+Every path starts with a Zoom event: a signed webhook, a live stream, or a poll that re-walks recent days so a late transcript still lands. The card gate runs before anything is stored. Agents read only redacted text and quote what they rely on, code checks each quote and its timestamp, and a person confirms before a lead, order or client record changes.
+
+## Agents on Zoom
+
+| Agent | What it does | Human step |
+| --- | --- | --- |
+| Live coverage checker | Reads the live transcript at most every 45 seconds and shows which onboarding fields are open | Guidance only, writes nothing |
+| Onboarding call reader | Proposes every field with the client's quote; code checks quote, time and speaker | A field closes only on the client's words |
+| Sales call reviewer | Reviews every redacted sales call on an order in one forced tool call; code adds up the score | The owner approves or holds the order |
+| Call summary and disposition | Summarises each advisor call and suggests a disposition and callback number | The advisor taps Confirm |
+| Recording classifier | Sorts recordings into internal, client, sales or external, with a time-aware staff roster | Unclear matches go to a review queue |
+| Call intake reader | Reads each day's redacted client calls, meetings and texts for facts, requests and promises | A reviewer approves item by item |
+| Card frame checker | Checks shared-screen frames after a card is spoken and boxes card fields | Files stay held until a person resolves it |
+| Call findings reader | Pulls short client quotes from calls for marketing content | Each finding waits for approval |
+
+Claude Opus 5 runs the onboarding, review, intake and frame checks, and Claude Sonnet 4.5 writes summaries and findings. The classifier runs in Claude through MCP tools.
+
+## Built to be trusted
+
+- **Consent first.** No part of an onboarding call after the opener starts until the rep confirms the recording disclosure or marks it declined. A declined call is never recorded or processed, and RTMS streams only the onboarding part.
+- **Card data stopped at ingest.** Every recording is scanned before storage with a Luhn check and windows for expiry dates and security codes. On a hit, the audio is toned, video frames are boxed and re-checked, and nothing is released until a person resolves it. If the scanner is down, the recording is held.
+- **Signed, idempotent webhooks.** Every receiver checks Zoom's HMAC-SHA256 signature, meeting events carry a unique idempotency key, and a stream is claimed in the database before it connects.
+- **Guarded texting.** Every text passes the CRM opt-out flag, a STOP list, quiet hours on the recipient's clock and a rate limit. If consent cannot be read, nothing is sent.
+- **Secrets stay out of chats.** Zoom user tokens are encrypted at rest and refresh tokens rotate. Client Zoom Phone secrets go in only through an admin route, never as a tool argument, and Google refresh tokens use AES-256-GCM.
+
+## By the numbers
+
+- 54 Zoom tools for Claude on the MCP hub
+- Over 180 API routes for Zoom work across FastAPI, NestJS and the MCP hub
+- Over 40 database tables and 11 scheduled jobs for Zoom data
+- Over 1,000 automated tests on the Zoom code
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI agent development](/services/ai-agent-development).

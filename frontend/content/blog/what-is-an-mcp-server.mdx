@@ -4,17 +4,23 @@ slug: what-is-an-mcp-server
 summary: "MCP lets Claude and other AI agents use your real systems safely. Here is what an MCP server is, when it is worth building, and when it isn't."
 description: "What an MCP server is in plain words, how it connects Claude and AI agents to your CRM, database and APIs, and when your business actually needs one built."
 date: "2026-10-11"
-updated: "2026-10-19"
+updated: "2026-10-30"
 tags: [MCP, Claude, AI agents]
 cover: "/images/blog/what-is-an-mcp-server/cover.jpg"   # share image (LinkedIn, WhatsApp, Medium)
 coverArt: mcp-server   # the live, animated version shown on the site
 draft: false
 answer: "An MCP server is a small piece of software that connects an AI model such as Claude to one of your systems, like a CRM, database or internal API, through a short list of approved tools. Your business needs one when AI has to work inside those systems again and again, with permissions and logs you control."
 faq:
+  - q: "What is an MCP server used for?"
+    a: "An MCP server lets an AI model such as Claude work inside one of your systems through a short list of approved tools. Typical uses are finding a customer in the CRM, querying a database, reading files, creating a booking or calling an internal API, so the AI answers from live data and only acts where you allow it."
+  - q: "What is MCP in Claude?"
+    a: "MCP is how Claude reaches tools and data outside the chat. In claude.ai, Claude Desktop, the Claude mobile apps and Cowork, people see an MCP server as a connector, added from Anthropic's Connectors Directory or as a custom connector by its URL. Claude Code connects to MCP servers from the command line, and developers can reach them through the Claude API."
+  - q: "What is an MCP connector?"
+    a: "It depends on where you see the word. In the Claude apps, a connector is an MCP server as people see it: you add it, sign in, usually with OAuth, and Claude can then use its tools. In the Claude API, the MCP connector is a beta feature that lets the Messages API use tools on a remote MCP server without you building your own MCP client."
   - q: "Is MCP only for Claude?"
     a: "No. Anthropic created MCP, but it is an open standard. ChatGPT, Gemini, Microsoft Copilot, Cursor and Visual Studio Code support it, and since December 2025 it has been run by the Agentic AI Foundation under the Linux Foundation. One MCP server can serve all of these clients."
-  - q: "Is an MCP server the same as an API?"
-    a: "No. An API is how software talks to your system. An MCP server sits on top of it and describes your system to an AI model as a set of named tools, each with a description and a strict input schema, so the model knows what it can do and the server controls what it is allowed to do."
+  - q: "Is MCP the same as an API?"
+    a: "No. An API is how software talks to one system, and every API has its own rules. MCP is one shared protocol for how AI apps talk to tools. An MCP server usually sits on top of your API and describes it to the model as named tools, each with a description and an input schema, so the model knows what it can do and the server decides what it may do."
   - q: "Is MCP secure?"
     a: "MCP is as secure as the server you build. A good MCP server uses OAuth so each client gets only the access it was granted, checks every input, keeps read and write tools apart, logs every call and asks a person before anything public or hard to undo. A server with one master key and no logs is not secure."
   - q: "Can an MCP server change data, or only read it?"
@@ -28,12 +34,24 @@ sources:
   - publisher: "Anthropic"
     title: "Donating the Model Context Protocol and establishing the Agentic AI Foundation"
     url: "https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation"
+  - publisher: "Model Context Protocol"
+    title: "What is the Model Context Protocol (MCP)?"
+    url: "https://modelcontextprotocol.io/docs/getting-started/intro"
   - publisher: "Model Context Protocol specification"
     title: "Tools"
     url: "https://modelcontextprotocol.io/specification/latest/server/tools"
   - publisher: "Model Context Protocol specification"
     title: "Authorization"
     url: "https://modelcontextprotocol.io/specification/latest/basic/authorization"
+  - publisher: "Claude documentation"
+    title: "Build an MCP server for Claude"
+    url: "https://claude.com/docs/connectors/building"
+  - publisher: "Claude Help Center"
+    title: "Get started with custom connectors using remote MCP"
+    url: "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp"
+  - publisher: "Claude API documentation"
+    title: "MCP connector"
+    url: "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector"
   - publisher: "OWASP GenAI Security Project"
     title: "LLM06:2025 Excessive Agency"
     url: "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
@@ -103,4 +121,4 @@ MCP is for when the AI has to work with your systems again and again, across too
 - Build it with small tools, strict inputs, OAuth, logs, and a person approving anything that can't be undone.
 - If your AI only answers from documents, you probably need RAG instead.
 
-Thinking about connecting Claude to your own systems? Tell me what you want it to do, and I'll tell you honestly whether MCP is the right fit. See [MCP server development](/services#mcp-server), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).
+Thinking about connecting Claude to your own systems? Tell me what you want it to do, and I'll tell you honestly whether MCP is the right fit. See [MCP server development](/services/mcp-server-development), or [book a 30-minute call](https://cal.com/muhammad-hasnain-pirzada/30min).

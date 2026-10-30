@@ -1,0 +1,79 @@
+---
+title: "Hosting MCP Server: Claude Manages Servers, Apps and Security"
+slug: hosting-ops-mcp
+type: [MCP, Automation]
+summary: "An MCP server with 117 tools that lets Claude run servers, apps, backups, staging and malware scans on a managed cloud host, with allowlisted SSH and rate limits."
+description: "Hosting MCP server with 117 Claude tools for servers, apps, backups, staging and malware scans, with allowlisted SSH, tiered rate limits and verified writes."
+stack: [Python, FastMCP, MCP SDK, OAuth 2.1, SSE, asyncssh, Docker]
+results:
+  - "117 Claude tools for a managed cloud host"
+  - "A 28-tool security suite"
+  - "Allowlisted SSH with injection checks"
+  - "320 automated tests"
+status: Live
+featured: false
+order: 23
+date: "2026-10-05"
+art: panel
+preview:
+  window: "hosting-ops · live"
+  heading: "Request · malware scan on a client app"
+  rows:
+    - { label: "Rate tier", value: "write · 60/min", tone: info }
+    - { label: "Scan", value: "started", tone: info }
+    - { label: "Operation", value: "polled · done", tone: ok }
+    - { label: "Infected files", value: "none found", tone: ok }
+  footer: "Result read back from the host"
+cta: "Need something like this for your business? Let's talk."
+fiverr: "https://www.fiverr.com/s/X00B44k"
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+The client websites of a contractor marketing agency run on a managed cloud hosting provider. Day-to-day hosting work meant a dashboard, a lot of clicks and a lot of waiting: restart a server, take a backup, set up staging, check a malware scan, allow an IP. When the AI side of the platform needed to do this work too, it needed tools that are safe to hand to a model, because one wrong command on a live server can take a client site down.
+
+## What I built
+
+- **117 hosting tools.** An MCP server that wraps a managed cloud hosting provider's API, so Claude can work with servers and apps directly.
+- **Servers and apps.** 15 server tools and 19 app tools cover the server lifecycle, settings and scaling, plus app domains, cron and credentials.
+- **A security suite.** 28 tools: 14 for malware scans and file restore, 12 for the firewall and IP or country blocking, and 2 for allow-lists.
+- **Files, SSH and deploys.** 12 tools read and write files, run allowlisted SSH commands and deploy sites.
+- **Backups and staging.** 7 backup tools and 6 staging tools, so a change can be tried on a copy before it reaches the live site.
+- **The rest of the job.** 16 tools for SSL, git, team and projects, 5 for monitoring, 3 for SSH keys, 2 for services and 2 for operation status and identity.
+- **A shared vault.** 2 vault tools keep sites in the credential vault shared with the [WordPress fleet server](/projects/wordpress-fleet-mcp). Passwords are encrypted with the same Fernet scheme, so both servers can read them.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Claude" },
+    { label: "OAuth 2.1", note: "SSE or stdio" },
+    { label: "Rate-limit tier", note: "by risk" },
+    { label: "Safety checks", note: "allowlist + path roots" },
+    { label: "Hosting API or SSH" },
+    { label: "Verify", note: "poll or read back" },
+  ]}
+/>
+
+Remote clients connect over SSE and local ones over stdio, both behind OAuth 2.1. Every tool sits in a rate-limit tier that matches its risk. Calls to the host go through its API with a cached token that is refreshed when the API answers 401, and SSH work runs over asyncssh. Many hosting actions are slow, so they return an operation. The write that started it declares how it is verified: poll the operation until it finishes, or read the result back.
+
+## Built to be trusted
+
+- **Allowlist, not blocklist.** An SSH command runs only if it matches an allowlist. It is also checked for shell-injection tricks, and every file path must stay inside the allowed roots.
+- **Tiered rate limits.** Destructive tools are capped at 10 calls a minute, server lifecycle tools at 20 and writes at 60. SSH is capped at 60 a minute and 1,000 an hour.
+- **Every write declares its proof.** A success message from the host is not treated as proof. Each write says how it is checked, by polling the operation or reading the change back, and where a read-back is cheap the tool does it and reports whether it matched.
+- **Dry run by default.** Two tools default to dry_run=True, so the first call only shows what would happen.
+
+## By the numbers
+
+- 117 tools, including a 28-tool security suite.
+- 4 rate-limit tiers: destructive, server lifecycle, writes and SSH.
+- About 15k lines of Python, built on FastMCP 3.2 and MCP SDK 1.27.
+- 320 test functions.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [MCP server development](/services/mcp-server-development).

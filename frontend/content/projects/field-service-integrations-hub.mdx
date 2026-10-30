@@ -1,0 +1,95 @@
+---
+title: "Field Service Integrations Hub: Jobber, QuickBooks, Sage 50"
+slug: field-service-integrations-hub
+type: [Automation, Agents]
+summary: "Read-only connectors for Housecall Pro, Jobber, QuickBooks, Sage 50 and more, a desktop sync agent with counted receipts, and a workbench that turns job records into projects."
+description: "Field service integrations for an agency: read-only connectors for Housecall Pro, Jobber, QuickBooks and Sage 50 with PII guards and counted receipts."
+stack: [FastAPI, Python, PostgreSQL, APScheduler, Redis, GraphQL, ODBC, NestJS, React, AWS S3, OpenCV, Claude]
+results:
+  - "9 business systems synced, read-only"
+  - "A receipt per batch, counted back from the database"
+  - "Rows with customer contact details refused before they land"
+  - "247 API routes and 18 scheduled sync jobs"
+status: Live
+featured: false
+order: 17
+date: "2026-08-16"
+art: panel
+preview:
+  window: "connectors · live"
+  heading: "Hourly sync · desktop accounting books"
+  rows:
+    - { label: "Batch", value: "received", tone: info }
+    - { label: "Read-back count", value: "matches", tone: ok }
+    - { label: "Phone in job note", value: "row refused", tone: warn }
+    - { label: "Webhook signature", value: "verified", tone: ok }
+    - { label: "Interrupted run", value: "resumes", tone: muted }
+  footer: "Only clean, counted rows land"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+The agency's clients keep their real work in their own tools: jobs in Housecall Pro or Jobber, books in QuickBooks or a desktop copy of Sage 50, photos in CompanyCam, years of estimates in Google Drive. That record is the best proof of what each contractor does and where. Copying it by hand was slow, and every system has its own traps: auth errors that come back as HTTP 200, photo links that expire within the hour, and customer names and phone numbers that must never reach marketing content.
+
+## What I built
+
+- **Read-only connectors.** Each system gets its own client with token refresh, rate limit backoff and sync state, and none of them writes back to the vendor.
+- **A desktop sync agent for Sage 50.** A signed Windows program reads the books through ODBC on the client's own PC every hour and sends them in batches. An interrupted run resumes from its progress file, and every write is an upsert on Sage's internal record key, so a resent batch changes nothing.
+- **A receipt per batch, counted back.** After each batch lands, the server runs a COUNT(*) inside the same transaction and returns it in the receipt. A run fails on a count mismatch, a failed verify pass or any rejected record.
+- **A document extractor.** It reads files the other readers cannot, such as Apple Pages, ClarisWorks and old Mac files with no extension, and finds invoice fields and inspection findings. Each document is sorted as complete, partial, needs AI or empty, and only scans and photos go to Claude.
+- **A project reconciliation workbench.** It gathers job evidence from 12 sources and scores every fragment against a candidate project. Strong matches attach, weaker ones wait as candidates, and a person confirms, rejects or merges.
+- **Data browsers and drill-down analytics.** The portal has a screen for each connector with searchable record tables, a raw record panel and a run log. On the analysis tab, any bar, month, town or number opens the records behind it.
+
+## Connectors
+
+| System | What syncs |
+| --- | --- |
+| Housecall Pro | Customers, jobs, estimates, invoices, employees and job photos |
+| Jobber | Requests, quotes, jobs, line items, notes, attachments and team members |
+| QuickBooks Online | Company info, items, customers, estimates, invoices, sales receipts and payments |
+| Sage 50 | 16 approved tables, from customers and invoices to jobs and purchases |
+| Tint Wiz | Contacts, projects, reviews, film types and uploads |
+| FieldRoutes | 20 record types, reviews included |
+| CompanyCam | Projects and photos, matched to the client's own projects |
+| Zoom Phone | Call history, recordings and voicemails |
+| Google Drive and Sheets | Estimates, invoices, reports and job sheets |
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Vendor API or desktop agent", note: "read-only" },
+    { label: "Connector client", note: "retries + token refresh" },
+    { label: "PII gate", note: "allow-list + shape scan" },
+    { label: "Upsert on the source key", note: "resent data changes nothing" },
+    { label: "Workbench", note: "a person confirms" },
+    { label: "Portal browsers", note: "every number opens its records" },
+  ]}
+/>
+
+Every sync job runs on a schedule behind a Redis lock, so two workers never run the same pull. Housecall Pro and Jobber webhooks are checked against their HMAC signatures, answered at once and processed in the background. Each source reports "not connected" apart from "connected but empty", so a client with no Jobber account never reads as a client with no jobs. Nothing a sync infers, such as a new town or a missing service, goes straight onto a client's profile. It becomes a proposal that a person approves.
+
+## Built to be trusted
+
+- **A PII boundary before the insert.** Jobber queries ask only for allowed fields, an allow-list per entity builds each row, and a scan for the shapes of emails, phones, addresses and card numbers refuses the row. QuickBooks rows pass the same last two gates. A refusal is counted on the run, not hidden.
+- **Sage reads, nothing more.** The agent asks only for approved fields, refuses to send anything that looks like payroll, bank, tax or card data, and the server rejects such a field if it arrives anyway. Secrets sit in Windows DPAPI, unsigned updates are refused, and content work sees only cities, ZIP codes, counts and service mix.
+- **Photos held until screened.** A customer photo stays unpublishable until face and number plate checks clear it, and an exterior shot that might show a house number goes to a person.
+- **Reads that cannot hang the API.** Each document is read in its own child process with a time limit and a memory cap, so one bad file fails alone.
+- **Decisions that stick.** A confirmation a person makes is never undone by the next re-scan, auto-merge is switched off, and every decision is logged.
+
+## By the numbers
+
+- 247 API routes across the connector, extractor and reconciliation modules
+- 18 scheduled sync jobs, from a Drive check every 2 minutes to weekly full syncs
+- 16 approved Sage 50 tables, 5 run types and 13 Sage tools for Claude
+- 12 evidence sources feeding the reconciliation workbench
+- 114 Python test files for these modules
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

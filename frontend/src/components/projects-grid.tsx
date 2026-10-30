@@ -12,7 +12,7 @@ export function ProjectsGrid({ projects }: { projects: ProjectMeta[] }) {
 
   return (
     <div>
-      <div role="group" aria-label="Filter projects by type" className="mb-8 flex flex-wrap gap-2">
+      <div role="group" aria-label="Filter projects by type" className="mb-10 flex flex-wrap gap-2">
         {options.map((option) => {
           const n = option === "All" ? projects.length : count(option);
           if (n === 0) return null; // an empty filter looks unfinished
@@ -23,9 +23,9 @@ export function ProjectsGrid({ projects }: { projects: ProjectMeta[] }) {
               aria-pressed={filter === option}
               disabled={n === 0}
               onClick={() => setFilter(option)}
-              className="rounded-full border border-line bg-panel px-4 py-2 text-sm text-muted transition duration-300 hover:-translate-y-0.5 hover:border-teal/50 hover:text-ink active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 aria-pressed:border-transparent aria-pressed:bg-brand aria-pressed:font-semibold aria-pressed:text-night"
+              className="chip cursor-pointer px-4 py-2 text-sm transition duration-200 hover:border-white/30 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40 aria-pressed:border-teal aria-pressed:bg-teal aria-pressed:text-night"
             >
-              {option} <span className="text-xs opacity-70">{n}</span>
+              {option} <span className="text-xs tabular-nums opacity-60">{n}</span>
             </button>
           );
         })}

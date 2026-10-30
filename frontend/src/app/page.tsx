@@ -1,24 +1,22 @@
 import Link from "next/link";
-import { CardNetwork } from "@/components/card-network";
-import { CountUp } from "@/components/count-up";
+import { EngineerBadge, LogoBand, MarginNote, Scribble } from "@/components/brand";
+import { CoverMock } from "@/components/cover-mocks";
 import { CtaBand } from "@/components/cta-band";
 import { socials } from "@/components/footer";
-import { CoverMock } from "@/components/cover-mocks";
-import { ArrowRight, serviceIcons } from "@/components/icons";
-import { HeroName } from "@/components/hero-name";
-import { HeroPortrait } from "@/components/hero-portrait";
+import { ArrowRight, Calendar, Check, serviceIcons } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { Reveal } from "@/components/motion";
 import { PostCard } from "@/components/post-card";
+import { ProjectCover } from "@/components/project-cover";
+import { ProofTabs, type ProofTab } from "@/components/proof-tabs";
 import { ProjectCard } from "@/components/project-card";
 import { SectionHeading } from "@/components/section-heading";
-import { SystemMap } from "@/components/system-map";
-import { StackOrbit } from "@/components/stack-orbit";
+import { ToolChip } from "@/components/tool-chip";
 import { getPosts, getProjects, toProjectMeta } from "@/lib/content";
-import { personSchema, websiteSchema } from "@/lib/schema";
+import { faqSchema, personSchema, websiteSchema } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 import { services } from "@/lib/services";
-import { flagship, proof, site, stackGroups } from "@/lib/site";
+import { credentials, flagship, proof, site, stackGroups } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: `${site.name} · ${site.jobTitle}`,
@@ -27,70 +25,179 @@ export const metadata = pageMetadata({
   path: "/",
 });
 
+// Every one of these is wired into a system on the projects page.
+const bandTools = [
+  "Claude",
+  "OpenAI",
+  "Gemini",
+  "Retell AI",
+  "WhatsApp",
+  "Meta",
+  "Google",
+  "Zoom",
+  "WordPress",
+  "Elementor",
+  "Twilio",
+  "ElevenLabs",
+  "QuickBooks",
+  "PostgreSQL",
+  "n8n",
+  "AWS",
+];
+
+// Direct answers for search and AI assistants (sent as FAQPage schema too). 40 to 70 words each, facts only.
+const faq = [
+  {
+    q: "Who is Muhammad Hasnain Pirzada?",
+    a: "Muhammad Hasnain Pirzada is a Full Stack AI Engineer and a Registered Engineer with the Pakistan Engineering Council. He builds AI platforms, MCP servers for Claude, RAG chatbots, and WhatsApp and voice agents for businesses, from the user interface to the backend, the AI layer and the cloud it runs on.",
+  },
+  {
+    q: "What can you build for my business?",
+    a: "Six things: a full AI platform or SaaS, an AI chatbot trained on your documents, an MCP server that connects Claude to your systems, an AI agent or n8n automation, a WhatsApp AI assistant, and an AI voice agent that answers your phone. Each one has its own page with what's included.",
+  },
+  {
+    q: "Do you work with businesses in Saudi Arabia and the UAE?",
+    a: "Yes. I work remotely and build assistants that reply in English and Arabic. Pakistan time is 2 hours ahead of Riyadh and 1 hour ahead of Dubai, so our working hours overlap for calls, reviews and launches.",
+  },
+  {
+    q: "How does a project start, and how is it priced?",
+    a: "With a short free call about what the AI should do and what it connects to. After that you get a clear scope, the stack and a fixed quote before any work starts. You see working demos during the build, and at the end it's deployed on your accounts with docs.",
+  },
+  {
+    q: "Can I see real work before hiring you?",
+    a: "Yes. The projects page has case studies for an AI operations platform and the systems inside it, including a voice agent platform, a WordPress MCP server with 201 tools, call intelligence and SEO automation, plus chatbot, WhatsApp and MCP builds.",
+  },
+];
+
+const whyMe = [
+  { title: "Claude and MCP specialist.", text: "I've built 1,180+ MCP tools across three production servers, with auth, rate limits and call logs." },
+  { title: "Fixed scope before code.", text: "You get the plan, the stack and a fixed quote before any work starts." },
+  { title: "English and Arabic.", text: "WhatsApp and voice assistants built to answer customers in both languages." },
+  { title: "Your accounts, your code.", text: "Everything is deployed on your cloud, with docs and a handover, so you own it." },
+  { title: "Built for real customers.", text: "Approval gates, audit logs and a read-back on every write, because people depend on it." },
+  { title: "Gulf working hours.", text: "Pakistan time is 2 hours ahead of Riyadh and 1 hour ahead of Dubai, so our days overlap." },
+];
+
+const steps = [
+  { title: "Understand the job", text: "A short call about what the AI should do, what it connects to, and what must never go wrong." },
+  { title: "Plan and quote", text: "A clear scope, the stack and a fixed quote, agreed before any code is written." },
+  { title: "Build in the open", text: "Working demos early and often, so you see real progress instead of a big reveal." },
+  { title: "Launch and hand over", text: "Deployed on your accounts with docs, logs and a runbook, so your team owns it." },
+];
 
 export default function HomePage() {
-  const featured = getProjects()
-    .filter((p) => p.featured)
-    .slice(0, 3)
-    .map(toProjectMeta);
+  const all = getProjects().map(toProjectMeta);
+  const flagshipProject = all.find((p) => p.layout === "case-study");
+  const featured = all.filter((p) => p.featured && p !== flagshipProject).slice(0, 6);
   const posts = getPosts().slice(0, 3);
+
+  // "See it working": verified facts from each case study, one tab per kind of system.
+  const bySlug = (slug: string) => all.find((p) => p.slug === slug);
+  const proofTabs: ProofTab[] = [
+    {
+      label: "Voice agents",
+      title: "A phone agent that knows who's calling before it picks up",
+      points: [
+        "37 functions the agent can call mid-call, each one signature-checked",
+        "A 4-tier gate decides what each caller gets before the call is answered",
+        "Anything said on a call waits for a person before it changes a record",
+      ],
+      slug: "ai-voice-agent-platform",
+      service: { href: "/services/ai-voice-agent", label: "AI voice agent service" },
+    },
+    {
+      label: "MCP for Claude",
+      title: "Claude running a fleet of WordPress sites, safely",
+      points: [
+        "201 tools for page building, security, schema and migrations",
+        "Two-step execute, and every write says how to read it back",
+        "Part of 1,180+ MCP tools across three production servers",
+      ],
+      slug: "wordpress-fleet-mcp",
+      service: { href: "/services/mcp-server-development", label: "MCP server service" },
+    },
+    {
+      label: "Meta and ads",
+      title: "Meta ads, leads and conversions in one closed loop",
+      points: [
+        "The full Marketing API campaign lifecycle, run through Claude",
+        "Lead Ads webhooks verified, answered at once and synced in the background",
+        "Conversions API events sent once, only after the CRM saves",
+      ],
+      slug: "meta-ads-and-social-automation",
+      service: { href: "/services/ai-agent-development", label: "AI agent service" },
+    },
+    {
+      label: "SEO automation",
+      title: "Google Business Profiles managed from verified data",
+      points: [
+        "Every write is read back from Google before it counts as done",
+        "1 and 2 star reviews are held for a person, never auto-answered",
+        "Risk tiers are enforced on the server: no tier, no action",
+      ],
+      slug: "google-business-profile-manager",
+      service: { href: "/services/ai-agent-development", label: "AI agent service" },
+    },
+    {
+      label: "WhatsApp",
+      title: "Customers answered on WhatsApp in seconds",
+      points: [
+        "Replies come from the business's own information, not guesses",
+        "Complex chats are handed to a person on the team",
+        "A visual n8n workflow the business can adjust without code",
+      ],
+      slug: "whatsapp-ai-chatbot",
+      service: { href: "/services/whatsapp-ai-chatbot", label: "WhatsApp AI service" },
+    },
+  ].flatMap(({ slug, ...t }) => {
+    const project = bySlug(slug);
+    return project ? [{ ...t, project }] : [];
+  });
 
   return (
     <>
-      <JsonLd data={[personSchema(), websiteSchema()]} />
+      <JsonLd data={[personSchema(), websiteSchema(), faqSchema(faq)]} />
 
-      {/* 1. Hero */}
+      {/* Hero */}
       <section className="relative isolate overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-          <div className="animate-aurora absolute -top-56 -right-40 size-[680px] rounded-full bg-[radial-gradient(circle,rgb(94_234_212/0.22),transparent_62%)]" />
-          <div className="animate-aurora absolute top-1/3 -left-56 size-[600px] rounded-full bg-[radial-gradient(circle,rgb(59_130_246/0.22),transparent_62%)] [--d:-9s]" />
-          <div className="absolute inset-0 bg-grid opacity-70 [mask-image:radial-gradient(70%_60%_at_60%_30%,black,transparent)]" />
-        </div>
-
-        <div className="container-page grid items-center gap-14 py-14 sm:py-20 lg:grid-cols-[1fr_auto] lg:gap-24 lg:pt-24 lg:pb-32">
-          <div className="order-2 lg:order-1">
-            <Link
-              href="/contact"
-              className="amber-pill animate-in group inline-flex items-center gap-2 rounded-full border border-amber/40 bg-amber/10 px-3 py-1 text-xs font-semibold text-amber"
-            >
-              <span className="relative flex size-2" aria-hidden="true">
-                <span className="absolute inline-flex size-full rounded-full bg-amber opacity-75 motion-safe:animate-ping" />
-                <span className="relative inline-flex size-2 rounded-full bg-amber" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-50 [mask-image:radial-gradient(70%_70%_at_75%_40%,black,transparent_75%)]"
+        />
+        <div className="container-page grid items-center gap-14 pt-8 pb-16 sm:pt-12 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] lg:gap-10 lg:pt-14 lg:pb-24">
+          <div>
+            <h1 className="animate-in">
+              <span className="block -rotate-2 font-hand text-[2.1rem] leading-none text-teal sm:text-[2.5rem]">
+                Hi, I&apos;m
               </span>
-              Available for projects
-              <ArrowRight className="transition group-hover:translate-x-1" />
-            </Link>
-            <h1 className="animate-in mt-6 [--d:80ms]">
-              <span className="block text-2xl font-bold text-ink sm:text-3xl">Hi, I&apos;m</span>
-              <HeroName name={site.name} />
+              <span className="mt-3 block text-[2.7rem] leading-[1.02] sm:text-[3.8rem] lg:text-[4.3rem]">
+                {site.name}
+              </span>
+              <span className="sr-only">, {site.jobTitle}</span>
             </h1>
-            <ul className="animate-in mt-5 flex flex-wrap gap-2 [--d:160ms]" aria-label="Roles">
-              {site.roles.map((role) => (
-                <li
-                  key={role}
-                  className="rounded-full border border-teal/40 bg-teal/10 px-3 py-1 text-xs font-semibold text-teal sm:text-sm"
-                >
-                  {role}
-                </li>
-              ))}
-            </ul>
-            <p className="animate-in mt-7 max-w-2xl text-2xl leading-snug font-bold text-ink sm:text-[2rem] [--d:240ms]">
-              I build <span className="text-gradient">AI platforms and agents</span> that automate operations for
-              growing businesses.
+            <p className="animate-in mt-7 max-w-2xl text-[1.45rem] leading-snug font-bold text-ink/90 [--d:80ms] sm:text-[1.75rem]">
+              I build AI that answers your calls, replies on WhatsApp and takes the <Scribble onLoad>busywork</Scribble>{" "}
+              off your team.
             </p>
-            <p className="animate-in mt-4 max-w-xl text-base leading-relaxed text-muted sm:text-lg [--d:320ms]">
-              From the screen your team uses to the backend, the AI and the cloud it runs on. I build all of it, end to
-              end.
+            <p className="animate-in mt-5 max-w-xl text-lg leading-relaxed text-ink/70 [--d:140ms]">
+              {site.jobTitle}. Voice agents, MCP servers for Claude, chatbots and full AI platforms, built end to end and
+              running in production.
             </p>
-            <div className="animate-in mt-8 flex flex-col gap-3 sm:flex-row [--d:400ms]">
-              <Link href="/projects" className="btn btn-primary btn-attract">
-                View my work <ArrowRight className="animate-nudge" />
+            <div className="animate-in mt-9 flex flex-col gap-3 [--d:200ms] sm:flex-row">
+              <Link href="/projects" className="btn btn-primary">
+                See my work <ArrowRight />
               </Link>
-              <Link href="/contact" className="btn btn-ghost">
-                Let&apos;s talk
-              </Link>
+              {site.booking ? (
+                <a href={site.booking} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                  <Calendar /> Book a free call
+                </a>
+              ) : (
+                <Link href="/contact" className="btn btn-ghost">
+                  Let&apos;s talk
+                </Link>
+              )}
             </div>
-            <ul className="animate-in mt-8 flex items-center gap-3 [--d:480ms]" aria-label="Profiles">
+            <ul className="animate-in mt-9 flex items-center gap-2.5 [--d:260ms]" aria-label="Profiles">
               {socials.map(({ label, href, Icon }) => (
                 <li key={label}>
                   <a
@@ -99,7 +206,7 @@ export default function HomePage() {
                     rel="me noopener noreferrer"
                     aria-label={label}
                     title={label}
-                    className="grid size-11 place-items-center rounded-full border border-line bg-panel text-lg text-muted transition duration-300 hover:-translate-y-1 hover:border-teal/60 hover:text-teal hover:shadow-[0_0_24px_-6px_rgb(94_234_212/0.7)]"
+                    className="grid size-11 place-items-center rounded-full border border-white/10 text-lg text-ink/70 transition hover:-translate-y-0.5 hover:border-teal/50 hover:text-teal"
                   >
                     <Icon />
                   </a>
@@ -107,111 +214,95 @@ export default function HomePage() {
               ))}
             </ul>
           </div>
-          <div className="animate-pop order-1 justify-self-center [--d:120ms] lg:order-2">
-            <HeroPortrait />
+
+          <div className="animate-in relative [--d:120ms]">
+            <EngineerBadge
+              role={site.jobTitle}
+              credential={credentials[0] ? `${credentials[0].title} · ${credentials[0].issuer}` : undefined}
+            />
+            <MarginNote className="top-28 -left-2 hidden xl:flex" arrowClass="rotate-[8deg]">
+              that&apos;s me
+            </MarginNote>
+            <MarginNote className="-bottom-16 -left-4 hidden xl:flex" arrowClass="rotate-[35deg]">
+              29 real systems below
+            </MarginNote>
           </div>
         </div>
       </section>
 
-      {/* 2. Proof strip: all from the AI Operations Platform */}
-      <section aria-label="Highlights" className="relative border-y border-line bg-panel">
-        <dl className="container-page grid grid-cols-2 gap-y-10 pt-12 pb-8 md:grid-cols-4 md:divide-x md:divide-line">
-          {proof.map((item, i) => (
-            <Reveal key={item.label} delay={i * 0.08} className="flex flex-col items-center gap-1 px-2 text-center">
-              <dt className="order-2 font-mono text-[11px] tracking-[0.16em] text-muted uppercase">{item.label}</dt>
-              <dd className="order-1 text-4xl font-extrabold tracking-tight sm:text-5xl">
-                <span className="text-gradient">
-                  <CountUp value={item.value} />
-                </span>
-              </dd>
-            </Reveal>
-          ))}
-        </dl>
-        <p className="container-page pb-10 text-center text-sm text-muted">
-          All from one AI operations platform I built.{" "}
-          <Link href={flagship} className="link font-semibold">
-            Read the case study <ArrowRight />
-          </Link>
+      {/* Tools I connect AI to */}
+      <section aria-label="Tools I build with" className="pb-16 sm:pb-20">
+        <p className="container-page mb-6 text-center font-hand text-[1.5rem] leading-none font-bold text-ink/55">
+          wired into the tools businesses already use
         </p>
+        <LogoBand tools={bandTools} />
       </section>
 
-      {/* How it fits together */}
-      <section className="cv-auto section relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(50%_60%_at_50%_55%,rgb(59_130_246/0.1),transparent_70%)]"
-        />
-        <div className="container-page">
-          <SectionHeading
-            eyebrow="How it fits together"
-            title={
-              <>
-                Your data in. <span className="text-gradient">Useful AI out.</span>
-              </>
-            }
-            intro="I connect the model to the data and tools your business already has, then put it where your team and customers already are."
-          />
-          <SystemMap />
+      {/* Numbers */}
+      <section aria-label="Highlights" className="border-y border-white/[0.07] bg-white/[0.015]">
+        <div className="container-page py-12 sm:py-14">
+          <dl className="grid grid-cols-2 gap-y-10 lg:grid-cols-4">
+            {proof.map((item, i) => (
+              <div
+                key={item.label}
+                className={`flex flex-col ${i % 2 === 1 ? "border-l border-white/[0.08] pl-6 sm:pl-10" : ""} ${
+                  i === 2 ? "lg:border-l lg:pl-10" : ""
+                } ${i > 0 ? "lg:border-l lg:border-white/[0.08] lg:pl-10" : ""}`}
+              >
+                <dt className="order-2 mt-2 text-sm text-ink/60">{item.label}</dt>
+                <dd className="order-1 text-[2.4rem] leading-none font-extrabold tracking-[-0.045em] sm:text-[3.2rem]">
+                  {item.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-9 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink/60">
+            <span className="font-hand text-[1.35rem] leading-none font-bold text-teal">counted straight from the code</span>
+            in one AI operations platform: two backends, a React portal and three MCP servers.
+            <Link href={flagship} className="link font-bold">
+              Read the case study <ArrowRight />
+            </Link>
+          </p>
         </div>
       </section>
 
-      {/* 3. Featured projects */}
-      <section className="cv-auto section container-page">
-        <SectionHeading
-          eyebrow="Featured work"
-          title="Production AI, not demos"
-          intro="A few systems I've built end to end: the model and retrieval logic, the integrations, and the app people actually use."
-          action={{ href: "/projects", label: "All projects" }}
-        />
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((project, i) => (
-            <li key={project.slug}>
-              <Reveal delay={i * 0.08} className="h-full">
-                <ProjectCard project={project} />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* 4. Services */}
-      <section className="cv-auto section border-t border-line">
+      {/* Services */}
+      <section className="cv-auto section border-t border-white/[0.06]">
         <div className="container-page">
           <SectionHeading
             eyebrow="Services"
-            title="What I can build for you"
-            action={{ href: "/services", label: "All services" }}
+            title={
+              <>
+                What I can <Scribble>build</Scribble> for you
+              </>
+            }
+            intro="Six services, each with its own clear scope and a fixed quote before any work starts. Every one ends with a system your team owns."
+            action={{ href: "/services", label: "Compare all services" }}
           />
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service, i) => {
               const Icon = serviceIcons[service.icon];
-              if (service.icon === "Platform") {
+              if (i === 0) {
+                // The big tile: the full platform service, with a live preview of a platform console.
                 return (
-                  <li key={service.slug} className="sm:col-span-2">
+                  <li key={service.slug} className="sm:col-span-2 lg:row-span-2">
                     <Reveal className="h-full">
                       <Link
-                        href={`/services#${service.slug}`}
-                        className="group card card-hover relative isolate grid h-full gap-6 overflow-hidden border-teal/30 p-6 sm:grid-cols-[1fr_1.15fr] sm:items-center"
+                        href={`/services/${service.slug}`}
+                        className="group card-feature card-hover flex h-full flex-col overflow-hidden"
                       >
-                        <div
-                          aria-hidden="true"
-                          className="absolute inset-0 -z-10 bg-[radial-gradient(70%_90%_at_100%_0%,rgb(94_234_212/0.14),transparent_70%)]"
-                        />
-                        <div className="flex flex-col gap-3">
-                          <span className="fx-icon grid size-11 place-items-center rounded-xl bg-brand text-xl text-night shadow-[0_0_24px_-6px_rgb(94_234_212/0.7)]">
+                        <div className="p-7 sm:p-8">
+                          <span className="icon-tile">
                             <Icon />
                           </span>
-                          <h3 className="text-xl">{service.title}</h3>
-                          <p className="text-sm leading-relaxed text-muted">{service.oneLiner}</p>
-                          <span className="inline-flex items-center gap-1 pt-2 text-sm font-semibold text-teal">
-                            What&apos;s included <ArrowRight className="transition group-hover:translate-x-1" />
+                          <h3 className="mt-6 text-2xl sm:text-[1.75rem]">{service.title}</h3>
+                          <p className="mt-2.5 max-w-lg text-[0.98rem] leading-relaxed text-ink/70">{service.oneLiner}</p>
+                          <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-teal">
+                            Learn more <ArrowRight className="transition-transform group-hover:translate-x-1" />
                           </span>
                         </div>
-                        <div
-                          aria-hidden="true"
-                          className="cover-host tilt-host relative aspect-[16/10] overflow-hidden rounded-2xl border border-line bg-night"
-                        >
-                          <div className="absolute inset-0 bg-grid opacity-60" />
+                        <div className="cover-host tilt-host relative mt-auto aspect-[16/8] min-h-[220px] overflow-hidden border-t border-white/[0.07] bg-[radial-gradient(70%_90%_at_80%_0%,rgb(94_234_212/0.16),transparent_65%)]">
+                          <div className="absolute inset-0 bg-dots opacity-50" />
                           <CoverMock art="platform" />
                         </div>
                       </Link>
@@ -221,85 +312,202 @@ export default function HomePage() {
               }
               return (
                 <li key={service.slug}>
-                  <Reveal delay={i * 0.05} className="h-full">
+                  <Reveal delay={(i % 3) * 0.06} className="h-full">
                     <Link
-                      href={`/services#${service.slug}`}
-                      className="group card card-hover flex h-full flex-col gap-3 overflow-hidden p-6"
+                      href={`/services/${service.slug}`}
+                      className="group card card-hover flex h-full flex-col p-7"
                     >
-                      <CardNetwork seed={i + 60} />
-                      <span className="fx-icon grid size-11 place-items-center rounded-xl border border-teal/30 bg-night/70 text-xl text-teal group-hover:border-teal/70">
+                      <span className="icon-tile">
                         <Icon />
                       </span>
-                      <h3 className="text-lg">{service.title}</h3>
-                      <p className="text-sm leading-relaxed text-muted">{service.oneLiner}</p>
-                      <span className="mt-auto inline-flex items-center gap-1 pt-2 text-sm font-semibold text-teal">
-                        What&apos;s included <ArrowRight className="transition group-hover:translate-x-1" />
+                      <h3 className="mt-6 text-xl">{service.title}</h3>
+                      <p className="mt-2.5 text-[0.95rem] leading-relaxed text-ink/70">{service.oneLiner}</p>
+                      <span className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-bold text-teal">
+                        Learn more <ArrowRight className="transition-transform group-hover:translate-x-1" />
                       </span>
                     </Link>
                   </Reveal>
                 </li>
               );
             })}
-            <li className="lg:col-span-2">
-              <Reveal delay={services.length * 0.05} className="h-full">
-                <Link
-                  href="/contact"
-                  className="group card card-hover relative isolate flex h-full flex-col gap-3 overflow-hidden border-teal/30 p-6"
-                >
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 -z-10 bg-[radial-gradient(90%_90%_at_100%_0%,rgb(94_234_212/0.16),transparent_70%)]"
-                  />
-                  <CardNetwork seed={99} />
-                  <h3 className="text-lg">Not sure what you need?</h3>
-                  <p className="text-sm leading-relaxed text-muted">
-                    Tell me the problem. I&apos;ll tell you honestly which of these fits, or if none of them do.
-                  </p>
-                  <span className="mt-auto inline-flex items-center gap-1 pt-2 text-sm font-semibold text-teal">
-                    Let&apos;s talk <ArrowRight className="transition group-hover:translate-x-1" />
-                  </span>
-                </Link>
-              </Reveal>
-            </li>
           </ul>
         </div>
       </section>
 
-      {/* 5. Stack */}
-      <section className="cv-auto section relative overflow-hidden border-t border-line">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(45%_60%_at_75%_50%,rgb(94_234_212/0.08),transparent_70%)]"
-        />
+      {/* See it working */}
+      {proofTabs.length > 0 ? (
+        <section className="cv-auto section border-t border-white/[0.06]">
+          <div className="container-page">
+            <SectionHeading
+              eyebrow="See it working"
+              title={
+                <>
+                  Real systems, running
+                </>
+              }
+              intro="Pick a kind of system to see what it does and the facts behind it. Every number here was counted in the code."
+            />
+            <ProofTabs tabs={proofTabs} />
+          </div>
+        </section>
+      ) : null}
+
+      {/* Featured work */}
+      <section className="cv-auto section border-t border-white/[0.06]">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Stack"
-            title={
-              <>
-                Tools I ship with, <span className="text-gradient">model to cloud</span>
-              </>
-            }
-            intro="Three rings around the AI: the models, the tools that connect them to real work, and the stack that ships it."
+            eyebrow="Selected work"
+            title="Systems I have built and shipped"
+            intro="Systems I've built end to end: the model and retrieval logic, the integrations, the safety checks, and the app people actually use."
+            action={{ href: "/projects", label: "See all projects" }}
           />
+          {flagshipProject ? (
+            <Reveal className="mb-6">
+              <Link
+                href={`/projects/${flagshipProject.slug}`}
+                className="group card-feature card-hover grid overflow-hidden lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]"
+              >
+                <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.07] lg:aspect-auto lg:min-h-[400px] lg:border-r lg:border-b-0">
+                  <ProjectCover project={flagshipProject} large />
+                </div>
+                <div className="flex flex-col p-7 sm:p-10">
+                  <p className="eyebrow">Flagship case study</p>
+                  <h3 className="mt-3 text-2xl leading-tight transition-colors group-hover:text-teal sm:text-[2rem]">
+                    {flagshipProject.title}
+                  </h3>
+                  <p className="mt-4 leading-relaxed text-ink/75">{flagshipProject.summary}</p>
+                  <ul className="mt-6 space-y-2.5">
+                    {flagshipProject.results.slice(0, 4).map((r) => (
+                      <li key={r} className="flex gap-2.5 text-sm text-ink/85">
+                        <Check className="mt-0.5 shrink-0 text-teal" /> {r}
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-8 text-sm font-bold text-teal">
+                    Read the full case study <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+          ) : null}
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((project, i) => (
+              <li key={project.slug}>
+                <Reveal delay={(i % 3) * 0.06} className="h-full">
+                  <ProjectCard project={project} />
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Why work with me */}
+      <section className="cv-auto section border-t border-white/[0.06]">
+        <div className="container-page">
           <Reveal>
-            <StackOrbit groups={stackGroups} />
+            <div className="brackets relative border border-white/[0.07] bg-[#0d1430]/80 px-6 py-12 sm:px-12 sm:py-16">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+                <div>
+                  <p className="eyebrow">Why work with me</p>
+                  <h2 className="mt-4 text-[2.2rem] sm:text-5xl">
+                    What you can <Scribble>count on</Scribble>
+                  </h2>
+                  <p className="mt-5 max-w-sm leading-relaxed text-ink/70">
+                    The model is the easy part. Approvals, logs, permissions and the boring safety checks are where I spend my time.
+                  </p>
+                </div>
+                <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+                  {whyMe.map((item, i) => (
+                    <li key={item.title} className="flex gap-4">
+                      <span className="mt-0.5 font-extrabold text-teal tabular-nums">0{i + 1}</span>
+                      <p className="leading-relaxed text-ink/75">
+                        <strong className="block text-[1.05rem] text-ink">{item.title}</strong>
+                        {item.text}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      {/* 6. Latest posts */}
+      {/* How I work: the one light, paper section */}
+      <section className="paper cv-auto section">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow="how I work"
+            title="From first call to a system you own"
+            intro="You see it working early, you can change your mind along the way, and at the end you get everything needed to run it yourself."
+          />
+          <ol className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step, i) => (
+              <li key={step.title} className="relative">
+                <Reveal delay={i * 0.07}>
+                  <span className="block font-hand text-[3.4rem] leading-none font-bold text-teal">{i + 1}.</span>
+                  <h3 className="mt-3 text-xl">{step.title}</h3>
+                  <p className="mt-2.5 leading-relaxed text-ink/70">{step.text}</p>
+                </Reveal>
+                {i < steps.length - 1 ? (
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 80 30"
+                    className="absolute top-5 -right-9 hidden h-7 w-16 text-teal/70 lg:block"
+                  >
+                    <path d="M2 18 C 22 4, 48 4, 70 16" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" />
+                    <path d="M60 9 L 71 16 L 60 22" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Stack */}
+      <section className="cv-auto section border-t border-white/[0.06]">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow="Stack"
+            title="Tools I ship with, model to cloud"
+            intro="The right model for each job, the tools that connect it to real work, and the stack that ships it."
+          />
+          <Reveal>
+            <div className="card grid divide-y divide-white/[0.07] lg:grid-cols-[0.8fr_1fr_1.5fr] lg:divide-x lg:divide-y-0">
+              {stackGroups.map((group) => (
+                <div key={group.label} className="p-7 sm:p-8">
+                  <h3 className="meta">{group.label}</h3>
+                  <p className="mt-2 text-sm text-ink/70">{group.note}</p>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {group.tools.map((tool) => (
+                      <li key={tool}>
+                        <ToolChip name={tool} size="sm" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Writing */}
       {posts.length > 0 ? (
-        <section className="cv-auto section border-t border-line">
+        <section className="cv-auto section border-t border-white/[0.06]">
           <div className="container-page">
             <SectionHeading
               eyebrow="Writing"
-              title="Latest posts"
-              action={{ href: "/blog", label: "All posts" }}
+              title="Notes from building AI in production"
+              intro="Practical posts on AI agents, MCP, RAG and voice AI, with a source for every claim."
+              action={{ href: "/blog", label: "Read the blog" }}
             />
             <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {posts.map((post, i) => (
                 <li key={post.slug}>
-                  <Reveal delay={i * 0.08} className="h-full">
+                  <Reveal delay={i * 0.06} className="h-full">
                     <PostCard post={post} />
                   </Reveal>
                 </li>
@@ -309,9 +517,31 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      {/* 7. CTA */}
+      {/* Questions */}
+      <section aria-labelledby="home-faq" className="cv-auto section border-t border-white/[0.06]">
+        <div className="container-page grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
+          <Reveal>
+            <p className="eyebrow">Questions</p>
+            <h2 id="home-faq" className="mt-4 text-[2.2rem] sm:text-5xl lg:text-[3.4rem]">
+              Straight answers
+            </h2>
+            <p className="mt-5 max-w-sm text-base leading-relaxed text-ink/70">
+              The things people usually ask before we start. Anything else, just ask on a call.
+            </p>
+          </Reveal>
+          <dl className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+            {faq.map(({ q, a }) => (
+              <div key={q} className="py-6">
+                <dt className="text-lg font-bold text-ink">{q}</dt>
+                <dd className="mt-2.5 leading-7 text-ink/75">{a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       <CtaBand
-        title="Want AI working inside your business? Let's talk."
+        title="Want AI working inside your business?"
         text="Tell me what you want it to do, and I'll tell you honestly what will work."
       />
     </>

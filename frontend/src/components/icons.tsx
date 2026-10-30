@@ -190,6 +190,9 @@ export const typeIcons: Record<ProjectType, ComponentType<IconProps>> = {
   Voice: Phone,
   WhatsApp: MessageCircle,
   Models: Cpu,
+  // Globe and Zap are declared further down, so these resolve them when rendered.
+  SEO: (p: IconProps) => <Globe {...p} />,
+  Automation: (p: IconProps) => <Zap {...p} />,
 };
 
 export const WhatsApp = MessageCircle;

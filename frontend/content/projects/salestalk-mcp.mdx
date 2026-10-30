@@ -3,7 +3,7 @@ title: "SalesTalk MCP: Chat with Your Sales Database in Claude"
 slug: salestalk-mcp
 type: [MCP, Agents]
 summary: "A custom MCP server that lets Claude answer sales questions in plain English from a live PostgreSQL database, read-only by design."
-description: "SalesTalk MCP by Muhammad Hasnain Pirzada: a read-only Model Context Protocol server that connects Claude to a PostgreSQL sales database, with six purpose-built tools and layered safety."
+description: "SalesTalk MCP by Muhammad Hasnain Pirzada: a read-only MCP server that lets Claude answer sales questions in plain English from a live PostgreSQL database."
 stack: [Python, MCP SDK, PostgreSQL, Docker, Starlette]
 results:
   - "Plain-English questions answered from live data in under a second"
@@ -11,7 +11,7 @@ results:
   - "Write and delete attempts refused by several independent safety layers"
 status: Live
 featured: true
-order: 5
+order: 7
 date: "2026-10-11"
 cover: ""
 art: salestalk     # animated SalesTalk mockup (see components/cover-mocks.tsx)
@@ -54,4 +54,4 @@ A custom **MCP server** (Model Context Protocol, the standard way to give Claude
 - Every number can be traced to the exact tool call that produced it.
 - The same pattern connects Claude to your own database, CRM, ERP or internal API, with read-only access by default.
 
-Want Claude connected to your own system? See the [MCP server service](/services#mcp-server).
+Want Claude connected to your own system? See the [MCP server service](/services/mcp-server-development).

@@ -1,0 +1,80 @@
+---
+title: "Client Self-Service Portal with AI Intake Forms and Form Builder"
+slug: client-portal-form-builder
+type: [Automation, Chatbots]
+summary: "A self-service portal where contractors fill AI-assisted intake forms, check AI drafts from a texted link and connect their accounts without ever seeing a stored secret."
+description: "A client self-service portal with AI-assisted intake forms, a drag-and-drop form builder, owner review by texted link and a vault that never shows secrets."
+stack: [React, TypeScript, TanStack Query, NestJS, Socket.IO, FastAPI, PostgreSQL, Claude, Fernet]
+results:
+  - "53 form API routes and 2 live progress channels"
+  - "Owners approve, edit or strike each AI section from a phone"
+  - "3 credential stores in one list, secrets never shown"
+  - "Admins see the exact client page in a read-only preview"
+status: Live
+featured: false
+order: 20
+date: "2026-07-20"
+art: panel
+preview:
+  window: "client-portal · live"
+  heading: "Owner review · opened from a text"
+  rows:
+    - { label: "Your own words", value: "approved", tone: ok }
+    - { label: "AI-added line", value: "edited by owner", tone: info }
+    - { label: "Contradicted", value: "struck", tone: warn }
+    - { label: "Form progress", value: "streaming live", tone: info }
+    - { label: "Directory login", value: "in vault, hidden", tone: muted }
+  footer: "Every decision saved and read back"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+To build a contractor's website and content, the agency needs a lot from the owner: services, guarantees, logos, and logins for directories and software. Forms went back and forth by email, AI drafts were hard for a busy owner to check, and logins arrived in plain text messages. When a client called with a question, staff could not see the page the client was looking at.
+
+## What I built
+
+- **A client dashboard.** A setup card counts "X of Y done" over only what applies to the client's plan, split into what the agency needs and what it handles. A master record card checks the Google Business Profile name, address and phone against what is on file. Admins open the same page as a read-only "view as client" preview.
+- **AI-assisted intake forms.** Claude drafts or improves the client's answers. Progress streams over Socket.IO one question at a time, and a refresh mid-run replays the current state.
+- **A form builder for staff.** Drag-and-drop ordering, 7 question types, sections, per-form user access, and CSV import and export. Each answer has approve, unapprove, approve all, and refine with Claude from a typed instruction.
+- **Source labels on every answer.** Client, staff, AI, a blend, the client's website or their Zoom call. Website and call drafts stay drafts until the client confirms them.
+- **Owner review by text link.** A phone-first page opened from a texted link. Each line is tagged as the client's words, AI-added, contradicted or written by staff, and a tap shows its source. The owner approves, edits or strikes each section that holds an AI-added or contradicted line.
+- **Connection pages without secrets.** Profiles, software and social pages show what the agency can reach and how. A profile is confirmed as the client's before any login is asked for.
+- **A unified credential vault.** One page per client merges platform connections, vaulted logins and API keys, and WordPress application passwords, deduplicated and grouped by state: connected, connection issues, available to connect.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Client portal", note: "only what applies" },
+    { label: "AI-assisted form", note: "live progress over sockets" },
+    { label: "Texted review link", note: "drafted, sent by staff" },
+    { label: "Owner decides", note: "approve, edit, strike" },
+    { label: "Saved and read back" },
+  ]}
+/>
+
+Staff build the form, the client fills it in the portal, and Claude works in the background while the page shows each question as it lands. The review link is drafted into the same client text outbox used in [onboarding](/projects/client-onboarding-activation), and a person sends it. When the owner decides a section, the page shows the record as the server read it back. A decision blocked by an open reconciliation flag is not saved, and the page says so.
+
+## Built to be trusted
+
+- **Secrets never reach the screen.** The vault list masks secrets on the server, and the edit panel only knows whether a password is on file and when it was set. A client who sends a login sees only that it arrived. Secrets are encrypted with Fernet, and each change writes its history line in the same transaction.
+- **Server-side validation.** Answers are untrusted input, with length caps and type checks on the server. Markdown left in AI output is stripped before saving.
+- **Authenticated live channels.** Each progress socket checks the JWT on connect and joins one room per form group.
+- **Some fields take only the client's words.** Ownership fields such as family-owned or veteran-owned are set only on a stamped onboarding call and are read-only on every form. For a new client, only confirmed answers are enhanced.
+- **A real-action gate.** Buttons that write to a live Google Business Profile or run across every client open a dialog that says what will change and what cannot be undone.
+
+## By the numbers
+
+- 53 API routes across 7 form controllers, with 6 database entities, 2 Socket.IO channels and 14 backend spec files
+- 13 credential vault routes behind one list built from 3 stores
+- 7 question types and 7 answer source labels
+- 6 client portal routes and 5 form builder routes, across 131 front-end files
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

@@ -1,0 +1,96 @@
+---
+title: "Meta Ads and Social Automation with the Marketing API"
+slug: meta-ads-and-social-automation
+type: [Automation, MCP]
+summary: "One Meta layer for a marketing agency: the full campaign lifecycle, Lead Ads intake, Conversions API events, and Facebook and Instagram publishing, with every spend change guarded."
+description: "Meta ads and social automation on the Marketing API: campaigns, Lead Ads, Conversions API, Facebook and Instagram publishing, and 113 guarded Claude tools."
+stack: [FastAPI, PostgreSQL, Redis, Meta Marketing API, Meta Graph API, Meta Conversions API, Instagram Graph API, Claude, Python MCP, React]
+results:
+  - "Full campaign lifecycle on Marketing API v26.0"
+  - "113 Claude tools generated from one manifest"
+  - "New ads start paused; spend increases wait for approval"
+  - "Conversion events sent once, after the CRM commits"
+status: Live
+featured: true
+order: 4
+date: "2026-08-24"
+art: panel
+preview:
+  window: "meta-ads · live"
+  heading: "Budget change · ad set"
+  rows:
+    - { label: "Risk class", value: "Spend up", tone: warn }
+    - { label: "Dry run", value: "Exact request shown", tone: muted }
+    - { label: "Cap check", value: "Under monthly cap", tone: ok }
+    - { label: "Approval", value: "Waiting for a person", tone: info }
+  footer: "Every approved write is read back from Meta"
+cta: "Need something like this for your business? Let's talk."
+fiverr: "https://www.fiverr.com/s/X00B44k"
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A contractor marketing agency runs Facebook and Instagram for many client businesses: ads, lead forms, posts, comments and messages. Done by hand in Ads Manager, the work is slow and easy to get wrong. Meta counts budgets in cents, so one value in the wrong unit is a hundred times off. Leads wait inside Meta instead of reaching the CRM, Meta never learns which leads became paying jobs, and one expired token can quietly stop everything.
+
+## What I built
+
+- **The full campaign lifecycle.** Campaigns, ad sets, ads and creatives can be created, copied, updated, paused and archived, with image and chunked video uploads, ad previews and Meta's own change history.
+- **Targeting and audiences.** Location, interest and behaviour search, reach estimates, website, engagement and lookalike audiences, and past-customer lists that are normalized and SHA-256 hashed before upload.
+- **Insights and reporting.** A nightly sync of yesterday plus the prior 7 days, because Meta restates attribution, asynchronous reports for long ranges, a cost-per-lead report, and recommendations written as proposals, never run.
+- **Lead Ads intake.** A signed leadgen webhook, lead form creation and replacement, and a nightly sync for every connected client, so no lead ages out of Meta's 90-day window.
+- **Conversions API events.** When a lead becomes an appointment or a sale, a Schedule or Purchase event goes to the client's dataset with hashed identifiers and Meta's lead id. Paid jobs in a client's own job records are matched too.
+- **Facebook and Instagram publishing.** 13 post formats: text, link, photo, album, video, reel and two story types on Facebook, and image, reel, two story types and carousel on Instagram, plus edits, deletes and Page profile updates.
+- **One inbox and follower tracking.** Comments, messages, mentions and reviews land in one store, tagged lead, question, praise, complaint or spam, with a reply draft from Claude. A fixed rule marks price and quote questions as leads whatever the model says.
+
+## What it covers
+
+| API area | What the system does |
+| --- | --- |
+| Marketing API (v26.0) | Campaigns, ad sets, ads, creatives, media, rules, split tests, insights |
+| Lead Ads | Webhook, lead retrieval, form create and replace, nightly sync |
+| Conversions API | Schedule and Purchase events with hashed user data and lead id |
+| Audiences | Website, engagement, lookalike and hashed customer lists |
+| Pages API | Posts, reels, stories, edits, profile, comments, messages, reviews |
+| Instagram Graph API | Container publishing, carousels, comments, messages, insights |
+| Threads API | Text and image posts, 60-day token refresh |
+| Business Manager | System User token, asset discovery, partner access requests |
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Claude calls a tool", note: "113, from one manifest" },
+    { label: "Risk class", note: "spend up, down, neutral, delete" },
+    { label: "Caps and ceilings", note: "monthly projection" },
+    { label: "Approval if needed" },
+    { label: "Write to Meta", note: "change row first" },
+    { label: "Read back and compare" },
+  ]}
+/>
+
+Every write goes through one engine. It compares the request with what Meta holds now and gives the change a risk class. Raising a budget, widening an audience, extending an end date or turning something on counts as spend up, and an unknown current value is treated as spend up too. The engine projects the client's monthly spend and refuses a change that would pass the cap. It records the change before calling Meta, so a crash can be reconciled later, then reads the object back. Each night a drift check re-reads the ad objects in batches of 50 and flags edits made by hand in Ads Manager.
+
+## Built to be trusted
+
+- **Paused by default.** Campaigns, ad sets and ads are always created paused, and going live needs an explicit confirm. Deletes always wait for a person. Spend increases wait too, unless they fall under a client's own auto-approve limit.
+- **Approvals bound to content.** A post, reply or Page edit is sent only if its approval matches the exact payload by hash. Each publish carries an idempotency key and is read back.
+- **Money in one place.** Meta takes budgets in cents, and one module does every conversion. Budget changes on a non-USD account are refused. Updates support dry runs and return each field's before and after.
+- **Conversions sent once.** Events go out after the CRM commits, are deduplicated by event id and are stamped on the lead. Lead field data never enters the tool call log.
+- **A careful stop flag.** Meta calls stop only when a live token check says the System User token is invalid. Rate limits are tracked from Meta's usage headers, and a timed-out write is checked, never blindly re-sent.
+
+## By the numbers
+
+- 113 Claude tools: 69 ad tools and 44 page and social tools, over an ads engine of 91 operations.
+- 20 Meta tables: 16 for ads and 4 for social publishing.
+- 16 scheduled jobs: 7 ads jobs behind a flag, 5 social jobs, 3 Lead Ads jobs and a Threads token refresh.
+- 9 health checks on the operations wall, from token health to API version sunset.
+- 675 automated test functions across the ads, social and MCP layers.
+
+How leads are worked once they land: [speed-to-lead CRM](/projects/speed-to-lead-crm). How posts are chosen and checked: [social media automation](/projects/social-media-automation).
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [MCP server development](/services/mcp-server-development).

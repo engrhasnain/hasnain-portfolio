@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Caveat, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import { Footer } from "@/components/footer";
@@ -7,17 +7,24 @@ import { Header } from "@/components/header";
 import { Interactions } from "@/components/interactions";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { MotionProvider } from "@/components/motion";
-import { Spotlight } from "@/components/spotlight";
 import { publicFileExists } from "@/lib/public-file";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-// Inter with the optical-size axis: large headings render as "Inter Display".
-const inter = Inter({
+// One family for everything: Plus Jakarta Sans, heavy and tight for headings, calm for body text.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
-  axes: ["opsz"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+// A handwriting face for margin notes and labels: the "engineer's notebook" touch.
+const caveat = Caveat({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-caveat",
+  weight: ["500", "700"],
 });
 
 const verificationOther: Record<string, string> = {};
@@ -62,7 +69,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${jakarta.variable} ${caveat.variable}`}>
       <body className="min-h-dvh bg-night font-sans text-ink antialiased">
         <a
           href="#main"
@@ -70,16 +77,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <div
-          aria-hidden="true"
-          className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-50 h-[3px] bg-brand"
-        />
         <Header photo={publicFileExists(site.photo) ? site.photo : undefined} />
         <MotionProvider>
           <main id="main">{children}</main>
         </MotionProvider>
         <Footer />
-        <Spotlight />
         <Interactions />
         <WhatsAppFloat />
         {/* The analytics script only exists on Vercel deployments. */}

@@ -7,7 +7,7 @@ export function Avatar({
   className = "size-44",
   sizes = "176px",
   priority = false,
-  ring = "bg-brand p-[3px] shadow-[0_0_60px_-10px_rgb(94_234_212/0.45)]",
+  ring = "bg-line p-[2px]",
 }: {
   className?: string;
   sizes?: string;
@@ -34,7 +34,7 @@ export function Avatar({
             aria-label={site.name}
             className="grid size-full place-items-center bg-[radial-gradient(circle_at_30%_20%,rgb(94_234_212/0.25),transparent_60%)] text-5xl font-extrabold"
           >
-            <span className="text-gradient">{site.initials}</span>
+            <span className="text-teal">{site.initials}</span>
           </div>
         )}
       </div>

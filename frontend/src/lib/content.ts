@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { cache } from "react";
 import matter from "gray-matter";
-import { PROJECT_TYPES, type PostMeta, type ProjectMeta, type ProjectType } from "./types";
+import { PROJECT_TYPES, type PostMeta, type ProjectMeta, type ProjectPreview, type ProjectType } from "./types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
 
@@ -56,6 +56,25 @@ function records(entry: Entry, key: string, keys: string[]): Record<string, stri
   });
 }
 
+const TONES = ["ok", "info", "warn", "muted"] as const;
+
+/** The panel cover from frontmatter `preview`: { window, heading?, rows: [{label, value, tone?}], footer? }. */
+function preview(entry: Entry): ProjectPreview | undefined {
+  const value = entry.data.preview as Record<string, unknown> | undefined;
+  if (!value) return undefined;
+  const window = text(value.window);
+  if (!window || !Array.isArray(value.rows)) throw new Error(`${entry.file}: preview needs "window" and a "rows" list`);
+  const rows = value.rows.map((item, i) => {
+    const row = (item ?? {}) as Record<string, unknown>;
+    const label = text(row.label);
+    const val = text(row.value);
+    if (!label || !val) throw new Error(`${entry.file}: preview.rows[${i}] needs "label" and "value"`);
+    const tone = TONES.find((t) => t === row.tone);
+    return { label, value: val, ...(tone ? { tone } : {}) };
+  });
+  return { window, heading: text(value.heading), rows, footer: text(value.footer) };
+}
+
 function isoDate(entry: Entry, key: string): string | undefined {
   const value = entry.data[key];
   if (value instanceof Date) return value.toISOString().slice(0, 10);
@@ -85,6 +104,7 @@ export const getProjects = cache((): Project[] =>
         date: isoDate(entry, "date") ?? "2026-01-01",
         cover: text(entry.data.cover),
         art: text(entry.data.art),
+        preview: preview(entry),
         layout: entry.data.layout === "case-study" ? "case-study" : undefined,
         cta: text(entry.data.cta),
         video: text(entry.data.video),
@@ -118,6 +138,7 @@ export const getPosts = cache((): Post[] =>
       return {
         slug: entry.slug,
         title: required(entry, "title"),
+        seoTitle: text(entry.data.seoTitle),
         summary,
         description: text(entry.data.description) ?? summary,
         date,

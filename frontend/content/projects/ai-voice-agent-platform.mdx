@@ -1,0 +1,100 @@
+---
+title: "AI Voice Agent Platform on Retell AI with QA and Human Review"
+slug: ai-voice-agent-platform
+type: [Voice, Agents]
+summary: "Retell AI voice agents for a contractor marketing agency: 37 live-call functions, a 4-tier inbound gate, dialers, 101 control tools for Claude, and changes a person approves."
+description: "AI voice agent platform on Retell AI: 37 mid-call functions, a 4-tier inbound gate, 101 Retell tools for Claude, and post-call changes a person approves."
+stack: [NestJS, TypeScript, PostgreSQL, BullMQ, Redis, Retell AI, Claude, OpenAI embeddings, ElevenLabs, FastAPI, FastMCP, React]
+results:
+  - "37 functions the agent can call during a live call"
+  - "4-tier inbound gate that picks the agent before pickup"
+  - "101 Retell tools for Claude, from campaigns to QA"
+  - "Name, address and phone changes never auto-applied"
+status: Live
+featured: true
+order: 2
+date: "2026-10-20"
+art: panel
+preview:
+  window: "voice-agent · live"
+  heading: "Inbound call · verified owner"
+  rows:
+    - { label: "Gate", value: "tier 1 · full agent", tone: ok }
+    - { label: "Pre-call brief", value: "loaded", tone: ok }
+    - { label: "Callback", value: "booked", tone: info }
+    - { label: "Address change", value: "queued for review", tone: warn }
+    - { label: "Webhook", value: "signature verified", tone: ok }
+  footer: "Identity changes wait for a person"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+The agency has to reach its client businesses by phone all the time: to confirm profile details, walk through a services list, book a callback, or get a yes before something goes live. Doing every call by hand does not scale. A voice bot that writes whatever it hears into a client's record is worse, because one misheard address spreads into listings and websites. The agency needed agents that hold a real call, and a person who still decides what changes.
+
+## What I built
+
+- **A function layer for live calls.** The agents can call 37 signed functions: 7 read the call context, 3 confirm who is calling, 5 save what was said, 6 edit the service area and services list, 9 run the profile approval call, 4 run content and project calls, and 3 book callbacks, hand off or queue a listing fix.
+- **A 4-tier inbound gate.** Before the agent speaks, the caller gets the full agent, a limited agent that can only check authority and book a callback, a static message with no LLM, or a decline.
+- **Callback and reconnect dialers.** Booked calls dial from BullMQ queues, and an approval call that has to stop is redialed within seconds and resumes at the next unconfirmed block.
+- **Post-call reconciliation.** Captured answers become proposed changes, and OpenAI embeddings match each spoken field name to the right profile field.
+- **A Retell control plane for Claude.** A Python MCP server gives Claude 101 Retell tools for campaigns, script edits and tests, live calls, knowledge bases, QA and alerts, and account and number admin.
+- **Brand voice text to speech.** Five more tools speak text in each client's ElevenLabs voice, with word timing, cached renders and character caps.
+- **A voice operations console.** An 11-tab React console covers calls, review, agent settings, prompts, functions, numbers and the gate, plus a calendar to schedule calls.
+
+## What it covers
+
+| Area | What the system does |
+| --- | --- |
+| Agents and versions | Creates, duplicates and versions agents. An edit to a live agent lands in a new draft, and publishing is a separate step. |
+| Prompt and model | Edits the prompt, opening line, model, tools and MCP servers. The agent's identity is injected per call, apart from the task. |
+| Voice and timing | 23 agent options, from voice, speed and emotion to interruption sensitivity, backchannel words and silence limits. |
+| Knowledge bases | Creates knowledge bases and adds sources, such as client briefs, for mid-call lookup. |
+| Phone numbers | Finds, buys and imports numbers, binds agents to them, and files caller ID and branded-call applications. |
+| Inbound routing | The 4-tier gate, a phone roster verified on real calls, a blocklist that expires, and a dry run that writes nothing. |
+| Outbound and campaigns | Single, batch and scheduled calls, each checked for consent and calling hours before it dials. |
+| Live call control | Stops a call at once, or updates its variables and injects context mid-call. |
+| Webhooks | Call started, ended and analyzed plus four transfer events, each signature-checked and stored once. |
+| Testing | Test web calls, simulated conversations and batch test runs before a publish. |
+| Analysis and QA | Reruns call analysis, scores calls, and runs cohorts, dashboards and alert rules. |
+| Consent | Do-not-call and consent gates, 8am to 9pm local calling hours, and a recording disclosure set by state. |
+| Retries | Approval and content calls get 2 attempts two hours apart, other callbacks 3 attempts five minutes apart. |
+| Cost and latency | Each call's cost logged exactly once, plus SMS and Claude spend, and p50, p95 and max latency per function. |
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Call starts", note: "4-tier gate or dialer" },
+    { label: "Retell AI agent", note: "37 signed functions" },
+    { label: "Signed webhook", note: "stored once" },
+    { label: "Reconciliation", note: "embeddings match fields" },
+    { label: "Human review", note: "accept, reject or queue" },
+  ]}
+/>
+
+On an inbound call, the gate picks the agent before pickup. I designed it to fail toward the cheap, safe option: if the gate itself errors, the caller gets the static agent with no LLM. During the call, the agent opens with a short brief of past calls and open promises, fetches long lists one block at a time, and saves answers as it goes. A booked callback returns a line to read word for word. When the call ends, Retell AI sends signed webhooks, and reconciliation compares the answers with what is on file. The differences reach review as proposed changes, not edits.
+
+## Built to be trusted
+
+- **Signed, idempotent webhooks.** Webhooks and function calls are checked with HMAC-SHA256 and a five-minute replay window, and each event is stored first so a repeat is skipped.
+- **Claims are checked in code.** If the agent logs a call as approved but the approval function never recorded it, the outcome is downgraded and the team is alerted.
+- **Identity data stays with people.** Name, address and phone changes go to a listing queue, weak answers go to review, and nothing from reconciliation applies until a person accepts it.
+- **Two-step confirm for Claude.** Tools that spend money or change config return a preview and a one-time token tied to the exact arguments, while stopping a live call needs no confirm.
+- **Guarded promises.** A number is verified only when the owner confirms it on a call, and any promise to access a client's customer data is flagged for compliance review.
+
+## By the numbers
+
+- 98 HTTP routes (93 NestJS, 5 FastAPI), including the 37 mid-call functions
+- 22 database entities, 30 migrations, 3 cron jobs and 4 BullMQ queue workers
+- 101 Retell tools for Claude, 47 flagged destructive, plus 5 text-to-speech tools
+- 30 spec files with over 450 test cases
+- An 11-tab voice console and a 4-tab call intake review
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI voice agent](/services/ai-voice-agent).

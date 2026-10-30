@@ -1,0 +1,80 @@
+---
+title: "Local SEO Content Engine for Service and Location Pages"
+slug: local-seo-content-engine
+type: [SEO, Agents]
+summary: "A local SEO system that decides which service and location pages a contractor site needs, what each page targets, and how to keep pages from competing for the same keywords."
+description: "A local SEO content engine that plans service and location pages from keyword data, gives every search intent one page, and stops pages competing to rank."
+stack: [FastAPI, PostgreSQL, DataForSEO, Cohere, Claude, Google Search Console, NestJS]
+results:
+  - "122 API routes and 17 data models in the Python backend"
+  - "Every keyword cluster routed to one place on the site, or filtered out"
+  - "Regional wording checked in 3 layers before it reaches a page"
+  - "Service list approved by text or email, parsed without guessing"
+status: Live
+featured: false
+order: 13
+date: "2026-09-28"
+art: panel
+preview:
+  window: "seo-planner · live"
+  heading: "Keyword run · approved service map"
+  rows:
+    - { label: "Seed terms", value: "simplified", tone: ok }
+    - { label: "Clusters", value: "merged by SERP", tone: info }
+    - { label: "Routing", value: "page, FAQ or H2", tone: info }
+    - { label: "Overlap found", value: "301 suggested", tone: warn }
+    - { label: "Cost ceiling", value: "within limit", tone: ok }
+  footer: "One search intent, one page"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A local service business needs the right set of pages: one for each service it really offers, and pages for the towns it covers. Get it wrong and the site misses searches people make, or ends up with several pages chasing the same keyword so none of them rank well. The agency was making these calls by hand for every client business, from long keyword exports. The regional wording was easy to miss too, because the same service is often called something different from one area to the next.
+
+## What I built
+
+- **A keyword pipeline bounded by a service map.** An LLM simplifies the seed terms, DataForSEO returns keywords and questions, Cohere clusters them, and clusters with overlapping search results are merged because they share an intent.
+- **A router for every cluster.** Each cluster goes to a service page, a blog topic, an FAQ, an H2 section on an existing page, or it is filtered out, so no keyword is left without an owner.
+- **A navigation builder.** Services are scored on client priority, search volume and how rankable they are, weighted 40, 35 and 25, with a boost for services that already rank near the top in Search Console.
+- **Regional wording checks.** The terms a page uses are checked in three layers: competitor search results, Search Console and People Also Ask, and the language customers use in their reviews.
+- **A cannibalization detector.** When two pages compete for the same terms, it recommends a 301 redirect instead of leaving both pages to split the rankings.
+- **A landing-page system.** New pages pass an eligibility gate and a near-duplicate gate. An approval dial moves from full review to sample review to exceptions only as a client's batches come back clean, but the owner always approves the wording. It also records how pages appear in Google's AI Overviews and AI Mode.
+- **Service taxonomy approval.** A set of NestJS modules sends the proposed service list to the client by text or email and records the answer.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Service map", note: "approved by the client" },
+    { label: "Keyword research", note: "DataForSEO + Cohere" },
+    { label: "Intent merge", note: "SERP overlap" },
+    { label: "Router", note: "page, blog, FAQ or H2" },
+    { label: "Pages and navigation", note: "gated and approved" },
+  ]}
+/>
+
+Everything starts from the approved service map, so research never drifts into services the business does not offer. Keywords are gathered, grouped and merged by intent, then sent to the one place on the site that should own them. The navigation and the landing pages are built from that routing, and the cannibalization detector keeps checking that pages stay apart as the site grows.
+
+## Built to be trusted
+
+- **Triage on wording.** Each regional term gets a confidence level. When the three layers disagree, the term goes to a person instead of the system picking one.
+- **A kill switch that checks itself.** Switching a page off is not taken on trust: the system re-fetches each page to confirm it has stopped serving.
+- **Pruning that only flags.** Pages with no impressions are flagged for merging into the nearest suitable page. Nothing is deleted automatically.
+- **Approvals that cannot drift.** The last approved version of the service list is saved in the same transaction as the approval. A partial "yes" is parsed without guessing, and LLM suggestions only propose values. They never write approved fields.
+- **A cost ceiling.** Each run is checked against a ceiling before it starts, and again as real costs come in.
+
+## By the numbers
+
+- 122 API routes in the Python backend: keyword 33, navigation 30, landing pages 43, topical map 6, map approval 5, linking 3, city research 2.
+- 17 ORM models behind those routes.
+- 78 routes and 14 entities across 4 NestJS modules for service taxonomy approval.
+- Navigation scoring weighted 40, 35 and 25 across priority, volume and rankability.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

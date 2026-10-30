@@ -7,48 +7,8 @@ import type { CSSProperties, ReactNode } from "react";
 
 const TEAL = "#5EEAD4";
 const EMERALD = "#34D399";
-const greenText = "bg-[linear-gradient(90deg,#5EEAD4,#34D399)] bg-clip-text text-transparent";
-const greenTile = "bg-[linear-gradient(135deg,#5EEAD4,#34D399)] text-night shadow-[0_0_3em_-0.6em_rgb(52_211_153/0.85)]";
-
-function CoverNetwork({ seed = 7 }: { seed?: number }) {
-  let s = seed;
-  const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
-  const nodes = Array.from({ length: 30 }, () => ({ x: rnd() * 1200, y: rnd() * 630, r: 1.5 + rnd() * 2.2, emerald: rnd() < 0.45 }));
-  const links: [number, number, number][] = [];
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-      if (d < 150) links.push([i, j, d]);
-    }
-  }
-  return (
-    <svg viewBox="0 0 1200 630" preserveAspectRatio="none" className="absolute inset-0 size-full">
-      {links.map(([i, j, d]) => (
-        <line
-          key={`${i}-${j}`}
-          x1={nodes[i].x}
-          y1={nodes[i].y}
-          x2={nodes[j].x}
-          y2={nodes[j].y}
-          stroke={TEAL}
-          strokeOpacity={((1 - d / 150) * 0.32).toFixed(2)}
-          strokeWidth="1"
-        />
-      ))}
-      {nodes.map((n, i) => (
-        <circle
-          key={i}
-          cx={n.x}
-          cy={n.y}
-          r={n.r}
-          fill={n.emerald ? EMERALD : TEAL}
-          className="net-node"
-          style={{ "--d": `${(i * 0.37) % 3.2}s` } as CSSProperties}
-        />
-      ))}
-    </svg>
-  );
-}
+const greenText = "text-teal";
+const greenTile = "bg-teal/12 text-teal ring-[0.12em] ring-teal/30";
 
 /** Shared layout: eyebrow, title and subtitle on the left, the author at the bottom, a tilted card on the right. */
 function CoverLayout({
@@ -56,25 +16,49 @@ function CoverLayout({
   title,
   subtitle,
   seed,
+  compact = false,
   children,
 }: {
   eyebrow: string;
   title: ReactNode;
   subtitle: string;
   seed: number;
+  compact?: boolean;
   children: ReactNode;
 }) {
+  if (compact) {
+    // Same panel as the project covers: navy, one soft teal light, a dot grid, and the product card in the middle.
+    return (
+      <div
+        aria-hidden="true"
+        className="cover-host tilt-host relative aspect-[16/10] w-full overflow-hidden bg-[#0d1430]"
+        style={{
+          backgroundImage:
+            "radial-gradient(70% 90% at 85% 0%, rgb(94 234 212 / 0.18), transparent 65%), radial-gradient(60% 70% at 0% 100%, rgb(94 234 212 / 0.07), transparent 70%)",
+        }}
+      >
+        <div className="absolute inset-0 bg-dots opacity-50 [mask-image:linear-gradient(180deg,black,transparent_85%)]" />
+        <div className="post-cover-compact absolute inset-0 grid place-items-center">
+          <div className="w-[43em]">
+            <div className="tilt">
+              <div className="agent-card rounded-[2.2em] border border-white/10 bg-[linear-gradient(180deg,rgb(20_32_58/0.96),rgb(15_23_46/0.96))] p-[2.6em] pb-[2.2em] shadow-[0_3em_8em_-3em_rgb(0_0_0/0.9)]">
+                {children}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div aria-hidden="true" className="cover-host relative aspect-[1200/630] w-full overflow-hidden bg-night">
       <div className="post-cover-root absolute inset-0">
-        <div className="absolute -top-[48%] -right-[22%] aspect-square w-[63%] rounded-full bg-[radial-gradient(circle,rgb(94_234_212/0.24),transparent_62%)]" />
-        <div className="absolute -bottom-[57%] -left-[25%] aspect-square w-[58%] rounded-full bg-[radial-gradient(circle,rgb(52_211_153/0.2),transparent_62%)]" />
-        <div className="absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(70%_70%_at_60%_40%,black,transparent)]" />
-        <CoverNetwork seed={seed} />
+        <div className="absolute -top-[48%] -right-[22%] aspect-square w-[63%] rounded-full bg-[radial-gradient(circle,rgb(94_234_212/0.16),transparent_62%)]" />
+                <div className="absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(70%_70%_at_60%_40%,black,transparent)]" />
+        <div className="absolute inset-0 bg-dots opacity-40 [mask-image:linear-gradient(180deg,black,transparent_85%)]" />
 
         <div className="absolute top-[6.2em] left-[6.4em] w-[60em]">
-          <p className="flex items-center gap-[0.9em] font-mono text-[1.5em] tracking-[0.22em] text-teal uppercase">
-            <span className="h-[0.14em] w-[2.3em] bg-[linear-gradient(90deg,#5EEAD4,#34D399)]" />
+          <p className="flex items-center gap-[0.9em] text-[1.4em] font-extrabold tracking-[0.16em] text-teal uppercase">
             {eyebrow}
           </p>
           <p className="mt-[0.46em] text-[5.6em] leading-[1.04] font-extrabold tracking-[-0.035em] text-ink">{title}</p>
@@ -86,7 +70,7 @@ function CoverLayout({
           <img
             src="/images/hasnain.jpg"
             alt=""
-            className="size-[4.6em] rounded-full bg-[linear-gradient(135deg,#5EEAD4,#34D399)] object-cover p-[0.2em]"
+            className="size-[4.6em] rounded-full bg-teal/60 object-cover p-[0.15em]"
           />
           <span>
             <span className="block text-[1.7em] font-bold text-ink">Muhammad Hasnain Pirzada</span>
@@ -97,7 +81,7 @@ function CoverLayout({
         {/* the card: tilted, straightens when you hover the cover */}
         <div className="absolute top-[9.2em] right-[5.8em] w-[43em]">
           <div className="tilt">
-            <div className="agent-card rounded-[2.2em] border border-white/10 bg-[linear-gradient(180deg,rgb(20_38_58/0.95),rgb(16_28_44/0.95))] p-[2.6em] pb-[2.2em] shadow-[0_3em_8em_-3em_rgb(0_0_0/0.9),0_0_6em_-2em_rgb(52_211_153/0.4)] transition-shadow duration-700">
+            <div className="agent-card rounded-[2.2em] border border-white/10 bg-[linear-gradient(180deg,rgb(20_32_58/0.96),rgb(15_23_46/0.96))] p-[2.6em] pb-[2.2em] shadow-[0_3em_8em_-3em_rgb(0_0_0/0.9)] transition-shadow duration-700">
               {children}
             </div>
           </div>
@@ -123,7 +107,7 @@ function CardHeader({ icon, label, name, status }: { icon: ReactNode; label: str
       </div>
       <span className="flex items-center gap-[0.4em] rounded-full border border-emerald-400/45 bg-emerald-400/10 px-[0.85em] py-[0.38em] text-[1.3em] font-semibold text-emerald-300">
         <span className="relative flex size-[0.55em]">
-          <span className="absolute inline-flex size-full rounded-full bg-emerald-300 opacity-75 motion-safe:animate-ping" />
+          <span className="absolute inline-flex size-full rounded-full bg-emerald-300 opacity-75" />
           <span className="relative inline-flex size-[0.55em] rounded-full bg-emerald-300" />
         </span>
         {status}
@@ -138,9 +122,10 @@ const waitChip = "border-amber/50 bg-amber/10 text-amber";
 const noChip = "border-rose-400/50 bg-rose-400/10 text-rose-400";
 
 /** "Your AI Agent Needs a Job Description Before It Gets Access" */
-function AgentIdCover() {
+function AgentIdCover({ compact = false }: { compact?: boolean }) {
   return (
     <CoverLayout
+      compact={compact}
       seed={7}
       eyebrow="AI agents · MCP · AI security"
       title={
@@ -192,9 +177,10 @@ const tools = [
 ];
 
 /** "What Is an MCP Server, and Does Your Business Need One?" */
-function McpServerCover() {
+function McpServerCover({ compact = false }: { compact?: boolean }) {
   return (
     <CoverLayout
+      compact={compact}
       seed={19}
       eyebrow="MCP · Claude · AI agents"
       title={
@@ -236,9 +222,10 @@ function McpServerCover() {
 }
 
 /** "How I Build RAG Chatbots That Don't Make Things Up" */
-function RagChatbotCover() {
+function RagChatbotCover({ compact = false }: { compact?: boolean }) {
   return (
     <CoverLayout
+      compact={compact}
       seed={31}
       eyebrow="RAG · Claude · AI security"
       title={
@@ -287,9 +274,10 @@ function RagChatbotCover() {
 const wave = [0.35, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.85, 0.55, 0.3, 0.75, 0.95, 0.45, 0.65, 0.3, 0.8, 0.5, 0.7, 0.35, 0.55];
 
 /** "Your Voice AI Hears "Martin" When Your Customer Says "Mardan"" */
-function VoiceNamesCover() {
+function VoiceNamesCover({ compact = false }: { compact?: boolean }) {
   return (
     <CoverLayout
+      compact={compact}
       seed={43}
       eyebrow="Voice AI · Speech recognition"
       title={
@@ -349,7 +337,8 @@ export function hasPostCover(art: string | undefined): art is CoverArt {
   return !!art && art in covers;
 }
 
-export function PostCover({ art }: { art: CoverArt }) {
+/** `compact` is the card version: just the product card on the site's tinted panel, since the card already shows the title. */
+export function PostCover({ art, compact = false }: { art: CoverArt; compact?: boolean }) {
   const Cover = covers[art];
-  return <Cover />;
+  return <Cover compact={compact} />;
 }
