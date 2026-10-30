@@ -1,15 +1,15 @@
 ---
-title: "AI Social Media Automation for Contractor Businesses"
+title: "AI Social Media Automation with Event Triggers for Contractors"
 slug: social-media-automation
 type: [Automation, Agents]
-summary: "A social media system that picks what to post from seven live signals, checks every caption with six guards, publishes to five platforms and answers Nextdoor leads."
-description: "AI social media automation that picks topics from 7 live signals, checks every caption with 6 content guards and publishes to 5 platforms with approval tiers."
-stack: [FastAPI, PostgreSQL, Claude, Meta Graph API, LinkedIn API, Pinterest API, Threads API, Playwright, Twilio, React]
+summary: "A social media system that picks posts from seven live signals and from weather, storm, trend and holiday events, checks every caption with six guards and publishes to five platforms."
+description: "AI social media automation that turns weather, storms, search trends and holidays into posts, checks every caption with 6 guards and publishes to 5 platforms."
+stack: [FastAPI, PostgreSQL, Claude, Meta Graph API, LinkedIn API, Pinterest API, Threads API, Playwright, Twilio, React, NWS API, NOAA NCEI, Google Trends, APScheduler]
 results:
-  - "A 7-signal engine decides what each client posts"
+  - "A 7-signal engine and a 10-stage event pipeline decide what to post"
+  - "A fixed kill-list runs first and the AI cannot overrule it"
   - "6 content guards check every caption before it can go out"
-  - "5 platforms: Facebook, Instagram, LinkedIn, Pinterest, Threads"
-  - "Nextdoor leads answered in the owner's voice, alerts capped at 2"
+  - "5 platforms, and Nextdoor leads answered in the owner's voice"
 status: Live
 featured: false
 order: 16
@@ -24,6 +24,8 @@ preview:
     - { label: "Approval", value: "Exception review", tone: muted }
     - { label: "Platforms", value: "Facebook, Instagram", tone: info }
   footer: "Nothing is scheduled until all six guards pass"
+coverStat: { value: "105", label: "API routes" }
+coverNote: "all six guards must pass"
 cta: "Need something like this for your business? Let's talk."
 fiverr: ""
 cover: ""
@@ -35,45 +37,48 @@ demo: ""
 
 ## The problem
 
-A contractor marketing agency posts to social media for many client businesses at once. For each roofer or plumber, someone has to decide what to post this week, write it, check it and publish it on several platforms. Done by hand, posts go out late or generic, and one wrong claim or a competitor's name in a caption can cost a client trust. Leads that arrive on Nextdoor wait hours for a reply, and by then the neighbour has called someone else.
+A contractor marketing agency posts to social media for many client businesses at once. For each roofer or plumber, someone has to decide what to post this week, write it, check it and publish it on several platforms. Real-world events change what people need: a hard freeze brings burst pipes, a hailstorm brings roof checks, and a holiday changes when people book. A post about it a week later is no use, and a post that jumps on the wrong event, like a storm that hurt people, is worse than no post at all. One wrong claim or a competitor's name in a caption can cost a client trust. Leads that arrive on Nextdoor wait hours for a reply, and by then the neighbour has called someone else.
 
 ## What I built
 
 - **A decision engine.** It scores seven signals for each client: Google Trends, weather, local news, seasonal timing, Search Console performance, engagement history and days since the last post. One strong signal, or two supporting ones, triggers a post.
+- **An event engine with arming rules.** Separate adapters read National Weather Service forecasts, NOAA NCEI storm records, Google Trends and holiday calendars, and turn each one into a common trigger. A source is armed for a client only when its feed fits the client's type of business, one of the client's approved services matches a signal the source sends, and the client has a service area for local signals.
+- **A 10-stage event pipeline.** Each trigger is paired with each angle the client could use, then filtered until only the pairs that truly change something for that buyer are left. Claude scores whether an event really fits a service, writes the line from the owner's own selling point, and checks that any law, credit or rate it mentions is still current. Approved posts are queued one item per channel, with the timing worked out from the trigger.
 - **Six content guards.** Every caption is checked for competitor bleed, competitor names, fluff, unsupported claims, platform rejection risks and AI tells. Each guard can pass it, rewrite one sentence, regenerate the post or block it.
-- **Three approval tiers.** New clients get full review, established clients get exception-only review, and trusted clients run on autopilot.
-- **Five platform adapters.** Facebook, Instagram, LinkedIn, Pinterest and Threads, connected through OAuth.
-- **Analytics and inbox.** Results are collected at 24 hours, 72 hours and 7 days. Meta inbox, follower and profile sweeps keep the portal up to date.
+- **Three approval tiers, five platforms.** New clients get full review, established clients get exception-only review, and trusted clients run on autopilot. Facebook, Instagram, LinkedIn, Pinterest and Threads connect through OAuth, and token refreshers keep the LinkedIn, Pinterest and Threads connections from lapsing.
+- **Analytics, inbox and a team portal.** Results are collected at 24 hours, 72 hours and 7 days, and Meta inbox, follower and profile sweeps keep the portal up to date. The team gets an AI post generator, a calendar, a publishing queue with approve and reject, scheduled and published views, and an AI reply enhancer with version history and undo.
 - **A Nextdoor lead responder.** It spots Nextdoor notifications forwarded by Gmail, opens the thread in a Playwright session per client, and drafts a reply in the owner's voice plus one follow-up.
-- **A portal for the team.** An AI post generator, a calendar, a publishing queue with approve and reject, scheduled and published views, the inbox and followers. The AI reply enhancer keeps a version history with undo.
 
 ## How it works
 
 <Flow
   steps={[
-    { label: "7 signals scored", note: "trends, weather, news, season" },
-    { label: "Claude writes the caption" },
+    { label: "Signals and events", note: "trends, weather, storms, holidays" },
+    { label: "Rules first", note: "arming, kill-list, timing" },
+    { label: "Claude writes", note: "fit, line, facts still current" },
     { label: "6 content guards", note: "pass, rewrite, regenerate, block" },
     { label: "Approval tier", note: "full, exception or autopilot" },
-    { label: "Publish to 5 platforms" },
-    { label: "Results at 24h, 72h, 7d" },
+    { label: "Publish to 5 platforms", note: "results at 24h, 72h, 7d" },
   ]}
 />
 
-The engine runs for every client on a schedule. When signals line up, for example a freeze warning in the client's market during pipe repair season, it picks a topic and a format and Claude writes the caption. The guards run in a fixed order. A small problem gets a targeted rewrite, a bigger one triggers a full regeneration with the violation added as a constraint, and anything serious is blocked for a person. Engagement history never triggers a post on its own: it only changes the format, using the results collected after each post.
+Both engines run for every client on a schedule. The scoring engine waits for signals to line up, for example a freeze warning in the client's market during pipe repair season, then picks a topic and a format. The event pipeline runs in a fixed order: rule steps handle geography, season, audience, the safety check, template and duplicate detection, the timing window and the channel list, and AI steps handle the parts that need judgement. A pair that fails at any stage is still stored with the name of the stage that refused it, so every "no" can be explained later.
+
+Once a caption is written, the guards run in a fixed order. A small problem gets a targeted rewrite, a bigger one triggers a full regeneration with the violation added as a constraint, and anything serious is blocked for a person. Engagement history never triggers a post on its own: it only changes the format, using the results collected after each post.
 
 ## Built to be trusted
 
-- **Hard stops.** A guard block stops the post and flags it for human review. It does not quietly publish.
+- **A kill-list the AI cannot overrule.** A fixed list of terms for deaths, violence, crime, disasters, tragedy and politics runs before any AI step in the event pipeline. A kill is final: there is no score to weigh against it and no override.
+- **Hard stops, not guesses.** A guard block stops the post and flags it for human review instead of quietly publishing. A client with missing setup, such as no service area or no approved services, goes to an exception queue instead of being armed on a guess.
 - **Autopilot with a limit.** On autopilot, a post that fails a guard is regenerated at most three times, then escalated to a person.
-- **Honest neighbourhood replies.** Validators check every Nextdoor draft. A rule-based refer-out guard forces a polite referral when a request falls outside the client's trade or credentials, so the AI never promises a job the client can't take.
-- **No spam, no alert floods.** An anti-spam guard caps daily replies per account, never answers the same post twice and adds a random delay before each send. Twilio SMS alerts to the owner stop at 2 per lead.
-- **Connections that stay alive.** Token refreshers keep LinkedIn, Pinterest and Threads connections from lapsing.
+- **Approved stays approved.** A later event run only rewrites drafts, so a post somebody approved keeps its approval and its wording. The final stage re-reads what it stored before it counts as done.
+- **Honest neighbourhood replies, no floods.** Validators check every Nextdoor draft, and a rule-based refer-out guard forces a polite referral when a request falls outside the client's trade or credentials, so the AI never promises a job the client can't take. An anti-spam guard caps daily replies per account, never answers the same post twice and adds a random delay before each send. Twilio SMS alerts to the owner stop at 2 per lead.
 
 ## By the numbers
 
-- 105 API routes and 12 database models for social publishing.
-- About 16 scheduled jobs.
+- 105 API routes and 12 database models for social publishing, with about 16 scheduled jobs.
+- About 203 API routes, about 31 tables and 10 scheduled jobs for event triggers.
+- 10 event pipeline stages: 7 rule steps and 3 AI steps (fit, line writing and fact currency).
 - 5 platform adapters, 6 content guards and 3 approval tiers.
 - The Nextdoor responder adds 23 routes, 8 tables and 3 scheduled jobs.
 

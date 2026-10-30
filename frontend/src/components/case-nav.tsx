@@ -7,7 +7,10 @@ export type CaseNavItem = { id: string; label: string };
 /** How far below the top of the window a section counts as "being read": a third of the way down, never above the bar. */
 const readingLine = () => Math.max(150, window.innerHeight * 0.33);
 
-/** Sticky "on this page" bar for long case studies. Highlights the section you're reading. */
+/**
+ * Sticky "on this page" bar for long case studies. Highlights the section you're reading.
+ * It sits at the top of the paper reading sheet and floats over it while you read, so it leaves with the sheet.
+ */
 export function CaseNav({ items }: { items: CaseNavItem[] }) {
   const [active, setActive] = useState(items[0]?.id);
   const listRef = useRef<HTMLUListElement>(null);
@@ -50,35 +53,36 @@ export function CaseNav({ items }: { items: CaseNavItem[] }) {
   }, [active]);
 
   return (
-    <nav aria-label="On this page" className="sticky top-[65px] z-30 border-y border-white/[0.06] bg-night/90 backdrop-blur-md">
-      <div className="container-page">
-        <ul
-          ref={listRef}
-          className="-mx-1 flex gap-1.5 overflow-x-auto py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {items.map((item, i) => {
-            const isActive = item.id === active;
-            return (
-              <li key={item.id} data-id={item.id} className="shrink-0">
-                <a
-                  href={`#${item.id}`}
-                  aria-current={isActive ? "location" : undefined}
-                  className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-semibold whitespace-nowrap transition duration-200 ${
-                    isActive
-                      ? "border-teal bg-teal text-night"
-                      : "border-transparent text-ink/60 hover:border-white/15 hover:text-ink"
-                  }`}
-                >
-                  <span className={`meta tabular-nums ${isActive ? "text-night/60" : "text-ink/40"}`}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {item.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+    // A band of the sheet colour behind the pill (before:) hides the text scrolling under it once it sticks,
+    // from the header down to a soft fade below the pill. At rest it is invisible on the sheet.
+    <nav
+      aria-label="On this page"
+      className="sticky top-[77px] z-30 before:absolute before:inset-x-0 before:-top-3 before:-bottom-4 before:bg-[linear-gradient(var(--color-night)_calc(100%_-_16px),transparent)] before:content-['']"
+    >
+      <ul
+        ref={listRef}
+        className="relative flex gap-1 overflow-x-auto rounded-full border border-line bg-night/85 p-1.5 shadow-[0_14px_30px_-20px_rgb(11_16_32/0.45)] backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {items.map((item, i) => {
+          const isActive = item.id === active;
+          return (
+            <li key={item.id} data-id={item.id} className="shrink-0">
+              <a
+                href={`#${item.id}`}
+                aria-current={isActive ? "location" : undefined}
+                className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-semibold whitespace-nowrap transition duration-200 ${
+                  isActive ? "bg-teal text-night" : "text-ink/70 hover:bg-ink/[0.06] hover:text-ink"
+                }`}
+              >
+                <span className={`meta tabular-nums ${isActive ? "text-night/70" : "text-ink/60"}`}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 }

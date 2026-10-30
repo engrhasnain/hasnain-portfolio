@@ -1,15 +1,15 @@
 ---
-title: "Local SEO Content Engine for Service and Location Pages"
+title: "Local SEO Content Engine for Service Areas and Location Pages"
 slug: local-seo-content-engine
-type: [SEO, Agents]
-summary: "A local SEO system that decides which service and location pages a contractor site needs, what each page targets, and how to keep pages from competing for the same keywords."
-description: "A local SEO content engine that plans service and location pages from keyword data, gives every search intent one page, and stops pages competing to rank."
-stack: [FastAPI, PostgreSQL, DataForSEO, Cohere, Claude, Google Search Console, NestJS]
+type: [SEO, Agents, Automation]
+summary: "A local SEO system that maps where a contractor really works from drive times, population and search demand, then decides which town and service pages the site needs and what each targets."
+description: "A local SEO content engine that maps service areas by drive time, Census population and search demand, then plans service and location pages, one per intent."
+stack: [FastAPI, NestJS, PostgreSQL, TypeORM, DataForSEO, Cohere, Claude, Google Search Console, Google Ads API, Google Geocoding API, Google Routes API, Google Time Zone API, US Census API]
 results:
-  - "122 API routes and 17 data models in the Python backend"
+  - "Service areas built from traffic-aware drive times to every ZIP in range"
+  - "A clear rule for which town, region or county leads the homepage"
   - "Every keyword cluster routed to one place on the site, or filtered out"
   - "Regional wording checked in 3 layers before it reaches a page"
-  - "Service list approved by text or email, parsed without guessing"
 status: Live
 featured: false
 order: 13
@@ -25,6 +25,8 @@ preview:
     - { label: "Overlap found", value: "301 suggested", tone: warn }
     - { label: "Cost ceiling", value: "within limit", tone: ok }
   footer: "One search intent, one page"
+coverStat: { value: "122", label: "API routes" }
+coverNote: "one intent, one page"
 cta: "Need something like this for your business? Let's talk."
 fiverr: ""
 cover: ""
@@ -36,45 +38,48 @@ demo: ""
 
 ## The problem
 
-A local service business needs the right set of pages: one for each service it really offers, and pages for the towns it covers. Get it wrong and the site misses searches people make, or ends up with several pages chasing the same keyword so none of them rank well. The agency was making these calls by hand for every client business, from long keyword exports. The regional wording was easy to miss too, because the same service is often called something different from one area to the next.
+A local service business needs the right set of pages: one for each service it really offers, and pages for the towns it really serves. Owners describe their area loosely: "about 45 minutes out", "not across the river", "the whole county". Turning that into a list of towns by hand was slow and different every time. The homepage town matters most. A tiny hamlet cannot carry a homepage, but a small resort town that people search for all the time can, and population by itself does not tell them apart. Get the pages wrong and the site misses searches people make, or ends up with several pages chasing the same keyword so none of them rank well. Regional wording trips people up too: the same service often has a different name from one area to the next.
 
 ## What I built
 
-- **A keyword pipeline bounded by a service map.** An LLM simplifies the seed terms, DataForSEO returns keywords and questions, Cohere clusters them, and clusters with overlapping search results are merged because they share an intent.
-- **A router for every cluster.** Each cluster goes to a service page, a blog topic, an FAQ, an H2 section on an existing page, or it is filtered out, so no keyword is left without an owner.
+- **A footprint from real drive times.** Addresses and towns are geocoded with Google and matched to Google Ads geo targets, refreshed every quarter from the Google Ads API. For each business location, the Routes API measures traffic-aware drive times to every ZIP in range, then exclusions, always-include areas and territory limits, such as a franchise map, are applied on top. Nationwide plans preview how many city pages, states and media markets they cover.
+- **Population and demand on every town.** Population comes from a 3-tier cache: the platform's own cache first, then city research already done, then the US Census ACS survey. Google Ads reach and Keyword Planner search volumes are stored with each town, and a new client's top 10 cities are the selected towns with the highest reach. A FastAPI service builds one research record per city from Census ACS, NOAA climate data, OpenStreetMap, Wikipedia and Tavily.
+- **A keyword pipeline bounded by an approved service map.** NestJS modules send the proposed service list to the client by text or email and record the answer. From that map, an LLM simplifies the seed terms, DataForSEO returns keywords and questions, Cohere clusters them, and clusters with overlapping search results are merged because they share an intent.
+- **One owner for every keyword.** Each cluster goes to a service page, a blog topic, an FAQ, an H2 section on an existing page, or it is filtered out. When two pages compete for the same terms, a cannibalization detector recommends a 301 redirect instead of leaving both pages to split the rankings.
 - **A navigation builder.** Services are scored on client priority, search volume and how rankable they are, weighted 40, 35 and 25, with a boost for services that already rank near the top in Search Console.
 - **Regional wording checks.** The terms a page uses are checked in three layers: competitor search results, Search Console and People Also Ask, and the language customers use in their reviews.
-- **A cannibalization detector.** When two pages compete for the same terms, it recommends a 301 redirect instead of leaving both pages to split the rankings.
 - **A landing-page system.** New pages pass an eligibility gate and a near-duplicate gate. An approval dial moves from full review to sample review to exceptions only as a client's batches come back clean, but the owner always approves the wording. It also records how pages appear in Google's AI Overviews and AI Mode.
-- **Service taxonomy approval.** A set of NestJS modules sends the proposed service list to the client by text or email and records the answer.
 
 ## How it works
 
 <Flow
   steps={[
+    { label: "Service area", note: "drive times to every ZIP" },
+    { label: "Towns weighed", note: "population + search demand" },
     { label: "Service map", note: "approved by the client" },
-    { label: "Keyword research", note: "DataForSEO + Cohere" },
-    { label: "Intent merge", note: "SERP overlap" },
+    { label: "Keyword research", note: "DataForSEO, Cohere, SERP merge" },
     { label: "Router", note: "page, blog, FAQ or H2" },
     { label: "Pages and navigation", note: "gated and approved" },
   ]}
 />
 
-Everything starts from the approved service map, so research never drifts into services the business does not offer. Keywords are gathered, grouped and merged by intent, then sent to the one place on the site that should own them. The navigation and the landing pages are built from that routing, and the cannibalization detector keeps checking that pages stay apart as the site grows.
+Geography comes first. Drive times use one standard for every client: the next weekday at 10:00 local time at the business, with the zone taken from the Time Zone API. The homepage rule has clear lines. A town under 15,000 people cannot carry the homepage on its own, unless it gets at least 5,000 monthly searches and at least 8 times its own population in searches. At 40,000 people or more, the town is a confident target. Below the line, the site steps up: first to a named region, then to a searched county-level area, then to "Greater X area" for the nearest well-reached city within 40 miles, then to the county. When the owner names a target, the owner's choice wins.
+
+The content side starts from the approved service map, so research never drifts into services the business does not offer. Keywords are gathered, grouped and merged by intent, then sent to the one place on the site that should own them. The navigation and the landing pages are built from that routing, and the cannibalization detector keeps checking that pages stay apart as the site grows.
 
 ## Built to be trusted
 
-- **Triage on wording.** Each regional term gets a confidence level. When the three layers disagree, the term goes to a person instead of the system picking one.
-- **A kill switch that checks itself.** Switching a page off is not taken on trust: the system re-fetches each page to confirm it has stopped serving.
-- **Pruning that only flags.** Pages with no impressions are flagged for merging into the nearest suitable page. Nothing is deleted automatically.
+- **A person settles the doubtful cases.** Geography changes captured on a call, such as adding a city or removing a county, become pending rows, and only an explicit approve click writes them. Each regional term gets a confidence level, and when the three layers disagree, the term goes to a person instead of the system picking one.
+- **Read-back, not trust.** After a geography save, the states, counties and cities actually stored are counted and compared with what the write should have left. Any difference marks the save as failed and lists each problem. Switching a page off is checked too: the system re-fetches each page to confirm it has stopped serving.
 - **Approvals that cannot drift.** The last approved version of the service list is saved in the same transaction as the approval. A partial "yes" is parsed without guessing, and LLM suggestions only propose values. They never write approved fields.
+- **Pruning that only flags.** Pages with no impressions are flagged for merging into the nearest suitable page. Nothing is deleted automatically.
 - **A cost ceiling.** Each run is checked against a ceiling before it starts, and again as real costs come in.
 
 ## By the numbers
 
-- 122 API routes in the Python backend: keyword 33, navigation 30, landing pages 43, topical map 6, map approval 5, linking 3, city research 2.
-- 17 ORM models behind those routes.
+- 122 API routes in the Python backend: keyword 33, navigation 30, landing pages 43, topical map 6, map approval 5, linking 3, city research 2, with 17 ORM models behind them.
+- 40 API routes across 3 controllers for service area geography: 35 admin, 3 for service area intake, 2 for the client portal, with 10 data models and 14 test files.
 - 78 routes and 14 entities across 4 NestJS modules for service taxonomy approval.
-- Navigation scoring weighted 40, 35 and 25 across priority, volume and rankability.
+- Up to 625 ZIPs measured in one Routes request.
 
 Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI platform development](/services/ai-platform-development).

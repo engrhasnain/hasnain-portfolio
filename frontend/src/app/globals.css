@@ -36,6 +36,208 @@
   color: #0b1020;
 }
 
+/* ---------- The reading sheet ----------
+ * Case studies and blog posts: a dark top, then the article printed on one cream sheet lying on the navy desk,
+ * then dark again. <div className="paper paper-sheet"> holds the body. The rules below re-style the system classes
+ * for paper, so the same components look printed instead of inverted.
+ */
+.paper {
+  color-scheme: light;
+}
+.paper-sheet {
+  position: relative;
+  border-radius: 1.25rem;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 10px 0 -5px #d3cab8,
+    0 44px 80px -44px rgb(0 0 0 / 0.85),
+    0 18px 36px -22px rgb(0 0 0 / 0.6);
+}
+@media (min-width: 768px) {
+  .paper-sheet {
+    border-radius: 2rem;
+  }
+}
+
+@layer components {
+  /* Cards are card stock on the sheet: a warm hairline, and a soft ink shadow when they lift. */
+  .paper .card,
+  .paper .card-feature {
+    border-color: #ddd5c5;
+    background-color: #fbf9f4;
+    background-image: none;
+    box-shadow: 0 1px 2px rgb(11 16 32 / 0.04);
+  }
+  .paper .card-feature {
+    border-color: rgb(15 118 110 / 0.35);
+    background-image: radial-gradient(70% 90% at 100% 0%, rgb(15 118 110 / 0.06), transparent 60%);
+  }
+  .paper .card-hover:hover {
+    border-color: #c8bea9;
+    box-shadow:
+      0 1px 2px rgb(11 16 32 / 0.05),
+      0 22px 40px -24px rgb(11 16 32 / 0.32);
+  }
+  .paper .chip {
+    border-color: rgb(15 118 110 / 0.24);
+    background-color: rgb(15 118 110 / 0.05);
+    color: #0f766e;
+  }
+  .paper .tool-chip {
+    border-color: #ddd5c5;
+    background-color: #fbf9f4;
+  }
+  .paper .btn-primary:hover {
+    background-color: #115e59;
+    box-shadow: 0 14px 28px -16px rgb(11 16 32 / 0.5);
+  }
+  .paper .btn-ghost {
+    border-color: rgb(11 16 32 / 0.2);
+  }
+  .paper .btn-ghost:hover {
+    border-color: rgb(11 16 32 / 0.42);
+    background-color: rgb(11 16 32 / 0.03);
+  }
+
+  /* Article text on paper: ink headings, a softer ink for long reading (11:1 on the cream), dark teal links. */
+  .paper .prose-glow {
+    color: #2b3040;
+  }
+  .paper .prose-glow :not(pre) > code {
+    border-color: rgb(15 118 110 / 0.2);
+    background-color: rgb(15 118 110 / 0.07);
+    color: #115e59;
+  }
+  /* Code blocks stay a dark navy slab on the paper. */
+  .paper .prose-glow pre {
+    color-scheme: dark;
+    border-color: #0b1020;
+    background-color: #0f1630;
+    color: #e6e8f0;
+    box-shadow: 0 18px 36px -24px rgb(11 16 32 / 0.6);
+  }
+  /* Tables read like a printed table: a firm rule above and below, hairlines between rows. */
+  .paper .prose-glow table {
+    border-block: 1.5px solid rgb(11 16 32 / 0.7);
+  }
+  .paper .prose-glow th {
+    border-color: rgb(11 16 32 / 0.22);
+  }
+  .paper .prose-glow td {
+    border-color: rgb(11 16 32 / 0.09);
+  }
+  .paper .prose-glow tr:last-child > td {
+    border-bottom: 0;
+  }
+  .paper .prose-glow img {
+    box-shadow: 0 16px 32px -26px rgb(11 16 32 / 0.45);
+  }
+  /* "Key takeaways" in a post: the site's checklist, in a highlighted box. */
+  .paper .prose-glow #key-takeaways + ul {
+    list-style: none;
+    border: 1px solid rgb(15 118 110 / 0.35);
+    border-radius: 1rem;
+    background: #fbf9f4 radial-gradient(70% 90% at 100% 0%, rgb(15 118 110 / 0.06), transparent 60%);
+    padding: 1.4rem 1.4rem 1.4rem 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .paper .prose-glow #key-takeaways + ul {
+      padding: 1.75rem 2rem 1.75rem 1.75rem;
+    }
+  }
+  .paper .prose-glow #key-takeaways + ul > li {
+    position: relative;
+    padding-left: 1.9rem;
+    color: rgb(11 16 32 / 0.85);
+  }
+  .paper .prose-glow #key-takeaways + ul > li::before {
+    content: "";
+    position: absolute;
+    top: 0.4em;
+    left: 0;
+    width: 1.15em;
+    height: 1.15em;
+    background-color: #0f766e;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+}
+
+@layer utilities {
+  /* Hairlines written for the navy page (white at low opacity) become warm hairlines on paper. Hover variants still win. */
+  :where(.paper) [class~="border-white/[0.06]"],
+  :where(.paper) [class~="border-white/[0.07]"] {
+    border-color: #e2dacb;
+  }
+  :where(.paper) [class~="border-white/[0.08]"],
+  :where(.paper) [class~="border-white/10"] {
+    border-color: #d8d0bf;
+  }
+  :where(.paper) [class~="border-white/15"] {
+    border-color: #c9bfab;
+  }
+  :where(.paper) [class~="divide-white/[0.06]"] > :not(:last-child),
+  :where(.paper) [class~="divide-white/[0.07]"] > :not(:last-child) {
+    border-color: #e6dfd2;
+  }
+  :where(.paper) [class~="divide-white/[0.08]"] > :not(:last-child) {
+    border-color: #d8d0bf;
+  }
+  :where(.paper) [class~="bg-white/15"] {
+    background-color: rgb(11 16 32 / 0.16);
+  }
+  /* Faint ink on cream drops under 4.5:1, so secondary text is a little darker on paper (every step passes AA). */
+  :where(.paper) [class~="text-ink/40"],
+  :where(.paper) [class~="text-ink/45"] {
+    color: rgb(11 16 32 / 0.6);
+  }
+  :where(.paper) [class~="text-ink/50"],
+  :where(.paper) [class~="text-ink/55"] {
+    color: rgb(11 16 32 / 0.64);
+  }
+  :where(.paper) [class~="text-ink/60"] {
+    color: rgb(11 16 32 / 0.68);
+  }
+  /* The blueprint grid behind diagrams, in pencil. */
+  :where(.paper) .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(11 16 32 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(11 16 32 / 0.06) 1px, transparent 1px);
+  }
+}
+
+/* .edge and the tool chip hover live outside the layers, so their paper versions do too. */
+.paper .edge {
+  border-color: rgb(15 118 110 / 0.35);
+  background-color: #fbf9f4;
+  background-image: radial-gradient(70% 90% at 100% 0%, rgb(15 118 110 / 0.06), transparent 60%);
+}
+.paper .tool-chip:hover {
+  border-color: color-mix(in srgb, var(--brand-paper, var(--brand)) 45%, transparent);
+}
+/* Brand logos use their true colour on paper (the navy page lifts dark ones towards white). */
+.paper svg.brand-logo {
+  fill: var(--logo-paper);
+}
+/* Running workflow steps light up in dark teal and settle back to the paper colour. */
+@keyframes wf-glow-paper {
+  0%,
+  14% {
+    border-color: rgb(15 118 110 / 0.55);
+    background-color: rgb(15 118 110 / 0.08);
+  }
+  22%,
+  100% {
+    border-color: var(--color-line);
+    background-color: rgb(243 239 230 / 0.7);
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (hover: hover) {
+  .paper .wf-step {
+    animation-name: wf-glow-paper;
+  }
+}
+
 /* Accent text: solid teal. (Kept under the old name so existing pages pick it up.) */
 @utility text-gradient {
   color: var(--color-teal);
@@ -136,6 +338,8 @@
    * .meta          small uppercase labels inside cards (dates, types, table headers)
    * .chip          tags
    * .btn-primary / .btn-ghost   the only two buttons
+   * .paper         at most one paper surface per page. On case studies and blog posts it is the reading sheet
+   *                (.paper.paper-sheet around the article body); elsewhere a band (<section className="paper section">).
    */
   .card {
     @apply relative isolate rounded-2xl border border-white/[0.08] bg-[#0d1430]/80 transition duration-300;
@@ -583,101 +787,15 @@ a.node:hover,
     transition: none;
   }
 }
-/* .seq-N: rows of a mockup appear one after another, hold, then replay. */
-@keyframes seq-1 {
-  0%,
-  1% {
+/* .seq-N: rows of a mockup slide in one after another, once, and then stay (a cover is never blank). */
+@keyframes seq-in {
+  from {
     opacity: 0;
     transform: translateY(0.4em);
   }
-  5%,
-  92% {
+  to {
     opacity: 1;
     transform: none;
-  }
-  97%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes seq-2 {
-  0%,
-  8% {
-    opacity: 0;
-    transform: translateY(0.4em);
-  }
-  12%,
-  92% {
-    opacity: 1;
-    transform: none;
-  }
-  97%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes seq-3 {
-  0%,
-  15% {
-    opacity: 0;
-    transform: translateY(0.4em);
-  }
-  19%,
-  92% {
-    opacity: 1;
-    transform: none;
-  }
-  97%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes seq-4 {
-  0%,
-  22% {
-    opacity: 0;
-    transform: translateY(0.4em);
-  }
-  26%,
-  92% {
-    opacity: 1;
-    transform: none;
-  }
-  97%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes seq-5 {
-  0%,
-  29% {
-    opacity: 0;
-    transform: translateY(0.4em);
-  }
-  33%,
-  92% {
-    opacity: 1;
-    transform: none;
-  }
-  97%,
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes seq-6 {
-  0%,
-  36% {
-    opacity: 0;
-    transform: translateY(0.4em);
-  }
-  40%,
-  92% {
-    opacity: 1;
-    transform: none;
-  }
-  97%,
-  100% {
-    opacity: 0;
   }
 }
 @keyframes typing {
@@ -701,22 +819,22 @@ a.node:hover,
 }
 @media (prefers-reduced-motion: no-preference) {
   .seq-1 {
-    animation: seq-1 12s ease-out infinite both;
+    animation: seq-in 0.55s ease-out 0.10s both;
   }
   .seq-2 {
-    animation: seq-2 12s ease-out infinite both;
+    animation: seq-in 0.55s ease-out 0.28s both;
   }
   .seq-3 {
-    animation: seq-3 12s ease-out infinite both;
+    animation: seq-in 0.55s ease-out 0.46s both;
   }
   .seq-4 {
-    animation: seq-4 12s ease-out infinite both;
+    animation: seq-in 0.55s ease-out 0.64s both;
   }
   .seq-5 {
-    animation: seq-5 12s ease-out infinite both;
+    animation: seq-in 0.55s ease-out 0.82s both;
   }
   .seq-6 {
-    animation: seq-6 12s ease-out infinite both;
+    animation: seq-in 0.55s ease-out 1.00s both;
   }
   .typing > span {
     animation: typing 1.2s ease-in-out infinite;

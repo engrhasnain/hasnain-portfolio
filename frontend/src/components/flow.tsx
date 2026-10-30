@@ -2,7 +2,7 @@ import { Reveal } from "./motion";
 
 type Step = string | { label: string; note?: string };
 
-/** A solid hairline with an arrowhead between two steps: downwards on phones, to the right from sm up. */
+/** A solid ink hairline with an arrowhead between two steps: downwards on phones, to the right from sm up. */
 function Connector({ className }: { className: string }) {
   return (
     <span
@@ -10,12 +10,12 @@ function Connector({ className }: { className: string }) {
       className={`pointer-events-none absolute top-full left-1/2 h-6 w-3 -translate-x-1/2 items-center justify-center sm:top-1/2 sm:left-full sm:h-3 sm:w-10 sm:translate-x-0 sm:-translate-y-1/2 ${className}`}
     >
       <svg viewBox="0 0 12 24" className="h-6 w-3 sm:hidden" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 1V22" stroke="currentColor" className="text-white/20" />
-        <path d="M2.5 18.5L6 22L9.5 18.5" stroke="currentColor" strokeWidth={1.4} className="text-teal" />
+        <path d="M6 1V22" stroke="currentColor" className="text-ink/30" />
+        <path d="M2.5 18.5L6 22L9.5 18.5" stroke="currentColor" strokeWidth={1.5} className="text-ink/75" />
       </svg>
       <svg viewBox="0 0 40 12" className="hidden h-3 w-10 sm:block" fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 6H35" stroke="currentColor" className="text-white/20" />
-        <path d="M31.5 2.5L35 6L31.5 9.5" stroke="currentColor" strokeWidth={1.4} className="text-teal" />
+        <path d="M5 6H35" stroke="currentColor" className="text-ink/30" />
+        <path d="M31.5 2.5L35 6L31.5 9.5" stroke="currentColor" strokeWidth={1.5} className="text-ink/75" />
       </svg>
     </span>
   );

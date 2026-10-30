@@ -232,15 +232,15 @@ export function Built({ items, ...section }: SectionProps & { items: BuiltItem[]
 }
 
 /**
- * Hairlines between the number cells: 2 columns on phones, 3 from sm, 5 from lg.
+ * Hairlines between the number cells: 2 columns on phones, 3 from md, 5 from lg.
  * Each breakpoint gets exactly one class per side, so no two classes fight over the same border.
  */
 function cellBorders(i: number) {
   // Written out in full so Tailwind can find every class in the source.
   const phone = `${i % 2 !== 0 ? "border-l" : "border-l-0"} ${i >= 2 ? "border-t" : "border-t-0"}`;
-  const sm = `${i % 3 !== 0 ? "sm:border-l" : "sm:border-l-0"} ${i >= 3 ? "sm:border-t" : "sm:border-t-0"}`;
+  const md = `${i % 3 !== 0 ? "md:border-l" : "md:border-l-0"} ${i >= 3 ? "md:border-t" : "md:border-t-0"}`;
   const lg = `${i % 5 !== 0 ? "lg:border-l" : "lg:border-l-0"} ${i >= 5 ? "lg:border-t" : "lg:border-t-0"}`;
-  return `${phone} ${sm} ${lg}`;
+  return `${phone} ${md} ${lg}`;
 }
 
 /** 05 · By the numbers: big counters, like the numbers band on the home page. Only facts from the code. */
@@ -249,11 +249,15 @@ export function Numbers({ items, note, ...section }: SectionProps & { items: { v
     <CaseSection {...section}>
       <Reveal>
         <div className="card overflow-hidden">
-          <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+          {/* Sized so the widest value ("2,600+") fits its cell at every width inside the reading sheet. */}
+          <dl className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {items.map((item, i) => (
-              <div key={item.label} className={`flex flex-col border-white/[0.08] px-6 py-8 sm:px-8 sm:py-10 ${cellBorders(i)}`}>
+              <div
+                key={item.label}
+                className={`flex flex-col border-white/[0.08] px-5 py-8 sm:px-6 sm:py-10 lg:px-5 xl:px-7 ${cellBorders(i)}`}
+              >
                 <dt className="order-2 mt-2 text-sm text-ink/60">{item.label}</dt>
-                <dd className="order-1 text-[2.3rem] leading-none font-extrabold tracking-[-0.045em] sm:text-[2.8rem]">
+                <dd className="order-1 text-[2.1rem] leading-none font-extrabold tracking-[-0.045em] sm:text-[2.5rem]">
                   <CountUp value={item.value} />
                 </dd>
               </div>

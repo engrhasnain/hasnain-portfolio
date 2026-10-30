@@ -540,23 +540,38 @@ function PanelMock({ preview }: { preview: ProjectPreview }) {
   );
 }
 
-export function PanelCover({ preview }: { preview: ProjectPreview }) {
+/**
+ * Centres the mockup in the cover. With an `aside` (the cover's notes), the notes and a slightly smaller mockup
+ * travel together as one group, so they stay close on a phone card and on a wide project cover alike.
+ */
+function MockFrame({ aside, scale, children }: { aside?: ReactNode; scale: string; children: ReactNode }) {
   return (
     <div className="mock-root absolute inset-0 grid place-items-center pt-[1.1em]">
-      <div className="tilt">
-        <PanelMock preview={preview} />
-      </div>
+      {aside ? (
+        <div className="flex items-stretch">
+          <div className="relative w-[7.6em] shrink-0">{aside}</div>
+          <div className={`tilt ${scale}`}>{children}</div>
+        </div>
+      ) : (
+        <div className="tilt">{children}</div>
+      )}
     </div>
   );
 }
 
-export function CoverMock({ art }: { art: MockArt }) {
+export function PanelCover({ preview, aside }: { preview: ProjectPreview; aside?: ReactNode }) {
+  return (
+    <MockFrame aside={aside} scale="text-[0.86em]">
+      <PanelMock preview={preview} />
+    </MockFrame>
+  );
+}
+
+export function CoverMock({ art, aside }: { art: MockArt; aside?: ReactNode }) {
   const Mock = mocks[art];
   return (
-    <div className="mock-root absolute inset-0 grid place-items-center pt-[1.1em]">
-      <div className="tilt">
-        <Mock />
-      </div>
-    </div>
+    <MockFrame aside={aside} scale={art === "platform" ? "text-[0.74em]" : "text-[0.8em]"}>
+      <Mock />
+    </MockFrame>
   );
 }

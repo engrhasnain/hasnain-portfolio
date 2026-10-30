@@ -495,7 +495,7 @@ export const services: Service[] = [
         text: "You get a Docker setup, docs and example prompts, and the server runs where you want it to run.",
       },
     ],
-    projects: ["wordpress-fleet-mcp", "salestalk-mcp", "mcp-platform-engineering"],
+    projects: ["production-mcp-servers", "salestalk-mcp", "ai-operations-platform"],
     posts: ["what-is-an-mcp-server", "ai-agent-job-description"],
     faq: [
       {
@@ -644,7 +644,7 @@ export const services: Service[] = [
         text: "It goes live on your accounts, and your team gets a short runbook for checking runs and fixing common issues.",
       },
     ],
-    projects: ["meta-ads-and-social-automation", "zoom-ai-agents", "autonomous-blog-publishing"],
+    projects: ["meta-ads-and-social-automation", "zoom-ai-agents", "ai-website-and-blog-engine"],
     posts: ["ai-agent-job-description", "what-is-an-mcp-server"],
     faq: [
       {
@@ -943,7 +943,7 @@ export const services: Service[] = [
         text: "It answers calls around the clock and sends transcripts and summaries. We review the first calls together and fix anything it misheard.",
       },
     ],
-    projects: ["ai-voice-agent-platform", "zoom-ai-agents", "call-intelligence"],
+    projects: ["ai-voice-agent-platform", "zoom-ai-agents", "speed-to-lead-crm"],
     posts: ["voice-ai-names", "ai-agent-job-description"],
     faq: [
       {

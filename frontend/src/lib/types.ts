@@ -35,6 +35,10 @@ export type ProjectMeta = {
   art?: string;
   /** The panel cover's content, used when art is "panel". */
   preview?: ProjectPreview;
+  /** The cover's sticky note: one number from the results, e.g. { value: "37", label: "live-call functions" }. */
+  coverStat?: { value: string; label: string };
+  /** The cover's handwritten margin note, 2 to 5 words. */
+  coverNote?: string;
   /** "case-study" gives the project a full-width page for long write-ups (used by the flagship). */
   layout?: "case-study";
   /** Title of the call-to-action band at the end of the project page. */

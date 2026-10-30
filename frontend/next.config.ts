@@ -31,6 +31,26 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async redirects() {
+    // Case studies merged on 2026-10-30: old links (and anything Google already found) land on the merged page.
+    const merged: Record<string, string> = {
+      "operations-command-center": "ai-operations-platform",
+      "brand-system-website-builder": "ai-website-and-blog-engine",
+      "bulk-ai-content-generation": "ai-website-and-blog-engine",
+      "autonomous-blog-publishing": "ai-website-and-blog-engine",
+      "wordpress-fleet-mcp": "production-mcp-servers",
+      "hosting-ops-mcp": "production-mcp-servers",
+      "mcp-platform-engineering": "production-mcp-servers",
+      "call-intelligence": "zoom-ai-agents",
+      "event-triggered-marketing": "social-media-automation",
+      "service-area-intelligence": "local-seo-content-engine",
+    };
+    return Object.entries(merged).map(([from, to]) => ({
+      source: `/projects/${from}`,
+      destination: `/projects/${to}`,
+      permanent: true,
+    }));
+  },
 };
 
 export default nextConfig;

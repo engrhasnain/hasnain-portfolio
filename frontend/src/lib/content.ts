@@ -75,6 +75,16 @@ function preview(entry: Entry): ProjectPreview | undefined {
   return { window, heading: text(value.heading), rows, footer: text(value.footer) };
 }
 
+/** The cover's sticky note from frontmatter `coverStat`: { value, label }. */
+function coverStat(entry: Entry): ProjectMeta["coverStat"] {
+  const value = entry.data.coverStat as Record<string, unknown> | undefined;
+  if (!value) return undefined;
+  const stat = text(value.value);
+  const label = text(value.label);
+  if (!stat || !label) throw new Error(`${entry.file}: coverStat needs "value" and "label"`);
+  return { value: stat, label };
+}
+
 function isoDate(entry: Entry, key: string): string | undefined {
   const value = entry.data[key];
   if (value instanceof Date) return value.toISOString().slice(0, 10);
@@ -105,6 +115,8 @@ export const getProjects = cache((): Project[] =>
         cover: text(entry.data.cover),
         art: text(entry.data.art),
         preview: preview(entry),
+        coverStat: coverStat(entry),
+        coverNote: text(entry.data.coverNote),
         layout: entry.data.layout === "case-study" ? "case-study" : undefined,
         cta: text(entry.data.cta),
         video: text(entry.data.video),

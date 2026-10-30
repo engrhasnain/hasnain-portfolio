@@ -135,81 +135,84 @@ export default async function PostPage({ params }: Props) {
           </div>
         ) : null}
 
-        {post.answer ? (
-          <section aria-labelledby="short-answer" className="card-feature mt-8 p-6 sm:p-7">
-            <h2 id="short-answer" className="meta">
-              The short answer
-            </h2>
-            <p className="mt-3 text-[1.0625rem] leading-8 text-ink/90">{post.answer}</p>
-          </section>
-        ) : null}
+        {/* The reading sheet: the article is printed on one paper sheet lying on the navy desk. */}
+        <div className="paper paper-sheet -mx-3 mt-10 px-5 py-9 sm:mx-0 sm:mt-12 sm:p-10 md:p-12 lg:p-14">
+          {post.answer ? (
+            <section aria-labelledby="short-answer" className="card-feature p-5 sm:p-7">
+              <h2 id="short-answer" className="meta">
+                The short answer
+              </h2>
+              <p className="mt-3 text-[1.0625rem] leading-8 text-ink/90">{post.answer}</p>
+            </section>
+          ) : null}
 
-        <div className="prose-glow mt-12 sm:mt-14">
-          <Mdx source={post.body} />
-        </div>
-
-        {post.faq.length ? (
-          <section aria-labelledby="faq" className="mt-16 border-t border-white/[0.06] pt-14">
-            <p className="eyebrow">Questions</p>
-            <h2 id="faq" className="mt-4 text-3xl sm:text-4xl">
-              Frequently asked questions
-            </h2>
-            <dl className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">
-              {post.faq.map(({ q, a }) => (
-                <div key={q} className="py-6">
-                  <dt className="text-lg font-bold text-ink">{q}</dt>
-                  <dd className="mt-2.5 leading-7 text-ink/75">{a}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        ) : null}
-
-        {post.sources.length ? (
-          <section aria-labelledby="sources" className="mt-20">
-            <p className="eyebrow">Checked against</p>
-            <h2 id="sources" className="mt-4 text-3xl sm:text-4xl">
-              Sources
-            </h2>
-            <ol className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">
-              {post.sources.map((s, i) => (
-                // The link stretches over the whole row, so the row is the click target.
-                <li key={s.url} className="group relative flex gap-5 py-4">
-                  <span className="meta mt-1 w-6 shrink-0 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                  <p className="min-w-0 flex-1 leading-relaxed">
-                    <span className="block text-sm text-ink/55">{s.publisher}</span>
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-0.5 font-semibold text-ink underline decoration-teal/40 underline-offset-4 transition-colors after:absolute after:inset-0 group-hover:text-teal group-hover:decoration-teal"
-                    >
-                      {s.title}
-                    </a>
-                  </p>
-                  <ArrowUpRight
-                    aria-hidden="true"
-                    className="mt-1 shrink-0 text-teal transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
-                </li>
-              ))}
-            </ol>
-          </section>
-        ) : null}
-
-        <footer className="card mt-20 flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-7">
-          <Avatar className="size-16" sizes="64px" ring="bg-teal/40 p-[2px]" />
-          <div>
-            <p className="meta">Written by</p>
-            <p className="mt-1.5 text-xl font-bold tracking-[-0.025em] text-ink">{site.name}</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink/65">
-              {site.jobTitle} building chatbots, MCP servers and AI agents.{" "}
-              <Link href="/about" className="link font-bold">
-                More about me
-              </Link>
-            </p>
+          <div className={`prose-glow ${post.answer ? "mt-12 sm:mt-14" : ""} [&>:first-child]:mt-0`}>
+            <Mdx source={post.body} />
           </div>
-        </footer>
+
+          {post.faq.length ? (
+            <section aria-labelledby="faq" className="mt-16 border-t border-white/[0.06] pt-14">
+              <p className="eyebrow">Questions</p>
+              <h2 id="faq" className="mt-4 text-3xl sm:text-4xl">
+                Frequently asked questions
+              </h2>
+              <dl className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+                {post.faq.map(({ q, a }) => (
+                  <div key={q} className="py-6">
+                    <dt className="text-lg font-bold text-ink">{q}</dt>
+                    <dd className="mt-2.5 leading-7 text-ink/75">{a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ) : null}
+
+          {post.sources.length ? (
+            <section aria-labelledby="sources" className="mt-20">
+              <p className="eyebrow">Checked against</p>
+              <h2 id="sources" className="mt-4 text-3xl sm:text-4xl">
+                Sources
+              </h2>
+              <ol className="mt-8 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+                {post.sources.map((s, i) => (
+                  // The link stretches over the whole row, so the row is the click target.
+                  <li key={s.url} className="group relative flex gap-5 py-4">
+                    <span className="meta mt-1 w-6 shrink-0 tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                    <p className="min-w-0 flex-1 leading-relaxed">
+                      <span className="block text-sm text-ink/55">{s.publisher}</span>
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-0.5 font-semibold text-ink underline decoration-teal/40 underline-offset-4 transition-colors after:absolute after:inset-0 group-hover:text-teal group-hover:decoration-teal"
+                      >
+                        {s.title}
+                      </a>
+                    </p>
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      className="mt-1 shrink-0 text-teal transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    />
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null}
+
+          <footer className="card mt-20 flex flex-col items-start gap-5 p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-7">
+            <Avatar className="size-16" sizes="64px" ring="bg-teal/40 p-[2px]" />
+            <div>
+              <p className="meta">Written by</p>
+              <p className="mt-1.5 text-xl font-bold tracking-[-0.025em] text-ink">{site.name}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink/65">
+                {site.jobTitle} building chatbots, MCP servers and AI agents.{" "}
+                <Link href="/about" className="link font-bold">
+                  More about me
+                </Link>
+              </p>
+            </div>
+          </footer>
+        </div>
 
         {related.length ? (
           <nav aria-labelledby="keep-reading" className="mt-20">

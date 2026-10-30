@@ -1,0 +1,90 @@
+---
+title: "AI Website Builder and Blog Publishing Engine for Contractors"
+slug: ai-website-and-blog-engine
+type: [Automation, SEO, Models]
+summary: "One pipeline for contractor sites: an approved brand guide, every page written in bulk from the client's own data, then a blog that writes, checks, publishes and reads each post back."
+description: "AI website builder and blog engine for contractors: pages from approved brand guides, bulk copy via batch APIs and RAG, and WordPress posts read back live."
+stack: [Claude, FastAPI, NestJS, PostgreSQL, pgvector, OpenAI Batch API, OpenAI Embeddings, BullMQ, WordPress REST API, Google Search Console API, IndexNow, DataForSEO, vtracer, Model Context Protocol]
+results:
+  - "Pages generated only from an approved brand guide"
+  - "Site copy grounded in 5 client data sources in pgvector"
+  - "Batch runs resume from a checkpoint, even after a shutdown"
+  - "Every blog post read back from the live page"
+status: Live
+featured: false
+order: 8
+date: "2026-09-22"
+art: panel
+preview:
+  window: "blog-publisher · live"
+  heading: "Scheduled post · due now"
+  rows:
+    - { label: "Claim", value: "1 worker, atomic", tone: ok }
+    - { label: "Spend cap", value: "under warning", tone: ok }
+    - { label: "Validator", value: "passed", tone: ok }
+    - { label: "WordPress", value: "published", tone: info }
+    - { label: "IndexNow", value: "submitted", tone: info }
+  footer: "Live page read back and confirmed"
+coverStat: { value: "56", label: "Claude search tools" }
+coverNote: "no approved guide, no pages"
+cta: "Need something like this for your business? Let's talk."
+fiverr: ""
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A contractor website has to look and sound like the business behind it, then keep earning traffic. In practice the brand lives in a dozen places: an emailed logo, colours copied from an old site, a theme that claims one page builder and uses another. Every page, section and element needs copy, the service pages repeat for each service, and a model with no context writes words that could belong to any company. After launch, each site needs a steady flow of blog posts on topics people in its area search for, across a fleet of WordPress sites. Every handoff can fail: a blurry logo, a batch run that dies mid-deploy, a post that goes out twice or never reaches Google.
+
+## What I built
+
+One pipeline, from an approved brand guide to a full website and an ongoing blog.
+
+- **Versioned brand guides.** Each site has a guide with design tokens, component patterns, voice and imagery rules, and every save is a new version with a semantic version bump, a per-field diff and a change log entry.
+- **Quality gates and clean logos.** Text must meet WCAG AA contrast (4.5:1 for normal text, 3:1 for large text and buttons), and colour token names can never be removed or renamed. SVG logos are parsed with network access off and stripped of scripts, and flat-colour raster logos can be traced to SVG with vtracer.
+- **Voice and briefs from real data.** Claude reads a call transcript of at least 500 words and records tone, reading level, signature phrases and phrases to avoid. Claude Haiku extracts the facts, then Claude Sonnet writes the creative brief.
+- **Website copy in bulk.** Admins upload an .xlsx file of prompts by page type, section and section piece. One general batch covers the shared pages, each service category gets its own batch, and the run goes to Anthropic Message Batches or the OpenAI Batch API.
+- **Grounded in each client's own data.** Client data such as geography, company overview answers, topical maps and service Q&As is embedded with OpenAI text-embedding-3-small and stored in pgvector, and each request pulls the closest chunks from every source.
+- **A blog that plans itself.** Five topic engines feed the topic list, from a Search Console gap miner and a seasonal calendar to DataForSEO long-tail research. Every 5 minutes an orchestrator spreads the day's posts across client sites, the one longest without a post first, and fires the posts that are due.
+- **Claude in the loop over MCP.** Claude gets 53 tools for logos, brand guides and voice and 56 search tools, so it works from the same data as the pipeline.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Brand guide", note: "proposed from the live site" },
+    { label: "Gates and approval", note: "WCAG AA, a person signs off" },
+    { label: "Website copy in bulk", note: "RAG + Claude or OpenAI batch" },
+    { label: "Blog topics", note: "5 topic engines" },
+    { label: "Write and validate", note: "Claude + Gutenberg blocks" },
+    { label: "Publish and read back", note: "WordPress, then IndexNow" },
+  ]}
+/>
+
+A guide read from a live site is only a proposal. A read-only check first finds the page builder the site really uses, such as Elementor, Divi or Bricks, without trusting the WordPress generator tag. Confirming the guide needs a written note from a person, and approval is refused while any role on that site is open in the review queue. Generators read the approved version only and refuse to run when a site has none. Each page Claude Sonnet builds passes checks for forbidden phrases, structure, NAP details, schema and word floors, plus site-wide checks for broken links and other clients' details. Once a week, anything that moved on an approved site becomes a review item, never an edit.
+
+A bulk run will not start until the client's embeddings exist. Each request carries a custom ID that encodes its template and category, which is how a result finds its slot when the batch comes back hours later. A review prompt rides along in every request, so the model checks its own draft before it returns JSON.
+
+After launch, the blog runs on a schedule. Claude writes each post, a validator checks it, and a Gutenberg renderer turns it into native WordPress blocks. The post moves through tracked states from planning to publishing, goes out through the WordPress REST API and SSH, is read back from the real page, and is handed to an indexing queue.
+
+## Built to be trusted
+
+- **Gates that hold, history that stays.** A gate error blocks the save in the portal and blocks approval through Claude. Old versions stay, rejected proposals are kept so they are not re-proposed, and a vector trace becomes the primary logo only when a person approves it.
+- **Dry run first.** Token writes to a site's builder kit start as a dry run, and a live write needs a backup and before and after screenshots.
+- **Runs that survive restarts.** A bulk run keeps its batch IDs and last processed index, and saves every active checkpoint on SIGTERM or SIGINT. If the server restarts mid-post, a sweeper requeues the stranded blog post, and after a set number of retries marks it failed for a person to review.
+- **No filler, no double posts.** A no-content answer is saved empty with the model's note instead of invented copy. A blog post is claimed with a single atomic UPDATE that re-checks its status, and only one post is written to a site at a time.
+- **Spend caps and read-back.** Caps per client and for the fleet warn at 80% and block at 100%, checked every time a post is fired. A post counts as published only once the live page has been fetched and checked.
+
+## By the numbers
+
+- 78 API routes for brand guides, logos, voice and the page builder, 35 for website content and Q&A generation (23 and 12), and 112 for blog publishing (blog 86, indexing 11, IndexNow 15).
+- 53 MCP tools for Claude on brand work (22 for logos, 31 for brand guides and voice) and 56 MCP search tools (22 for Search Console, CrUX and PageSpeed, 25 for indexing and IndexNow, and 9 keyword tools).
+- 91 Python modules and 23 brand, logo and voice tables, plus 72 blog service modules and 12 scheduled jobs.
+- A 16-point checklist per page, and word floors of 2,000 (homepage) and 1,200 (service page).
+- 5 client data sources indexed into one pgvector table, with 1536-dimension embeddings from text-embedding-3-small.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [AI agent development](/services/ai-agent-development).

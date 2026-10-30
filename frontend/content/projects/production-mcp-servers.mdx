@@ -1,0 +1,108 @@
+---
+title: "Production MCP Servers for Claude: WordPress, Hosting and 1,186 Tools"
+slug: production-mcp-servers
+type: [MCP, Agents, Automation]
+summary: "Three production MCP servers, including a WordPress MCP server and a hosting server, that give Claude 1,186 tools to run a marketing agency's daily operations."
+description: "A WordPress MCP server, a hosting server and an operations hub: 1,186 Claude tools with two-layer auth, rate limits, call logs, read-back and 4,461 tests."
+stack: [Python, FastMCP, MCP SDK, OAuth 2.1, WordPress REST API, WP-CLI, Elementor, Playwright, PostgreSQL, asyncssh, Docker, nginx, AWS EC2, AWS S3]
+results:
+  - "3 production MCP servers, 1,186 Claude tools"
+  - "Client emails become approved site changes"
+  - "Every write says how it is verified"
+  - "4,461 automated tests"
+status: Live
+featured: true
+order: 5
+date: "2026-10-18"
+art: panel
+preview:
+  window: "wordpress-mcp · live"
+  heading: "Client email · new opening hours"
+  rows:
+    - { label: "Parsed request", value: "1 text change", tone: info }
+    - { label: "Routing", value: "auto-approve", tone: ok }
+    - { label: "Dry run", value: "diff ready", tone: info }
+    - { label: "Push", value: "applied", tone: ok }
+    - { label: "Read-back", value: "matches", tone: ok }
+  footer: "Change confirmed on the live page"
+coverStat: { value: "1,186", label: "Claude tools" }
+coverNote: "every write declares its proof"
+cta: "Need something like this for your business? Let's talk."
+fiverr: "https://www.fiverr.com/s/X00B44k"
+cover: ""
+video: ""
+architecture: ""
+github: ""
+demo: ""
+---
+
+## The problem
+
+A contractor marketing agency looks after a large number of client WordPress sites on a managed cloud host, plus the client operations around them. The requests never stop: new opening hours, a hero that looks wrong on mobile, a backup before a change, a malware scan, an IP to allow. Each one meant another dashboard and another sign-in, repeated site by site. Handing that work to Claude only helps if the tools behave like production software. Without shared rules, every tool handles errors its own way, a slow call runs twice, and one wrong command on a live server can take a client site down.
+
+## What I built
+
+- **Three production MCP servers.** A client-operations hub with 868 tools, a WordPress fleet server with 201 and a hosting server with 117, which together give Claude 1,186 tools.
+- **A WordPress MCP server and a hosting server.** One edits pages, runs visual QA, secures sites and turns client emails into approved changes. The other wraps a managed cloud host's API for servers, apps, backups, staging and malware scans.
+- **One written standard.** An internal [MCP server](/blog/what-is-an-mcp-server) standard sets the rules for all three: `<prefix>_<resource>_<verb>` names, an always-loaded core of 8 to 12 tools, pagination and field trimming, bulk variants, a health tool and backoff.
+- **Two-layer auth.** A bearer gate decides who may call a server at all. The upstream credentials for each system stay on the server and are never handed to the model.
+- **A shared tool registrar.** In the hub, every tool registers through one place that adds request IDs, time budgets, call logs and rate limits. The 11 core tools register first, so the start of the tool list stays the same and the cached prompt prefix keeps working.
+- **Safe renames and honest errors.** 24 legacy aliases keep older clients working after a tool moves to a new prefix, and upstream errors pass through word for word.
+
+## How it works
+
+<Flow
+  steps={[
+    { label: "Claude", note: "OAuth 2.1 sign-in" },
+    { label: "Bearer gate", note: "who may call" },
+    { label: "Tool registrar", note: "request_id + time budget" },
+    { label: "Rate limit", note: "per tool or by risk" },
+    { label: "Upstream system", note: "credentials stay server-side" },
+    { label: "Verify and log", note: "read back, secrets scrubbed" },
+  ]}
+/>
+
+Every server sits behind OAuth 2.1. The hub runs its own, with dynamic client registration turned off. The WordPress server takes Streamable HTTP on a single /mcp endpoint, and the hosting server takes SSE or stdio. In the hub, each call gets a request_id and a time budget, longer for known long-running tools, and a sliding-window limit allows 120 calls a minute per tool. The call then reaches the real system: the platform's Python and Node backend APIs, a client's WordPress site, or the host's API, with a cached token refreshed on a 401. On the way back, the hub writes a structured log entry with the request_id, secrets scrubbed and tokens and cost tracked. Each write then says how to check it: read the change back, or poll a slow operation until it is done.
+
+## Two servers up close
+
+### The WordPress fleet server
+
+- **Page-builder editing.** 11 Elementor tools list a page's structure, update elements in bulk, clone, insert and delete them, and flush CSS across sites. 7 more do the same for WPBakery, and 4 extract a site's design system and kit globals.
+- **Content and settings.** 57 tools cover posts, pages, custom post types, options, media, code snippets and theme settings.
+- **Visual QA.** 16 render tools take screenshots, read computed styles, measure the page and audit the hero section, with an autofix for common hero problems.
+- **Fleet security.** 36 tools replace .htaccess files, quarantine suspicious files, audit admin users, apply hardening templates, sweep Wordfence settings across the fleet, scan wp-config and manage plugins. An hourly guard catches stale cache minification.
+- **Schema, SEO and migrations.** 26 tools keep a schema roster, set and verify schema in bulk, extract FAQs, set SEO meta and move redirects. 4 more plan a blog migration, run it in batches, reconcile it and roll it back.
+- **Email to website.** 22 tools turn a client's email into a queued change with a confidence score and an SEO impact rating. By default a change is approved automatically only at 95% confidence with low SEO impact. Anything below 85% confidence, or with high SEO impact, goes back to the client to confirm, and each client can have its own overrides.
+
+Execution has two steps: a first call with confirm=false shows exactly what will change, then the real push runs. Writes go through the WordPress REST API with Application Passwords, or over SSH with WP-CLI when the API is not enough.
+
+### The hosting server
+
+- **Servers and apps.** 15 server tools and 19 app tools cover the server lifecycle, settings and scaling, plus app domains, cron and credentials.
+- **A 28-tool security suite.** 14 tools for malware scans and file restore, 12 for the firewall and IP or country blocking, and 2 for allow-lists.
+- **Files, SSH and deploys.** 12 tools read and write files, run allowlisted SSH commands over asyncssh and deploy sites.
+- **Backups and staging.** 7 backup tools and 6 staging tools, so a change can be tried on a copy before it reaches the live site.
+- **A shared vault.** 2 vault tools keep sites in the credential vault shared with the WordPress server, encrypted with the same Fernet scheme so both servers can read them.
+
+## Built to be trusted
+
+Each tool is scoped like an [AI agent's job description](/blog/ai-agent-job-description): what it may read, what it may change, and what needs a person.
+
+- **Destructive tools are marked.** 325 tools carry a destructive flag, and the standard asks for confirmation before any destructive action. Two hosting tools default to dry_run=True, so the first call only shows what would happen.
+- **Every write declares its proof.** A success message from the host is not treated as proof. Each write says how it is checked, and where a read-back is cheap the tool does it and reports whether it matched.
+- **Allowlist, not blocklist.** An SSH command runs only if it matches an allowlist. It is also checked for shell-injection tricks, and every file path must stay inside the allowed roots.
+- **Rate limits that follow risk.** On the hosting server, destructive tools are capped at 10 calls a minute, server lifecycle tools at 20 and writes at 60. SSH is capped at 60 a minute and 1,000 an hour.
+- **Changes that can be undone.** The hero autofix refuses to run unless three checks pass, and a separate tool reverts it. Every blog migration can be reconciled against the source and rolled back.
+- **People decide the risky calls.** The hub's 21 domain tools make live writes only behind an environment flag, and nothing renews unless the account balance covers the whole batch. Lifting a domain lock, fetching an auth code or reactivating a domain goes to a human decision queue, and a DNS change that would remove MX records is refused unless confirmed.
+- **Logged and locked.** The WordPress server's middleware logs every request, including rejected sign-ins, and site credentials live in a Fernet-encrypted vault. Its Playwright renderer blocks private IP ranges and the cloud metadata address.
+
+## By the numbers
+
+- 3 production MCP servers with 1,186 tools: 868 in the hub, 201 in the WordPress fleet server and 117 in the hosting server.
+- 201 WordPress tools across 45 modules, including 36 for security, 26 for schema and SEO and 22 for email to website.
+- 117 hosting tools, including a 28-tool security suite, behind 4 rate-limit tiers.
+- 325 tools flagged as destructive, 113 hub tools generated from a JSON manifest, 11 core tools registered first and 24 legacy aliases.
+- About 222k lines of Python and 4,461 test functions across the three servers, with 1,376 test functions in the WordPress fleet server and 320 in the hosting server.
+
+Part of the [AI operations platform](/projects/ai-operations-platform). Want something like this? See [MCP server development](/services/mcp-server-development).

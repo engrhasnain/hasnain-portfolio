@@ -61,13 +61,24 @@ const key = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 // Near-black brand colours (Next.js, Vercel, MCP) would vanish on the dark page, so those logos use the text colour.
 // Darker blues (PostgreSQL, Python, TypeScript) are lifted a little towards white so they read clearly.
-function visible(hex: string) {
+function channels(hex: string) {
   const n = parseInt(hex.slice(1), 16);
   const rgb = [n >> 16, (n >> 8) & 255, n & 255];
-  const lum = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
+  return { rgb, lum: (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255 };
+}
+const toHex = (rgb: number[]) => `#${rgb.map((c) => Math.round(c).toString(16).padStart(2, "0")).join("")}`;
+
+function visible(hex: string) {
+  const { rgb, lum } = channels(hex);
   if (lum < 0.25) return "#E5E7F0";
   if (lum >= 0.5) return hex;
-  return `#${rgb.map((c) => Math.round(c + (255 - c) * 0.3).toString(16).padStart(2, "0")).join("")}`;
+  return toHex(rgb.map((c) => c + (255 - c) * 0.3));
+}
+
+// On the cream paper sheet the true brand colour reads best; only very light ones (React, WhatsApp) are deepened a little.
+function onPaper(hex: string) {
+  const { rgb, lum } = channels(hex);
+  return lum > 0.45 ? toHex(rgb.map((c) => c * 0.75)) : hex;
 }
 
 /** The logo (or matching icon) and display colour for a tool name. */
@@ -98,33 +109,52 @@ function lookup(name: string) {
   return prefix ? logoFor[prefix] : undefined;
 }
 
-export function toolBrand(name: string): { color: string; path?: string; Fallback: ComponentType<IconProps> } {
+export function toolBrand(name: string): {
+  color: string;
+  /** The colour on the paper sheet. */
+  paper: string;
+  path?: string;
+  Fallback: ComponentType<IconProps>;
+} {
   const match = lookup(name);
   const brand = typeof match === "string" ? brandLogos[match] : undefined;
   return {
     color: brand ? visible(brand.hex) : "#5EEAD4",
+    paper: brand ? onPaper(brand.hex) : "#0f766e",
     path: brand?.path,
     Fallback: typeof match === "object" ? namedIcons[match.icon] : namedIcons.sparkles,
   };
 }
 
 export function ToolLogo({ name, size = 20 }: { name: string; size?: number }) {
-  const { color, path, Fallback } = toolBrand(name);
+  const { color, paper, path, Fallback } = toolBrand(name);
+  // The fill attribute is the navy-page colour; on paper, .paper svg.brand-logo swaps in --logo-paper.
+  // Icons without a logo are the accent teal, which the paper theme already turns dark teal.
   return path ? (
-    <svg viewBox="0 0 24 24" width={size} height={size} fill={color} aria-hidden="true" focusable="false">
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill={color}
+      className="brand-logo"
+      style={{ "--logo-paper": paper } as CSSProperties}
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d={path} />
     </svg>
   ) : (
-    <Fallback style={{ color, fontSize: size }} />
+    <Fallback className="text-teal" style={{ fontSize: size }} />
   );
 }
 
 /** A tool in my stack: the system's chip, led by the tool's real logo (or a matching icon). The border takes the brand colour on hover. */
 export function ToolChip({ name, size = "md", className = "" }: { name: string; size?: "sm" | "md"; className?: string }) {
   const small = size === "sm";
+  const { color, paper } = toolBrand(name);
   return (
     <span
-      style={{ "--brand": toolBrand(name).color } as CSSProperties}
+      style={{ "--brand": color, "--brand-paper": paper } as CSSProperties}
       className={`tool-chip chip shrink-0 whitespace-nowrap text-ink/85 ${
         small ? "gap-2 py-1.5 pr-3 pl-2" : "gap-2.5 py-2 pr-4 pl-3 text-sm"
       } ${className}`}

@@ -157,112 +157,117 @@ export default async function ProjectPage({ params }: Props) {
           )}
         </div>
 
+        {/* The reading sheet: the article body is printed on one paper sheet lying on the navy desk. */}
         {caseStudy ? (
-          <div className="relative mt-16 sm:mt-24">
-            <CaseNav
-              items={[...caseNavItems(project.body), ...(project.stack.length > 0 ? [{ id: "stack", label: "Stack" }] : [])]}
-            />
-            <div className="container-page pt-12 sm:pt-16">
-              <Mdx source={project.body} />
-              {project.stack.length > 0 ? (
-                <section id="stack" className="scroll-mt-36 border-t border-white/[0.06] py-16 sm:py-24">
-                  <CaseHeading
-                    n={String(caseNavItems(project.body).length + 1).padStart(2, "0")}
-                    eyebrow="Stack"
-                    title="Tools behind it"
-                  />
-                  <Reveal>
-                    <ul className="flex flex-wrap gap-2.5">
-                      {project.stack.map((s) => (
-                        <li key={s}>
-                          <ToolChip name={s} />
+          <div className="container-page mt-16 sm:mt-24">
+            <div className="paper paper-sheet -mx-3 px-5 pt-5 pb-8 sm:mx-0 sm:p-10 xl:px-14 xl:pt-12 xl:pb-14">
+              <CaseNav
+                items={[...caseNavItems(project.body), ...(project.stack.length > 0 ? [{ id: "stack", label: "Stack" }] : [])]}
+              />
+              <div className="pt-10 sm:pt-12 [&>section:last-child]:pb-0">
+                <Mdx source={project.body} />
+                {project.stack.length > 0 ? (
+                  <section id="stack" className="scroll-mt-36 border-t border-white/[0.06] py-16 sm:py-24">
+                    <CaseHeading
+                      n={String(caseNavItems(project.body).length + 1).padStart(2, "0")}
+                      eyebrow="Stack"
+                      title="Tools behind it"
+                    />
+                    <Reveal>
+                      <ul className="flex flex-wrap gap-2.5">
+                        {project.stack.map((s) => (
+                          <li key={s}>
+                            <ToolChip name={s} />
+                          </li>
+                        ))}
+                      </ul>
+                    </Reveal>
+                  </section>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="container-page mt-12 sm:mt-16">
+            <div className="paper paper-sheet -mx-3 grid gap-12 px-5 py-9 sm:mx-0 sm:p-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-14 xl:p-14">
+              <div className="prose-glow min-w-0 [&>h2:first-child]:mt-0">
+                <Mdx source={project.body} />
+                {project.architecture ? (
+                  <figure>
+                    <h2>Architecture</h2>
+                    <Image
+                      src={project.architecture}
+                      alt={`Architecture diagram of ${project.title}`}
+                      width={1600}
+                      height={900}
+                      sizes="(min-width: 1024px) 760px, 100vw"
+                      className="mt-6 h-auto w-full"
+                    />
+                  </figure>
+                ) : null}
+              </div>
+
+              {/* Sidebar: the facts first, then the one highlighted box. Only that box stays in view while you read. */}
+              <aside className="flex flex-col gap-5">
+                {project.results.length > 0 ? (
+                  <Reveal className="card p-6">
+                    <p className="meta">At a glance</p>
+                    <h2 className="mt-2 text-xl">Results</h2>
+                    <ul className="mt-5 space-y-3 text-[0.95rem] leading-relaxed">
+                      {project.results.map((r) => (
+                        <li key={r} className="flex gap-2.5">
+                          <Check className="mt-1 shrink-0 text-teal" />
+                          <span className="text-ink/85">{r}</span>
                         </li>
                       ))}
                     </ul>
                   </Reveal>
-                </section>
-              ) : null}
+                ) : null}
+                {project.stack.length > 0 ? (
+                  <Reveal delay={0.08} className="card p-6">
+                    <p className="meta">Built with</p>
+                    <h2 className="mt-2 text-xl">Stack</h2>
+                    <ul className="mt-5 flex flex-wrap gap-2">
+                      {project.stack.map((s) => (
+                        <li key={s}>
+                          <ToolChip name={s} size="sm" />
+                        </li>
+                      ))}
+                    </ul>
+                  </Reveal>
+                ) : null}
+                <div className="lg:sticky lg:top-24">
+                  <section className="card-feature p-6">
+                    <p className="eyebrow">Let&apos;s build yours</p>
+                    <h2 className="mt-3 text-xl">Need something like this?</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-ink/70">
+                      Tell me what you need, or hire me directly on Fiverr.
+                    </p>
+                    <div className="mt-6 flex flex-col gap-2.5">
+                      <Link href="/contact" className="btn btn-primary">
+                        Let&apos;s talk <ArrowRight />
+                      </Link>
+                      {site.booking ? (
+                        <a href={site.booking} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                          <Calendar /> Book a free call
+                        </a>
+                      ) : null}
+                      {fiverr ? (
+                        <a href={fiverr} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                          Hire me on Fiverr <ArrowUpRight />
+                        </a>
+                      ) : null}
+                    </div>
+                  </section>
+                </div>
+              </aside>
             </div>
-          </div>
-        ) : (
-          <div className="container-page grid gap-12 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
-            <div className="prose-glow min-w-0 [&>h2:first-child]:mt-0">
-              <Mdx source={project.body} />
-              {project.architecture ? (
-                <figure>
-                  <h2>Architecture</h2>
-                  <Image
-                    src={project.architecture}
-                    alt={`Architecture diagram of ${project.title}`}
-                    width={1600}
-                    height={900}
-                    sizes="(min-width: 1024px) 760px, 100vw"
-                    className="mt-6 h-auto w-full"
-                  />
-                </figure>
-              ) : null}
-            </div>
-
-            {/* Sidebar: the facts first, then the one highlighted box. Only that box stays in view while you read. */}
-            <aside className="flex flex-col gap-5">
-              {project.results.length > 0 ? (
-                <Reveal className="card p-6">
-                  <p className="meta">At a glance</p>
-                  <h2 className="mt-2 text-xl">Results</h2>
-                  <ul className="mt-5 space-y-3 text-[0.95rem] leading-relaxed">
-                    {project.results.map((r) => (
-                      <li key={r} className="flex gap-2.5">
-                        <Check className="mt-1 shrink-0 text-teal" />
-                        <span className="text-ink/85">{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Reveal>
-              ) : null}
-              {project.stack.length > 0 ? (
-                <Reveal delay={0.08} className="card p-6">
-                  <p className="meta">Built with</p>
-                  <h2 className="mt-2 text-xl">Stack</h2>
-                  <ul className="mt-5 flex flex-wrap gap-2">
-                    {project.stack.map((s) => (
-                      <li key={s}>
-                        <ToolChip name={s} size="sm" />
-                      </li>
-                    ))}
-                  </ul>
-                </Reveal>
-              ) : null}
-              <div className="lg:sticky lg:top-24">
-                <section className="card-feature p-6">
-                  <p className="eyebrow">Let&apos;s build yours</p>
-                  <h2 className="mt-3 text-xl">Need something like this?</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                    Tell me what you need, or hire me directly on Fiverr.
-                  </p>
-                  <div className="mt-6 flex flex-col gap-2.5">
-                    <Link href="/contact" className="btn btn-primary">
-                      Let&apos;s talk <ArrowRight />
-                    </Link>
-                    {site.booking ? (
-                      <a href={site.booking} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                        <Calendar /> Book a free call
-                      </a>
-                    ) : null}
-                    {fiverr ? (
-                      <a href={fiverr} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                        Hire me on Fiverr <ArrowUpRight />
-                      </a>
-                    ) : null}
-                  </div>
-                </section>
-              </div>
-            </aside>
           </div>
         )}
       </article>
 
       {more.length > 0 ? (
-        <section className="section border-t border-white/[0.06]">
+        <section className="section">
           <div className="container-page">
             <SectionHeading
               eyebrow="Keep exploring"

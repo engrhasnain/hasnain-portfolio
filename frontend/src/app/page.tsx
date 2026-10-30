@@ -113,7 +113,7 @@ export default function HomePage() {
         "Two-step execute, and every write says how to read it back",
         "Part of 1,180+ MCP tools across three production servers",
       ],
-      slug: "wordpress-fleet-mcp",
+      slug: "production-mcp-servers",
       service: { href: "/services/mcp-server-development", label: "MCP server service" },
     },
     {
@@ -224,7 +224,7 @@ export default function HomePage() {
               that&apos;s me
             </MarginNote>
             <MarginNote className="-bottom-16 -left-4 hidden xl:flex" arrowClass="rotate-[35deg]">
-              29 real systems below
+              {all.length} real systems below
             </MarginNote>
           </div>
         </div>
