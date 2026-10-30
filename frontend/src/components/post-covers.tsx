@@ -10,6 +10,8 @@ const EMERALD = "#34D399";
 const greenText = "text-teal";
 const greenTile = "bg-teal/12 text-teal ring-[0.12em] ring-teal/30";
 
+type CoverProps = { compact?: boolean; aside?: ReactNode };
+
 /** Shared layout: eyebrow, title and subtitle on the left, the author at the bottom, a tilted card on the right. */
 function CoverLayout({
   eyebrow,
@@ -17,6 +19,7 @@ function CoverLayout({
   subtitle,
   seed,
   compact = false,
+  aside,
   children,
 }: {
   eyebrow: string;
@@ -24,6 +27,8 @@ function CoverLayout({
   subtitle: string;
   seed: number;
   compact?: boolean;
+  /** The card's notes (sticky note and handwritten note), shown beside the product card. */
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   if (compact) {
@@ -39,10 +44,13 @@ function CoverLayout({
       >
         <div className="absolute inset-0 bg-dots opacity-50 [mask-image:linear-gradient(180deg,black,transparent_85%)]" />
         <div className="post-cover-compact absolute inset-0 grid place-items-center">
-          <div className="w-[43em]">
-            <div className="tilt">
-              <div className="agent-card rounded-[2.2em] border border-white/10 bg-[linear-gradient(180deg,rgb(20_32_58/0.96),rgb(15_23_46/0.96))] p-[2.6em] pb-[2.2em] shadow-[0_3em_8em_-3em_rgb(0_0_0/0.9)]">
-                {children}
+          <div className="flex items-stretch">
+            {aside ? <div className="mock-root relative w-[7.6em] shrink-0">{aside}</div> : null}
+            <div className={aside ? "w-[43em] text-[0.88em]" : "w-[43em]"}>
+              <div className="tilt">
+                <div className="agent-card rounded-[2.2em] border border-white/10 bg-[linear-gradient(180deg,rgb(20_32_58/0.96),rgb(15_23_46/0.96))] p-[2.6em] pb-[2.2em] shadow-[0_3em_8em_-3em_rgb(0_0_0/0.9)]">
+                  {children}
+                </div>
               </div>
             </div>
           </div>
@@ -122,10 +130,11 @@ const waitChip = "border-amber/50 bg-amber/10 text-amber";
 const noChip = "border-rose-400/50 bg-rose-400/10 text-rose-400";
 
 /** "Your AI Agent Needs a Job Description Before It Gets Access" */
-function AgentIdCover({ compact = false }: { compact?: boolean }) {
+function AgentIdCover({ compact = false, aside }: CoverProps) {
   return (
     <CoverLayout
       compact={compact}
+      aside={aside}
       seed={7}
       eyebrow="AI agents · MCP · AI security"
       title={
@@ -177,10 +186,11 @@ const tools = [
 ];
 
 /** "What Is an MCP Server, and Does Your Business Need One?" */
-function McpServerCover({ compact = false }: { compact?: boolean }) {
+function McpServerCover({ compact = false, aside }: CoverProps) {
   return (
     <CoverLayout
       compact={compact}
+      aside={aside}
       seed={19}
       eyebrow="MCP · Claude · AI agents"
       title={
@@ -222,10 +232,11 @@ function McpServerCover({ compact = false }: { compact?: boolean }) {
 }
 
 /** "How I Build RAG Chatbots That Don't Make Things Up" */
-function RagChatbotCover({ compact = false }: { compact?: boolean }) {
+function RagChatbotCover({ compact = false, aside }: CoverProps) {
   return (
     <CoverLayout
       compact={compact}
+      aside={aside}
       seed={31}
       eyebrow="RAG · Claude · AI security"
       title={
@@ -274,10 +285,11 @@ function RagChatbotCover({ compact = false }: { compact?: boolean }) {
 const wave = [0.35, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.85, 0.55, 0.3, 0.75, 0.95, 0.45, 0.65, 0.3, 0.8, 0.5, 0.7, 0.35, 0.55];
 
 /** "Your Voice AI Hears "Martin" When Your Customer Says "Mardan"" */
-function VoiceNamesCover({ compact = false }: { compact?: boolean }) {
+function VoiceNamesCover({ compact = false, aside }: CoverProps) {
   return (
     <CoverLayout
       compact={compact}
+      aside={aside}
       seed={43}
       eyebrow="Voice AI · Speech recognition"
       title={
@@ -338,7 +350,7 @@ export function hasPostCover(art: string | undefined): art is CoverArt {
 }
 
 /** `compact` is the card version: just the product card on the site's tinted panel, since the card already shows the title. */
-export function PostCover({ art, compact = false }: { art: CoverArt; compact?: boolean }) {
+export function PostCover({ art, compact = false, aside }: { art: CoverArt; compact?: boolean; aside?: ReactNode }) {
   const Cover = covers[art];
-  return <Cover compact={compact} />;
+  return <Cover compact={compact} aside={compact ? aside : undefined} />;
 }

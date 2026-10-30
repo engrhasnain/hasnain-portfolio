@@ -17,6 +17,9 @@ export type ProjectPreview = {
   footer?: string;
 };
 
+/** A cover's sticky note: one exact number from the page, e.g. { value: "37", label: "live-call functions" }. */
+export type CoverStat = { value: string; label: string };
+
 export type ProjectMeta = {
   slug: string;
   title: string;
@@ -35,8 +38,8 @@ export type ProjectMeta = {
   art?: string;
   /** The panel cover's content, used when art is "panel". */
   preview?: ProjectPreview;
-  /** The cover's sticky note: one number from the results, e.g. { value: "37", label: "live-call functions" }. */
-  coverStat?: { value: string; label: string };
+  /** The cover's sticky note: one number from the results. */
+  coverStat?: CoverStat;
   /** The cover's handwritten margin note, 2 to 5 words. */
   coverNote?: string;
   /** "case-study" gives the project a full-width page for long write-ups (used by the flagship). */
@@ -65,6 +68,10 @@ export type PostMeta = {
   readingMinutes: number;
   /** A live, animated cover from components/post-covers.tsx, shown on the site instead of the cover image. */
   coverArt?: string;
+  /** The card cover's sticky note: one number (or very short word) from the post. */
+  coverStat?: CoverStat;
+  /** The card cover's handwritten margin note, 2 to 5 words. */
+  coverNote?: string;
   /** Only ever true in a local SHOW_DRAFTS preview. */
   draft?: boolean;
   /** The 40-60 word direct answer shown at the top, the part search and AI answers quote. */

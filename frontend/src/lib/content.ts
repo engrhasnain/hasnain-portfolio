@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { cache } from "react";
 import matter from "gray-matter";
-import { PROJECT_TYPES, type PostMeta, type ProjectMeta, type ProjectPreview, type ProjectType } from "./types";
+import { PROJECT_TYPES, type CoverStat, type PostMeta, type ProjectMeta, type ProjectPreview, type ProjectType } from "./types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
 
@@ -76,7 +76,7 @@ function preview(entry: Entry): ProjectPreview | undefined {
 }
 
 /** The cover's sticky note from frontmatter `coverStat`: { value, label }. */
-function coverStat(entry: Entry): ProjectMeta["coverStat"] {
+function coverStat(entry: Entry): CoverStat | undefined {
   const value = entry.data.coverStat as Record<string, unknown> | undefined;
   if (!value) return undefined;
   const stat = text(value.value);
@@ -161,6 +161,8 @@ export const getPosts = cache((): Post[] =>
         readingMinutes: Math.max(1, Math.round(words / 220)),
         draft: entry.data.draft === true,
         coverArt: text(entry.data.coverArt),
+        coverStat: coverStat(entry),
+        coverNote: text(entry.data.coverNote),
         answer: text(entry.data.answer),
         faq: records(entry, "faq", ["q", "a"]).map(({ q, a }) => ({ q, a })),
         sources: records(entry, "sources", ["publisher", "title", "url"]).map(({ publisher, title, url }) => ({ publisher, title, url })),

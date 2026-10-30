@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/content";
 import type { PostMeta } from "@/lib/types";
+import { CoverNotes } from "./cover-notes";
 import { hasPostCover, PostCover } from "./post-covers";
 import { ArrowRight } from "./icons";
 
@@ -12,7 +13,11 @@ export function PostCard({ post, headingLevel = "h3" }: { post: PostMeta; headin
     <Link href={`/blog/${post.slug}`} className="group card card-hover flex h-full flex-col overflow-hidden">
       <div className="post-cover relative overflow-hidden border-b border-white/[0.07]">
         {hasPostCover(post.coverArt) ? (
-          <PostCover art={post.coverArt} compact />
+          <PostCover
+            art={post.coverArt}
+            compact
+            aside={post.coverStat || post.coverNote ? <CoverNotes stat={post.coverStat} note={post.coverNote} /> : undefined}
+          />
         ) : post.cover ? (
           <div className="relative aspect-[16/10]">
             <Image
