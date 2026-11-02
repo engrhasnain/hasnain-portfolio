@@ -44,7 +44,7 @@ export function CtaBand({
                 <LinkedIn /> LinkedIn
               </a>
               <a href={`mailto:${site.email}`} className="font-semibold text-ink/85 hover:text-teal">
-                {site.email}
+                Email
               </a>
             </p>
           </div>

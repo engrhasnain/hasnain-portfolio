@@ -2,13 +2,13 @@
 title: "AI Social Media Automation with Event Triggers for Contractors"
 slug: social-media-automation
 type: [Automation, Agents]
-summary: "A social media system that picks posts from seven live signals and from weather, storm, trend and holiday events, checks every caption with six guards and publishes to five platforms."
-description: "AI social media automation that turns weather, storms, search trends and holidays into posts, checks every caption with 6 guards and publishes to 5 platforms."
+summary: "A social media system that picks posts from seven live signals, checks those captions with six guards, adds weather, storm, trend and holiday posts, and publishes to five platforms."
+description: "AI social media automation for contractors: seven live signals, six caption guards, weather, storm and holiday triggers, and publishing to five platforms."
 stack: [FastAPI, PostgreSQL, Claude, Meta Graph API, LinkedIn API, Pinterest API, Threads API, Playwright, Twilio, React, NWS API, NOAA NCEI, Google Trends, APScheduler]
 results:
   - "A 7-signal engine and a 10-stage event pipeline decide what to post"
   - "A fixed kill-list runs first and the AI cannot overrule it"
-  - "6 content guards check every caption before it can go out"
+  - "6 content guards check each signal-engine caption before it goes out"
   - "5 platforms, and Nextdoor leads answered in the owner's voice"
 status: Live
 featured: false
@@ -44,7 +44,7 @@ A contractor marketing agency posts to social media for many client businesses a
 - **A decision engine.** It scores seven signals for each client: Google Trends, weather, local news, seasonal timing, Search Console performance, engagement history and days since the last post. One strong signal, or two supporting ones, triggers a post.
 - **An event engine with arming rules.** Separate adapters read National Weather Service forecasts, NOAA NCEI storm records, Google Trends and holiday calendars, and turn each one into a common trigger. A source is armed for a client only when its feed fits the client's type of business, one of the client's approved services matches a signal the source sends, and the client has a service area for local signals.
 - **A 10-stage event pipeline.** Each trigger is paired with each angle the client could use, then filtered until only the pairs that truly change something for that buyer are left. Claude scores whether an event really fits a service, writes the line from the owner's own selling point, and checks that any law, credit or rate it mentions is still current. Approved posts are queued one item per channel, with the timing worked out from the trigger.
-- **Six content guards.** Every caption is checked for competitor bleed, competitor names, fluff, unsupported claims, platform rejection risks and AI tells. Each guard can pass it, rewrite one sentence, regenerate the post or block it.
+- **Six content guards.** Every caption from the signal engine is checked for competitor bleed, competitor names, fluff, unsupported claims, platform rejection risks and AI tells. Each guard can pass it, rewrite one sentence, regenerate the post or block it.
 - **Three approval tiers, five platforms.** New clients get full review, established clients get exception-only review, and trusted clients run on autopilot. Facebook, Instagram, LinkedIn, Pinterest and Threads connect through OAuth, and token refreshers keep the LinkedIn, Pinterest and Threads connections from lapsing.
 - **Analytics, inbox and a team portal.** Results are collected at 24 hours, 72 hours and 7 days, and Meta inbox, follower and profile sweeps keep the portal up to date. The team gets an AI post generator, a calendar, a publishing queue with approve and reject, scheduled and published views, and an AI reply enhancer with version history and undo.
 - **A Nextdoor lead responder.** It spots Nextdoor notifications forwarded by Gmail, opens the thread in a Playwright session per client, and drafts a reply in the owner's voice plus one follow-up.
