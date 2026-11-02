@@ -14,7 +14,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://i.ytimg.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://cloud.umami.is https://api-gateway.umami.dev",
+  "connect-src 'self' https://cloud.umami.is https://gateway.umami.is https://api-gateway.umami.dev",
   "media-src 'self'",
   "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
   "object-src 'none'",
